@@ -1,0 +1,8 @@
+# some type of files
+*.csv
+*.xlsx
+*.docx
+*.png
+# forders
+rawdata/
+

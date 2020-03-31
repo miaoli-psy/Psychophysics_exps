@@ -44,8 +44,13 @@ def strtolist(posi_list_str):
         posi_list.append(i)
     return posi_list
 
-# read selected display
-selecteddispalys = pd.read_excel('cleanedTotalData_fullinfo.xlsx')
+# read file - totaldata
+#selecteddispalys = pd.read_excel('cleanedTotalData_fullinfo.xlsx')
+
+# or read file - displays
+selecteddispalys = pd.read_excel('../../displays/update_stim_info_full.xlsx')
+
+
 
 # str - list
 selecteddispalys['positions'] = strtolist(selecteddispalys['positions_list'].tolist())
@@ -62,5 +67,11 @@ selecteddispalys['density_itemsperdeg2'] = selecteddispalys['properties'].map(la
 
 
 # write to excel 
-with pd.ExcelWriter('try.xlsx') as writer:
+
+# for totaldata-to current folder
+#with pd.ExcelWriter('try.xlsx') as writer:
+#    selecteddispalys.to_excel(writer)
+
+#or for display to display folder
+with pd.ExcelWriter('../../displays/try.xlsx') as writer:
     selecteddispalys.to_excel(writer)

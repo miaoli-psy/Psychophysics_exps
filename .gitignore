@@ -6,7 +6,7 @@
 *.pdf
 *.svg
 
-# forders
+# folders
 rawdata/
 slides/
 

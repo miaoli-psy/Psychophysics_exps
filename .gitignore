@@ -3,6 +3,10 @@
 *.xlsx
 *.docx
 *.png
+*.pdf
+*.svg
+
 # forders
 rawdata/
+slides/
 

@@ -5,54 +5,9 @@ Created on Fri Dec 11 20:56:42 2020
 """
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.spatial import distance
-import math
 
-from commons import process_str
+from commons import process_str, position
 
-# convert Cartesian corrdinates to Polar coordinates
-def get_radius(posi):
-    """
-    get distance between posi and the display center
-    """
-    return distance.euclidean(posi, (0,0))
-
-def get_angle(posi):
-    """
-    get angle for polor corrdinates
-    """
-    if posi[0] != 0 and posi[1] != 0:
-        if posi[0] > 0 and posi[1] > 0:
-            return math.degrees(math.atan(posi[1]/posi[0]))
-        elif posi[0] > 0 and posi[1] < 0:
-            return math.degrees(math.atan(posi[1]/posi[0]))+360
-        else:
-            return math.degrees(math.atan(posi[1]/posi[0]))+180
-    else:
-        if posi[0] == 0 and posi[1] > 0:
-            return 90
-        elif posi[0] ==0 and posi[1] < 0:
-            return 270
-        elif posi[0] > 0 and posi[1] == 0:
-            return 0
-        elif posi[0] < 0 and posi[1] == 0:
-            return 180
-    return None
-
-def get_polar_coordinates(inputposilist):
-    """
-    get polar coordinates for all disc positions
-    """
-    radius = [round(get_radius(p)) for p in inputposilist]
-    angle = [round(get_angle(p)) for p in inputposilist]
-    
-    polar_coordinates = []
-    for x, y in zip(angle, radius):
-        polar_coordinates.append((x,y))
-    
-    #sort by tuple's first value (angle)
-    polar_coordinates.sort()
-    return polar_coordinates
 
 def get_point_count_list(polar:list) -> list:
     # polar:                                 [(angle, distance),etc]
@@ -131,7 +86,7 @@ if __name__ == '__main__':
     simuli_df = pd.read_excel(path + filename)
 
     try_posi = process_str.str_to_list(simuli_df.positions_list[0])
-    polar = get_polar_coordinates(try_posi)
+    polar = position.get_polar_coordinates(try_posi)
     count_list = get_point_count_list(polar)
     range_list = get_range_count(count_list, step = 10)
 

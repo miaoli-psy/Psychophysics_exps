@@ -1,0 +1,47 @@
+
+from scipy.spatial import distance
+import math
+
+# convert Cartesian corrdinates to Polar coordinates
+def get_radius(posi:tuple):
+    """
+    get distance between posi and the display center
+    """
+    return distance.euclidean(posi, (0,0))
+
+def get_angle(posi:tuple):
+    """
+    get angle for polor corrdinates
+    """
+    if posi[0] != 0 and posi[1] != 0:
+        if posi[0] > 0 and posi[1] > 0:
+            return math.degrees(math.atan(posi[1]/posi[0]))
+        elif posi[0] > 0 and posi[1] < 0:
+            return math.degrees(math.atan(posi[1]/posi[0]))+360
+        else:
+            return math.degrees(math.atan(posi[1]/posi[0]))+180
+    else:
+        if posi[0] == 0 and posi[1] > 0:
+            return 90
+        elif posi[0] ==0 and posi[1] < 0:
+            return 270
+        elif posi[0] > 0 and posi[1] == 0:
+            return 0
+        elif posi[0] < 0 and posi[1] == 0:
+            return 180
+    return None
+
+def get_polar_coordinates(inputposilist:list):
+    """
+    get polar coordinates for all disc positions
+    """
+    radius = [round(get_radius(p)) for p in inputposilist]
+    angle = [round(get_angle(p)) for p in inputposilist]
+    
+    polar_coordinates = []
+    for x, y in zip(angle, radius):
+        polar_coordinates.append((x,y))
+    
+    #sort by tuple's first value (angle)
+    polar_coordinates.sort()
+    return polar_coordinates

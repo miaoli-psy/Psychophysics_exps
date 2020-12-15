@@ -5,6 +5,7 @@
 *.png
 *.pdf
 *.svg
+*.pyc
 
 # folders
 rawdata/

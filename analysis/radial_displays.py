@@ -115,30 +115,31 @@ def get_temp_data(simuli_df):
     c_names = simuli_df.columns.to_list()
     return c_names
 
-def get_range_list(try_posi:list, step:int) -> list:
-    polar = get_polar_coordinates(try_posi)
+def draw_temp(polar:list):
     x_val = [x[0] for x in polar]
     y_val = [x[1] for x in polar]
     fig, ax = plt.subplots()
     ax.plot(x_val, y_val)
-    count_list = get_point_count_list(polar)
-    range_list = get_range_count(count_list, step = step)
-    return range_list
+
 
 if __name__ == '__main__':
     is_debug = False
+
     # read stimuli display
     path = "../displays/"
     filename = "update_stim_info_full.xlsx"
     simuli_df = pd.read_excel(path + filename)
 
-    if is_debug:
-        c_names = get_temp_data(simuli_df)
-
     try_posi = process_str.str_to_list(simuli_df.positions_list[0])
-    range_list = get_range_list(try_posi, 10)
+    polar = get_polar_coordinates(try_posi)
+    count_list = get_point_count_list(polar)
+    range_list = get_range_count(count_list, step = 10)
 
     # steps = [i for i in range(0, 46)]
     # for step in steps:
     #     range_list = get_range_list(try_posi, step)
     #     # TODO: draw picture of range_list
+
+    if is_debug:
+        c_names = get_temp_data(simuli_df)
+        draw_temp(polar)

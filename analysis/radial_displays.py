@@ -6,7 +6,8 @@ Created on Fri Dec 11 20:56:42 2020
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from commons import process_str, position
+from commons import process_str
+from point import polar_point
 
 
 def get_point_count_list(polar:list) -> list:
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     simuli_df = pd.read_excel(path + filename)
 
     try_posi = process_str.str_to_list(simuli_df.positions_list[0])
-    polar = position.get_polar_coordinates(try_posi)
+    polar = polar_point.get_polar_coordinates(try_posi)
     count_list = get_point_count_list(polar)
     range_list = get_range_count(count_list, step = 10)
 

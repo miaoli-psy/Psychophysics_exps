@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial import distance
 import math
 
+from commons import process_str
 
 # convert Cartesian corrdinates to Polar coordinates
 def get_radius(posi):
@@ -109,30 +110,35 @@ def get_range_count(count_list:list, step:int) -> list:
 # rotated_a = affinity.rotate(line, 20)
 # rotated_b = affinity.rotate(geom = b, angle = -20, origin=((0,0)), use_radians=False)) #negative anlge: clockwise
 
-if __name__ == '__main__':
-    # =============================================================================
-    # read stimuli display
-    # =============================================================================
-    PATH = "../displays/"
-    STIMULI_DF = pd.read_excel(PATH+"update_stim_info_full.xlsx")
+def get_temp_data(simuli_df):
     # check df coloum names
-    # c_names = STIMULI_DF.columns.to_list()
-    # =============================================================================
-    # theta = 0 deg (a line)
-    # =============================================================================
+    c_names = simuli_df.columns.to_list()
+    return c_names
 
-    try_posi = [(140.0, 200.0), (-220.0, 150.0), (0.0, -250.0), (60.0, 170.0), (230.0, 0.0), (330.0, 190.0), (-100.0, -150.0), (190.0, -50.0), (-290.0, -130.0), (-280.0, -40.0), (-40.0, 170.0), (160.0, -200.0), (-130.0, -50.0), (220.0, 210.0), (-100.0, 30.0), (-230.0, 30.0), (110.0, -60.0), (120.0, -20.0), (130.0, 60.0), (200.0, -130.0), (-150.0, 70.0), (350.0, -120.0), (90.0, -170.0), (-90.0, -220.0), (120.0, 90.0), (60.0, -90.0), (-110.0, 120.0), (260.0, -230.0), (250.0, 90.0), (-30.0, -150.0), (-70.0, 150.0), (-170.0, -100.0), (-50.0, -110.0), (10.0, 170.0), (-190.0, 210.0), (120.0, 20.0), (-200.0, -180.0), (30.0, -180.0), (90.0, -80.0), (-330.0, 150.0), (20.0, 100.0), (10.0, -100.0), (70.0, 100.0), (-120.0, -20.0), (-120.0, 250.0), (350.0, -40.0), (40.0, -110.0), (-350.0, -240.0), (-180.0, -250.0), (-90.0, -60.0), (80.0, -250.0), (-70.0, -80.0), (-10.0, 110.0), (-110.0, 80.0), (320.0, 50.0), (-130.0, 10.0), (-20.0, 250.0), (-60.0, 90.0)]
-######
+def get_range_list(try_posi:list, step:int) -> list:
     polar = get_polar_coordinates(try_posi)
-
     x_val = [x[0] for x in polar]
     y_val = [x[1] for x in polar]
-
     fig, ax = plt.subplots()
     ax.plot(x_val, y_val)
-
-
-#####
     count_list = get_point_count_list(polar)
-    step = 10
     range_list = get_range_count(count_list, step = step)
+    return range_list
+
+if __name__ == '__main__':
+    is_debug = False
+    # read stimuli display
+    path = "../displays/"
+    filename = "update_stim_info_full.xlsx"
+    simuli_df = pd.read_excel(path + filename)
+
+    if is_debug:
+        c_names = get_temp_data(simuli_df)
+
+    try_posi = process_str.str_to_list(simuli_df.positions_list[0])
+    range_list = get_range_list(try_posi, 10)
+
+    # steps = [i for i in range(0, 46)]
+    # for step in steps:
+    #     range_list = get_range_list(try_posi, step)
+    #     # TODO: draw picture of range_list

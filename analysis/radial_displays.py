@@ -72,13 +72,16 @@ if __name__ == '__main__':
     simuli_df = pd.read_excel(path + filename)
 
     # (2) Get step_ranges_map: key: step, value: range_list
-    step_range = (0, 10)
+    step_range = (0, 13)
     all_positions_list = simuli_df.positions_list
+    # key(int):    angle step 
+    # value(list): range_list [[[angle, angle+step), num_points1], etc]
     step_ranges_map = get_step_ranges_map(step_range, all_positions_list)
 
     # (3) Draw picture of current range_list
     curr_step = 0 # degree step: 0-359
     curr_countlist_index = 10 # 0-249
+    # [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
     curr_rangelist = draw_current_rangelist(step_ranges_map, curr_step, curr_countlist_index)
 
     # Optional: only for debug

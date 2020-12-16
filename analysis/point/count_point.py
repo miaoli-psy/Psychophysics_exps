@@ -20,11 +20,14 @@ def __get_point_num_in_range(count_list:List[List[int]], curr_range:List[int]) -
     # point_num: how many disc in curr_range
     point_num = 0
     start, end = curr_range[0], curr_range[1]
+    # range is 0, (0, 0), (1,1),etc.
     if start == end:
         point_num = count_list[start][1]
+    # such as (2, 10)
     elif start < end:
         for angle_num in count_list[start:end]:
             point_num += angle_num[1]
+    # start > end: (358, 2)
     else:
         for angle_num in count_list[start:]:
             point_num += angle_num[1]

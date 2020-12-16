@@ -77,8 +77,8 @@ if __name__ == '__main__':
     step_ranges_map = get_step_ranges_map(step_range, all_positions_list)
 
     # (3) Draw picture of current range_list
-    curr_step = 0
-    curr_countlist_index = 10
+    curr_step = 0 # degree step: 0-359
+    curr_countlist_index = 10 # 0-249
     curr_rangelist = draw_current_rangelist(step_ranges_map, curr_step, curr_countlist_index)
 
     # Optional: only for debug

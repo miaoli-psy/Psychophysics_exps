@@ -25,8 +25,9 @@ def draw_temp(polar:list):
 
 # __prefix means: this function is a private function 
 # which only be used as a helper sub-function in a bigger function
-def __add_ranges_to_map(step_ranges_map:Dict[int, list], range_list, step:int):
-    if step not in step_ranges_map.keys():
+def __add_ranges_to_map(step_ranges_map:Dict[int, List[list]], range_list, step:int):
+    is_need_initial_key_in_dict = (step not in step_ranges_map.keys())
+    if is_need_initial_key_in_dict:
         step_ranges_map[step] = [range_list]
     else:
         step_ranges_map[step].append(range_list)
@@ -49,6 +50,7 @@ def get_step_ranges_map(step_range:Tuple[int], all_positions_list:list):
     steps = [i for i in range(step_start, step_end)]
 
     for curr_positions in all_positions_list:
+        # count_list: disc num for given angle: [[angle, point_count_number], etc]
         count_list = __get_count_list(curr_positions)
         __add_current_positions_to_map(steps, count_list, step_ranges_map)
 
@@ -70,12 +72,12 @@ if __name__ == '__main__':
     simuli_df = pd.read_excel(path + filename)
 
     # (2) Get step_ranges_map: key: step, value: range_list
-    step_range = (0, 2)
+    step_range = (0, 10)
     all_positions_list = simuli_df.positions_list
     step_ranges_map = get_step_ranges_map(step_range, all_positions_list)
 
     # (3) Draw picture of current range_list
-    curr_step = 1
+    curr_step = 0
     curr_countlist_index = 10
     curr_rangelist = draw_current_rangelist(step_ranges_map, curr_step, curr_countlist_index)
 

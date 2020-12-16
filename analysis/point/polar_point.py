@@ -3,13 +3,13 @@ import math
 from typing import Tuple, List
 
 # convert Cartesian corrdinates to Polar coordinates
-def __get_radius(posi:Tuple[float, float]) -> float:
+def __get_radius(posi:Tuple[float]) -> float:
     """
     get distance between posi and the display center
     """
     return distance.euclidean(posi, (0,0))
 
-def __get_angle_not_on_axis(posi:Tuple[float, float]) -> float:
+def __get_angle_not_on_axis(posi:Tuple[float]) -> float:
     if posi[0] > 0 and posi[1] > 0:
         return math.degrees(math.atan(posi[1]/posi[0]))
     elif posi[0] > 0 and posi[1] < 0:
@@ -17,7 +17,7 @@ def __get_angle_not_on_axis(posi:Tuple[float, float]) -> float:
     else:
         return math.degrees(math.atan(posi[1]/posi[0]))+180
 
-def __get_angle_on_axis(posi:Tuple[float, float]) -> float:
+def __get_angle_on_axis(posi:Tuple[float]) -> float:
     if posi[0] == 0 and posi[1] > 0:
         return 90
     elif posi[0] ==0 and posi[1] < 0:
@@ -27,7 +27,7 @@ def __get_angle_on_axis(posi:Tuple[float, float]) -> float:
     elif posi[0] < 0 and posi[1] == 0:
         return 180
 
-def __get_angle(posi:Tuple[float, float]) -> float:
+def __get_angle(posi:Tuple[float]) -> float:
     """
     get angle for polor corrdinates
     """
@@ -42,7 +42,7 @@ def __get_angle(posi:Tuple[float, float]) -> float:
         angle = __get_angle_on_axis(posi)
     return angle
 
-def get_polar_coordinates(inputposilist:List[Tuple[float, float]]) -> List[Tuple[int, int]]:
+def get_polar_coordinates(inputposilist:List[Tuple[float]]) -> List[Tuple[int]]:
     """
     get polar coordinates for all disc positions
     """

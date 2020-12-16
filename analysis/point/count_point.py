@@ -1,3 +1,6 @@
+from typing import List
+
+
 def get_point_count_list(polar:list) -> list:
     # polar:                                 [(angle, distance),etc]
     # count_list: disc num for given angle: [[angle, point_count_number], etc]
@@ -11,13 +14,15 @@ def get_point_count_list(polar:list) -> list:
         angle_num[1] = point_count_number + 1
     return count_list
 
-def __get_point_num_in_range(count_list:list, curr_range:list) -> int:
+def __get_point_num_in_range(count_list:List[List[int]], curr_range:List[int]) -> int:
     # count_list: disc num for given angle: [[angle, point_count_number], etc]
     # curr_range: angle range [start: end)
     # point_num: how many disc in curr_range
     point_num = 0
     start, end = curr_range[0], curr_range[1]
-    if start < end:
+    if start == end:
+        point_num = count_list[start][1]
+    elif start < end:
         for angle_num in count_list[start:end]:
             point_num += angle_num[1]
     else:

@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Dec 11 20:56:42 2020
-@author: Miao
+TODO: What does this code do?
 """
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -25,6 +23,8 @@ def draw_temp(polar:list):
     fig, ax = plt.subplots()
     ax.plot(x_val, y_val)
 
+# __prefix means: this function is a private function 
+# which only be used as a helper sub-function in a bigger function
 def __add_ranges_to_map(step_ranges_map:Dict[int, list], range_list, step:int):
     if step not in step_ranges_map.keys():
         step_ranges_map[step] = [range_list]

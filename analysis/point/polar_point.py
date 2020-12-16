@@ -1,4 +1,3 @@
-
 from scipy.spatial import distance
 import math
 from typing import Tuple, List
@@ -32,11 +31,6 @@ def __get_angle(posi:Tuple[float, float]) -> float:
             return 180
     raise Exception(f"Error: Current position {posi} cannot get valid angle, such as (0, 0)")
 
-assert 90 == __get_angle((0, 18))
-assert 270 == __get_angle((0, -18))
-# __get_angle((0, 0))
-
-
 def get_polar_coordinates(inputposilist:List[Tuple[float, float]]) -> List[Tuple[int, int]]:
     """
     get polar coordinates for all disc positions
@@ -51,3 +45,9 @@ def get_polar_coordinates(inputposilist:List[Tuple[float, float]]) -> List[Tuple
     #sort by tuple's first value (angle)
     polar_coordinates.sort()
     return polar_coordinates
+
+
+if __name__ == '__main__':
+    assert 90 == __get_angle((0, 18))
+    assert 270 == __get_angle((0, -18))
+    # __get_angle((0, 0))

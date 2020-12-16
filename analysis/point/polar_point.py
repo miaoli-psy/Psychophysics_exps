@@ -4,13 +4,13 @@ import math
 from typing import Tuple, List
 
 # convert Cartesian corrdinates to Polar coordinates
-def get_radius(posi:Tuple[float, float]) -> float:
+def __get_radius(posi:Tuple[float, float]) -> float:
     """
     get distance between posi and the display center
     """
     return distance.euclidean(posi, (0,0))
 
-def get_angle(posi:Tuple[float, float]) -> float:
+def __get_angle(posi:Tuple[float, float]) -> float:
     """
     get angle for polor corrdinates
     """
@@ -32,17 +32,17 @@ def get_angle(posi:Tuple[float, float]) -> float:
             return 180
     raise Exception(f"Error: Current position {posi} cannot get valid angle, such as (0, 0)")
 
-assert 90 == get_angle((0, 18))
-assert 270 == get_angle((0, -18))
-# get_angle((0, 0))
+assert 90 == __get_angle((0, 18))
+assert 270 == __get_angle((0, -18))
+# __get_angle((0, 0))
 
 
 def get_polar_coordinates(inputposilist:List[Tuple[float, float]]) -> List[Tuple[int, int]]:
     """
     get polar coordinates for all disc positions
     """
-    radius = [round(get_radius(p)) for p in inputposilist]
-    angle = [round(get_angle(p)) for p in inputposilist]
+    radius = [round(__get_radius(p)) for p in inputposilist]
+    angle = [round(__get_angle(p)) for p in inputposilist]
     
     polar_coordinates = []
     for x, y in zip(angle, radius):

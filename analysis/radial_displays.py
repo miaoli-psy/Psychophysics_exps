@@ -8,20 +8,26 @@ from typing import Tuple, Dict, List
 from commons import process_str
 from point import polar_point, count_point
 
-# =============================================================================
-# theta = 12 deg (around 11.42 deg, defined by the size of crowding zones)
-# =============================================================================
 
 def get_temp_data(simuli_df):
     # check df coloum names
     c_names = simuli_df.columns.to_list()
     return c_names
 
-def draw_temp(polar:list):
-    x_val = [x[0] for x in polar]
-    y_val = [x[1] for x in polar]
-    fig, ax = plt.subplots()
-    ax.plot(x_val, y_val)
+def __get_draw_ndisc_formate(curr_rangelist):
+    #[[[0,1], 0],...] -> [(0.5, 0)...]
+    #[[[1,3], 1],...] -> [(2.0, 1)...]
+    formate_list = list()
+    for index, l in enumerate(curr_rangelist):
+        angle_new = (l[0][0] + l[0][1])/2
+        formate_list.append((angle_new, l[1]))
+    return formate_list
+
+def __draw_ndisc_at_ray(formate_list):
+    x_val = [x[0] for x in formate_list]
+    y_val = [x[1] for x in formate_list]
+    plt.plot(x_val, y_val, 'og')
+
 
 # __prefix means: this function is a private function 
 # which only be used as a helper sub-function in a bigger function
@@ -60,11 +66,13 @@ def get_step_ranges_map(step_range:Tuple[int], all_positions_list:list):
 def draw_current_rangelist(step_ranges_map:Dict[int, list], step:int, countlist_index:int):
     curr_rangelist = step_ranges_map[step][countlist_index]
     # TODO: draw picture
+    formate_rangelist = __get_draw_ndisc_formate(curr_rangelist)
+    __draw_ndisc_at_ray(formate_rangelist)
     # FIXME: not need to return list
-    return curr_rangelist
+    # return curr_rangelist
 
 if __name__ == '__main__':
-    is_debug = False
+    is_debug = True
 
     # (1) Read stimuli display
     path = "../displays/"
@@ -72,6 +80,7 @@ if __name__ == '__main__':
     simuli_df = pd.read_excel(path + filename)
 
     # (2) Get step_ranges_map: key: step, value: range_list
+    ### max step = 12 deg (around 11.42 deg, defined by the size of crowding zones)###
     step_range = (0, 13)
     all_positions_list = simuli_df.positions_list
     # key(int):    angle step 
@@ -79,7 +88,7 @@ if __name__ == '__main__':
     step_ranges_map = get_step_ranges_map(step_range, all_positions_list)
 
     # (3) Draw picture of current range_list
-    curr_step = 0 # degree step: 0-359
+    curr_step = 12 # degree step: 0-359
     curr_countlist_index = 10 # 0-249
     # [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
     curr_rangelist = draw_current_rangelist(step_ranges_map, curr_step, curr_countlist_index)
@@ -88,3 +97,8 @@ if __name__ == '__main__':
     if is_debug:
         c_names = get_temp_data(simuli_df)
         # draw_temp(polar) # polar in sub_function cannot run here
+        
+        
+        
+        # formate_rangelist = __get_draw_ndisc_formate(curr_rangelist)
+        # __draw_ndisc_at_ray(formate_rangelist)

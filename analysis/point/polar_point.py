@@ -9,27 +9,38 @@ def __get_radius(posi:Tuple[float, float]) -> float:
     """
     return distance.euclidean(posi, (0,0))
 
+def __get_angle_not_on_axis(posi:Tuple[float, float]) -> float:
+    if posi[0] > 0 and posi[1] > 0:
+        return math.degrees(math.atan(posi[1]/posi[0]))
+    elif posi[0] > 0 and posi[1] < 0:
+        return math.degrees(math.atan(posi[1]/posi[0]))+360
+    else:
+        return math.degrees(math.atan(posi[1]/posi[0]))+180
+
+def __get_angle_on_axis(posi:Tuple[float, float]) -> float:
+    if posi[0] == 0 and posi[1] > 0:
+        return 90
+    elif posi[0] ==0 and posi[1] < 0:
+        return 270
+    elif posi[0] > 0 and posi[1] == 0:
+        return 0
+    elif posi[0] < 0 and posi[1] == 0:
+        return 180
+
 def __get_angle(posi:Tuple[float, float]) -> float:
     """
     get angle for polor corrdinates
     """
-    if posi[0] != 0 and posi[1] != 0:
-        if posi[0] > 0 and posi[1] > 0:
-            return math.degrees(math.atan(posi[1]/posi[0]))
-        elif posi[0] > 0 and posi[1] < 0:
-            return math.degrees(math.atan(posi[1]/posi[0]))+360
-        else:
-            return math.degrees(math.atan(posi[1]/posi[0]))+180
+    # Edge case
+    if posi == (0, 0):
+        raise Exception(f"Error: Current position {posi} cannot get valid angle, such as (0, 0)")
+    # axis: 0, 90, 180, 270
+    is_not_on_axis = (posi[0] != 0 and posi[1] != 0)
+    if is_not_on_axis:
+        angle = __get_angle_not_on_axis(posi)
     else:
-        if posi[0] == 0 and posi[1] > 0:
-            return 90
-        elif posi[0] ==0 and posi[1] < 0:
-            return 270
-        elif posi[0] > 0 and posi[1] == 0:
-            return 0
-        elif posi[0] < 0 and posi[1] == 0:
-            return 180
-    raise Exception(f"Error: Current position {posi} cannot get valid angle, such as (0, 0)")
+        angle = __get_angle_on_axis(posi)
+    return angle
 
 def get_polar_coordinates(inputposilist:List[Tuple[float, float]]) -> List[Tuple[int, int]]:
     """

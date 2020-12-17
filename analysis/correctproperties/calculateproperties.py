@@ -11,11 +11,12 @@ from math import pi
 from scipy.spatial import distance, ConvexHull
 from itertools import combinations
 
+
 def get_display_properties(displayPositions):
-    '''75 unit = 30 cm
+    """75 unit = 30 cm
         1 unit = 0.4cm
         1D in cm
-        density2 in items/deg2'''
+        density2 in items/deg2"""
     displayPositions_array = np.asarray(displayPositions)
     convexHull_t           = ConvexHull(displayPositions_array)
     convexHull_perimeter   = round((convexHull_t.area/10)*0.4,2)
@@ -29,8 +30,9 @@ def get_display_properties(displayPositions):
     averageE             = round(sum(ListD)/len(displayPositions) * 0.4,2)
     distances            = [(distance.euclidean(p1,p2)/10*0.4) for p1, p2 in combinations(displayPositions,2)]
     avg_spacing_c        = round(sum(distances)/len(distances)*0.4,2)
-    
-    aggregateSurface     = round(len(displayPositions)*pi*(0.25**2),4) #0.25 visual degree as radius
+
+    # 0.25 visual degree as radius
+    aggregateSurface     = round(len(displayPositions)*pi*(0.25**2),4)
     density              = round(aggregateSurface/occupancyArea, 5)
     density_itemsperdeg2 = round(len(displayPositions)/occupancyArea,5)
     

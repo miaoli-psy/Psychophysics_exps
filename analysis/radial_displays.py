@@ -1,4 +1,5 @@
 """
+@author Miao Li
 TODO: What does this code do?
 """
 import pandas as pd
@@ -18,8 +19,8 @@ def get_temp_data(simuli_df):
 # __prefix means: this function is a private function 
 # which only be used as a helper sub-function in a bigger function
 def __get_draw_ndisc_formate(curr_rangelist):
-    #[[[0,1], 0],...] -> [(0.5, 0)...]
-    #[[[1,3], 1],...] -> [(2.0, 1)...]
+    # [[[0,1], 0],...] -> [(0.5, 0)...]
+    # [[[1,3], 1],...] -> [(2.0, 1)...]
     formate_list = list()
     for index, l in enumerate(curr_rangelist):
         angle_new = (l[0][0] + l[0][1])/2
@@ -87,7 +88,7 @@ if __name__ == '__main__':
     simuli_df = pd.read_excel(path + filename)
 
     # (2) Get step_ranges_map: key: step, value: range_list
-    ### max step = 12 deg (around 11.42 deg, defined by the size of crowding zones)###
+    # max step = 12 deg (around 11.42 deg, defined by the size of crowding zones)
     step_range = (0, 13)
     all_positions_list = simuli_df.positions_list
     # key(int):    angle step 

@@ -14,6 +14,7 @@ def get_point_count_list(polar:list) -> list:
         angle_num[1] = point_count_number + 1
     return count_list
 
+
 def __get_point_num_in_range(count_list:List[List[int]], curr_range:List[int]) -> int:
     # count_list: disc num for given angle: [[angle, point_count_number], etc]
     # curr_range: angle range [start: end)
@@ -34,6 +35,7 @@ def __get_point_num_in_range(count_list:List[List[int]], curr_range:List[int]) -
         for angle_num in count_list[0:end]:
             point_num += angle_num[1]
     return point_num
+
 
 def get_range_count(count_list:list, step:int) -> list:
     # count_list: disc num for given angle: [[angle, point_count_number], etc]

@@ -10,12 +10,13 @@ def __get_radius(posi:Tuple[float]) -> float:
     return distance.euclidean(posi, (0,0))
 
 def __get_angle_not_on_axis(posi:Tuple[float]) -> float:
+    base_angle = math.degrees(math.atan(posi[1]/posi[0]))# in degree
     if posi[0] > 0 and posi[1] > 0:
-        return math.degrees(math.atan(posi[1]/posi[0]))
+        return base_angle
     elif posi[0] > 0 and posi[1] < 0:
-        return math.degrees(math.atan(posi[1]/posi[0]))+360
+        return base_angle + 360
     else:
-        return math.degrees(math.atan(posi[1]/posi[0]))+180
+        return base_angle + 180
 
 def __get_angle_on_axis(posi:Tuple[float]) -> float:
     if posi[0] == 0 and posi[1] > 0:

@@ -35,7 +35,7 @@ def __draw_ndisc_at_ray(formate_list):
     plt.show()
 
 
-def __add_ranges_to_map(step_ranges_map:Dict[int, List[list]], range_list, step:int):
+def __add_ranges_to_map(step_ranges_map: Dict[int, List[list]], range_list, step:int):
     is_need_initial_key_in_dict = (step not in step_ranges_map.keys())
     if is_need_initial_key_in_dict:
         step_ranges_map[step] = [range_list]
@@ -43,20 +43,20 @@ def __add_ranges_to_map(step_ranges_map:Dict[int, List[list]], range_list, step:
         step_ranges_map[step].append(range_list)
 
 
-def __get_count_list(curr_positions:list) -> list:
+def __get_count_list(curr_positions: list) -> list:
     curr_positions_list = process_str.str_to_list(curr_positions)
     polar = polar_point.get_polar_coordinates(curr_positions_list)
     count_list = count_point.get_point_count_list(polar)
     return count_list
 
 
-def __add_current_positions_to_map(steps:List[int], count_list:list, step_ranges_map:Dict[int, list]):
+def __add_current_positions_to_map(steps: List[int], count_list: list, step_ranges_map: Dict[int, list]):
     for step in steps:
         range_list = count_point.get_range_count(count_list, step)
         __add_ranges_to_map(step_ranges_map, range_list, step)
 
 
-def get_step_ranges_map(step_range:Tuple[int], all_positions_list:list):
+def get_step_ranges_map(step_range: Tuple[int], all_positions_list: list):
     # key: step, value: range_list
     step_ranges_map = dict()
     step_start, step_end = step_range[0], step_range[1]
@@ -71,7 +71,7 @@ def get_step_ranges_map(step_range:Tuple[int], all_positions_list:list):
 
 
 # FIXME: draw picture of current range_list
-def draw_current_rangelist(step_ranges_map:Dict[int, list], step:int, countlist_index:int):
+def draw_current_rangelist(step_ranges_map: Dict[int, list], step:int, countlist_index: int):
     curr_rangelist = step_ranges_map[step][countlist_index]
     # TODO: draw picture
 

@@ -67,4 +67,3 @@ def get_polar_coordinates(inputposilist:List[Tuple[float]]) -> List[Tuple[int]]:
 if __name__ == '__main__':
     assert 90 == __get_angle((0, 18))
     assert 270 == __get_angle((0, -18))
-    # __get_angle((0, 0))

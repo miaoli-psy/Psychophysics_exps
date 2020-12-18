@@ -1,7 +1,7 @@
 from typing import List
 
 
-def get_point_count_list(polar:list) -> list:
+def get_point_count_list(polar: list) -> list:
     # polar:                                 [(angle, distance),etc]
     # count_list: disc num for given angle: [[angle, point_count_number], etc]
     count_list = [[i, 0] for i in range(360)]
@@ -15,7 +15,7 @@ def get_point_count_list(polar:list) -> list:
     return count_list
 
 
-def __get_point_num_in_range(count_list:List[List[int]], curr_range:List[int]) -> int:
+def __get_point_num_in_range(count_list: List[List[int]], curr_range:List[int]) -> int:
     # count_list: disc num for given angle: [[angle, point_count_number], etc]
     # curr_range: angle range [start: end)
     # point_num: how many disc in curr_range
@@ -37,7 +37,7 @@ def __get_point_num_in_range(count_list:List[List[int]], curr_range:List[int]) -
     return point_num
 
 
-def get_range_count (count_list:list, step:int) -> list:
+def get_range_count (count_list: list, step: int) -> list:
     # count_list: disc num for given angle: [[angle, point_count_number], etc]
     # res_count: [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
     range_step = list()

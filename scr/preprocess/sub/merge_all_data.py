@@ -10,7 +10,7 @@ import os
 import pandas as pd
 
 
-def __get_dataframe_file(data_path:str, filetype:str, filename:str) -> pd.DataFrame:
+def __get_dataframe_file(data_path: str, filetype: str, filename: str) -> pd.DataFrame:
     if filetype == ".csv":
         df = pd.read_csv(data_path + filename)
     elif filetype == ".xlsx":
@@ -18,7 +18,7 @@ def __get_dataframe_file(data_path:str, filetype:str, filename:str) -> pd.DataFr
     return df
 
 
-def merge_all_data(data_path: str, filetype: str) -> pd.DataFrame:
+def merge_all_file2dataframe(data_path: str, filetype: str, filename_prefix: str) -> pd.DataFrame:
     # list data files
     files = os.listdir(data_path)
     # collect all raw data files
@@ -31,11 +31,8 @@ def merge_all_data(data_path: str, filetype: str) -> pd.DataFrame:
     return all_data
 
 
-if __name__ == '__main__':
-    is_debug = False
-    # data path
-    data_path = "../../data/rawdata_exp3a_pilot/"
-
+if __name__ == "__main__":
+    data_path = "../../../data/rawdata_exp3a_pilot/"
     filename_prefix = "P"
     filetype = ".csv"
-    all_df = merge_all_data(data_path, filetype)
+    all_df = merge_all_file2dataframe(data_path, filetype, filename_prefix)

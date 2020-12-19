@@ -23,7 +23,7 @@ def __get_draw_ndisc_formate(curr_rangelist):
     # [[[1,3], 1],...] -> [(2.0, 1)...]
     formate_list = list()
     for index, l in enumerate(curr_rangelist):
-        angle_new = (l[0][0] + l[0][1])/2
+        angle_new = (l[0][0] + l[0][1]) / 2
         formate_list.append((angle_new, l[1]))
     return formate_list
 
@@ -35,7 +35,7 @@ def __draw_ndisc_at_ray(formate_list):
     plt.show()
 
 
-def __add_ranges_to_map(step_ranges_map: Dict[int, List[list]], range_list, step:int):
+def __add_ranges_to_map(step_ranges_map: Dict[int, List[list]], range_list, step: int):
     is_need_initial_key_in_dict = (step not in step_ranges_map.keys())
     if is_need_initial_key_in_dict:
         step_ranges_map[step] = [range_list]
@@ -71,7 +71,7 @@ def get_step_ranges_map(step_range: Tuple[int], all_positions_list: list):
 
 
 # FIXME: draw picture of current range_list
-def draw_current_rangelist(step_ranges_map: Dict[int, list], step:int, countlist_index: int):
+def draw_current_rangelist(step_ranges_map: Dict[int, list], step: int, countlist_index: int):
     curr_rangelist = step_ranges_map[step][countlist_index]
     # TODO: draw picture
 
@@ -96,8 +96,8 @@ if __name__ == '__main__':
     step_ranges_map = get_step_ranges_map(step_range, all_positions_list)
 
     # (3) Draw picture of current range_list
-    curr_step = 12 # degree step: 0-13 (in theory 0-360)
-    curr_countlist_index = 10 # 0-249 (250 displays)
+    curr_step = 12  # degree step: 0-13 (in theory 0-360)
+    curr_countlist_index = 10  # 0-249 (250 displays)
     # [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
     curr_rangelist = draw_current_rangelist(step_ranges_map, curr_step, curr_countlist_index)
 
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     if is_debug:
         c_names = get_temp_data(simuli_df)
         # draw_temp(polar) # polar in sub_function cannot run here
-        
+
         # plot in Cartesian coordinates
         formate_rangelist = __get_draw_ndisc_formate(curr_rangelist)
         __draw_ndisc_at_ray(formate_rangelist)

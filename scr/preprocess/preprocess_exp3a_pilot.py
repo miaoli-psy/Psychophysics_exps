@@ -6,9 +6,11 @@ def preprocess_exp3a_func(data_path: str, filetype: str, filename_prefix: str) -
     all_df = merge_all_data.merge_all_file2dataframe(data_path, filetype, filename_prefix)
     return all_df
 
-
 if __name__ == "__main__":
+    is_debug = True
     data_path = "../../data/rawdata_exp3a_pilot/"
     filename_prefix = "P"
     filetype = ".csv"
     all_df = preprocess_exp3a_func(data_path, filetype, filename_prefix)
+    if is_debug:
+        col_names = list(all_df.columns)

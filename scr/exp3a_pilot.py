@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+Project: Psychophysics_exps
+Creator: Miao
+Create time: 2020-12-19 23:18
+IDE: PyCharm
+Introduction:
+"""
+
 from scr.preprocess import preprocess_exp3a_pilot
 
 

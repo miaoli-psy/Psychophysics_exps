@@ -19,13 +19,13 @@ def keep_valid_columns(df: pd.DataFrame, kept_columns_list: list) -> pd.DataFram
     return df
 
 
-def drop_df_rows(df: pd.DataFrame, subset_cols: list) -> pd.DataFrame:
+def drop_df_nan_rows_according2cols(df: pd.DataFrame, cols: list) -> pd.DataFrame:
     """
     :param df:
-    :param subset_cols: list of column names that dropna applied on
+    :param cols: list of column names that dropna applied on
     :return:
     """
-    df = df.dropna(subset = subset_cols)
+    df = df.dropna(subset = cols)
     return df
 
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     # drop practice trials: drop all rows with NaNs in key_resp.keys
     subset = ['key_resp.keys']
-    d_all_df = drop_df_rows(all_df, subset)
+    d_all_df = drop_df_nan_rows_according2cols(all_df, subset)
 
     if is_debug:
         col_names = list(all_df.columns)

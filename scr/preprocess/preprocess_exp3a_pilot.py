@@ -62,6 +62,7 @@ def get_col_boundary(df: pd.DataFrame, col_name: str, n_std = 2) -> tuple:
     std = __cal_std_of_one_col(df, col_name)
     return mean - n_std * std, mean + n_std * std
 
+
 if __name__ == "__main__":
     is_debug = False
     write_to_excel = False

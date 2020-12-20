@@ -53,6 +53,7 @@ if __name__ == "__main__":
                       "probe_c",
                       "ref_c",
                       "ref_first"]
+    #%% preprocess starts here
     all_df = preprocess_exp3a_func(data_path, filetype, filename_prefix)
     all_df = keep_valid_columns(all_df, kept_col_names)
 
@@ -74,11 +75,6 @@ if __name__ == "__main__":
     # preprocessed data
     all_df = drop_df_rows_according2_one_col(all_df, col_rt, resp_min, resp_max)
 
-    if is_debug:
-        col_names = list(all_df.columns)
-    if write_to_excel:
-        all_df.to_excel("preprocess_exp3a_pilot.xlsx")
-
     #%% analysis starts here
     # add numerosity difference between D1 and D2
     all_df["dff_D1D2"] = all_df["D1numerosity"] - all_df["D2numerosity"]
@@ -88,6 +84,11 @@ if __name__ == "__main__":
     insert_new_col_from_three_cols(all_df, "D1numerosity", "D2numerosity", "ref_first", "probeN", insert_probeN)
     # add ref numerosity
     insert_new_col_from_three_cols(all_df, "D1numerosity", "D2numerosity", "ref_first", "refN", insert_refN)
+
+    #%% debug and output
     if is_debug:
+        col_names = list(all_df.columns)
         added_probe_df = all_df[["D1numerosity", "D2numerosity", "ref_first", "probeN", "refN"]]
 
+    if write_to_excel:
+        all_df.to_excel("preprocess_exp3a_pilot.xlsx")

@@ -9,8 +9,8 @@ Introduction:
 
 from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_valid_columns, \
     drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, get_col_boundary
-from src.commons.process_dataframe import insert_new_col_from_two_cols
-
+from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols
+from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_first, insert_probeN, insert_refN
 
 if __name__ == "__main__":
     is_debug = True
@@ -83,20 +83,11 @@ if __name__ == "__main__":
     # add numerosity difference between D1 and D2
     all_df["dff_D1D2"] = all_df["D1numerosity"] - all_df["D2numerosity"]
     # add correct answer
-    def insert_is_resp_ref_first(ref_first_val:float, key_resp_keys_val:str):
-        if ref_first_val == 1.0:
-            if key_resp_keys_val == "f":
-                return 1
-            elif key_resp_keys_val == "j":
-                return 0
-        elif ref_first_val == 0.0:
-            if key_resp_keys_val == "f":
-                return 0
-            elif key_resp_keys_val == "j":
-                return 1
-        else:
-            raise Exception(f"Invalid ref_first value: {ref_first_val} "
-                            f"or Invalid key_resp_keys_val value: {key_resp_keys_val}")
-
     insert_new_col_from_two_cols(all_df, "ref_first", "key_resp.keys", "is_resp_ref_first", insert_is_resp_ref_first)
+    # add probe numerosity
+    insert_new_col_from_three_cols(all_df, "D1numerosity", "D2numerosity", "ref_first", "probeN", insert_probeN)
+    # add ref numerosity
+    insert_new_col_from_three_cols(all_df, "D1numerosity", "D2numerosity", "ref_first", "refN", insert_refN)
+    if is_debug:
+        added_probe_df = all_df[["D1numerosity", "D2numerosity", "ref_first", "probeN", "refN"]]
 

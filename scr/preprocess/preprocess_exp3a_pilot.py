@@ -15,11 +15,18 @@ def keep_valid_columns(df: pd.DataFrame, kept_columns_list: list) -> pd.DataFram
     for name in all_col_name_copy_list:
         if name not in kept_columns_list:
             drop_name_list.append(name)
-    df = df.drop(drop_name_list, axis=1)
+    df = df.drop(drop_name_list, axis = 1)
     return df
 
-# def drop_df_rows(df: pd.DataFrame):
 
+def drop_df_rows(df: pd.DataFrame, subset_cols: list) -> pd.DataFrame:
+    """
+    :param df:
+    :param subset_cols: list of column names that dropna applied on
+    :return:
+    """
+    df = df.dropna(subset = subset_cols)
+    return df
 
 
 if __name__ == "__main__":
@@ -64,6 +71,10 @@ if __name__ == "__main__":
                       "ref_first"]
     all_df = preprocess_exp3a_func(data_path, filetype, filename_prefix)
     all_df = keep_valid_columns(all_df, kept_col_names)
+
+    # drop practice trials: drop all rows with NaNs in key_resp.keys
+    subset = ['key_resp.keys']
+    d_all_df = drop_df_rows(all_df, subset)
 
     if is_debug:
         col_names = list(all_df.columns)

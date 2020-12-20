@@ -7,11 +7,13 @@ IDE: PyCharm
 Introduction:
 """
 
-from scr.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_valid_columns, \
+from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_valid_columns, \
     drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, get_col_boundary
+from src.commons.process_dataframe import insert_new_col_from_two_cols
+
 
 if __name__ == "__main__":
-    is_debug = False
+    is_debug = True
     write_to_excel = False
     data_path = "../data/rawdata_exp3a_pilot/"
     filename_prefix = "P"
@@ -76,3 +78,25 @@ if __name__ == "__main__":
         col_names = list(all_df.columns)
     if write_to_excel:
         all_df.to_excel("preprocess_exp3a_pilot.xlsx")
+
+    #%% analysis starts here
+    # add numerosity difference between D1 and D2
+    all_df["dff_D1D2"] = all_df["D1numerosity"] - all_df["D2numerosity"]
+    # add correct answer
+    def insert_is_resp_ref_first(ref_first_val:float, key_resp_keys_val:str):
+        if ref_first_val == 1.0:
+            if key_resp_keys_val == "f":
+                return 1
+            elif key_resp_keys_val == "j":
+                return 0
+        elif ref_first_val == 0.0:
+            if key_resp_keys_val == "f":
+                return 0
+            elif key_resp_keys_val == "j":
+                return 1
+        else:
+            raise Exception(f"Invalid ref_first value: {ref_first_val} "
+                            f"or Invalid key_resp_keys_val value: {key_resp_keys_val}")
+
+    insert_new_col_from_two_cols(all_df, "ref_first", "key_resp.keys", "is_resp_ref_first", insert_is_resp_ref_first)
+

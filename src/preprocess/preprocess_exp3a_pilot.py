@@ -6,7 +6,7 @@ Create time: 2020-12-20 21:07
 IDE: PyCharm
 Introduction: functions for preprocessed data of crowding and numerosity exp3a (online pilot)
 """
-from scr.preprocess.sub import merge_all_data
+from src.preprocess.sub import merge_all_data
 import pandas as pd
 import copy
 import math

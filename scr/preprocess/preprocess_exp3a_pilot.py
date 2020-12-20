@@ -53,10 +53,6 @@ def __cal_mean_of_one_col(df: pd.DataFrame, col_name: str) -> float:
     return mean
 
 
-# def get_resp_boundary(mean: float, std: float, n_std = 2) -> tuple:
-#     return mean - n_std * std, mean + n_std * std
-
-
 def get_col_boundary(df: pd.DataFrame, col_name: str, n_std = 2) -> tuple:
     mean = __cal_mean_of_one_col(df, col_name)
     std = __cal_std_of_one_col(df, col_name)

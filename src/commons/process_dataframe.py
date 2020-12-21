@@ -1,5 +1,6 @@
 import pandas as pd
 from typing import List
+import copy
 
 
 # func_name: func_name is process each element in each column, instead of the whole column
@@ -17,6 +18,17 @@ def process_cols(input_df: pd.DataFrame, input_cols: List[str], func_name):
             input_df[col] = input_df[col].map(func_name)
         else:
             raise Exception(f"Warning: Missing {col}")
+
+
+# input_cols: col_name string in list
+def get_processed_cols_df(input_df: pd.DataFrame, input_cols: List[str], func_name) -> pd.DataFrame:
+    output_df = copy.deepcopy(input_df)
+    for col in input_cols:
+        if col in input_df.columns:
+            output_df[col] = output_df[col].map(func_name)
+        else:
+            raise Exception(f"Warning: Missing {col}")
+    return output_df
 
 
 # old_col: old_col name string already in input_df

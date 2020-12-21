@@ -9,7 +9,8 @@ Introduction:
 
 from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_valid_columns, \
     drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, get_col_boundary
-from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols
+from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols, \
+    get_sub_df_according2col_value
 from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_first, insert_probeN, insert_refN,  \
     inset_probeCrowding, insert_refCrowing
 import pandas as pd
@@ -92,8 +93,13 @@ if __name__ == "__main__":
     insert_new_col_from_three_cols(all_df, "D1Crowding", "D2Crowding", "ref_first", "refCrowding", insert_refCrowing)
 
     #%% 4 conditions (ref c, probe c; ref c, probe nc; ref nc, probe c; ref nc, probe nc)
-    # refc_probec = get_sub_df_according2col_value(all_df, "")
-
+    refc = get_sub_df_according2col_value(all_df, "refCrowding", 1)
+    refnc = get_sub_df_according2col_value(all_df, "refCrowding", 0)
+    # below are for exp conditions
+    refcprobec = get_sub_df_according2col_value(refc, "probeCrowding", 1)
+    refcprobenc = get_sub_df_according2col_value(refc, "probeCrowding", 0)
+    refncprobec = get_sub_df_according2col_value(refnc, "probeCrowding", 1)
+    refncprobenc = get_sub_df_according2col_value(refnc, "probeCrowding", 0)
 
     #%% debug and output
     if is_debug:

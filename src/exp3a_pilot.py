@@ -11,7 +11,7 @@ from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_va
     drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, get_col_boundary
 from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols, \
     get_sub_df_according2col_value
-from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_first, insert_probeN, insert_refN,  \
+from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN,  \
     inset_probeCrowding, insert_refCrowing
 import pandas as pd
 
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     # add numerosity difference between D1 and D2
     all_df["dff_D1D2"] = all_df["D1numerosity"] - all_df["D2numerosity"]
     # add correct answer
-    insert_new_col_from_two_cols(all_df, "ref_first", "key_resp.keys", "is_resp_ref_first", insert_is_resp_ref_first)
+    insert_new_col_from_two_cols(all_df, "ref_first", "key_resp.keys", "is_resp_ref_more", insert_is_resp_ref_more)
     # add probe numerosity
     insert_new_col_from_three_cols(all_df, "D1numerosity", "D2numerosity", "ref_first", "probeN", insert_probeN)
     # add ref numerosity
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     #%% 4 conditions (ref c, probe c; ref c, probe nc; ref nc, probe c; ref nc, probe nc)
     refc = get_sub_df_according2col_value(all_df, "refCrowding", 1)
     refnc = get_sub_df_according2col_value(all_df, "refCrowding", 0)
-    # below are for exp conditions
+    # below are 4 exp conditions
     refcprobec = get_sub_df_according2col_value(refc, "probeCrowding", 1)
     refcprobenc = get_sub_df_according2col_value(refc, "probeCrowding", 0)
     refncprobec = get_sub_df_according2col_value(refnc, "probeCrowding", 1)
@@ -109,6 +109,8 @@ if __name__ == "__main__":
                              "D1Crowding",
                              "D2Crowding",
                              "ref_first",
+                             "key_resp.keys",
+                             "is_resp_ref_more",
                              "probeN",
                              "refN",
                              "probeCrowding",

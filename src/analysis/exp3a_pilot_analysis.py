@@ -8,7 +8,7 @@ Introduction: function to analyze exp3a pilot (online) data
 """
 
 
-def insert_is_resp_ref_first(ref_first_val: float, key_resp_keys_val: str):
+def insert_is_resp_ref_more(ref_first_val: float, key_resp_keys_val: str):
     if ref_first_val == 1.0:
         if key_resp_keys_val == "f":
             return 1

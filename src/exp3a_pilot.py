@@ -10,7 +10,9 @@ Introduction:
 from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_valid_columns, \
     drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, get_col_boundary
 from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols
-from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_first, insert_probeN, insert_refN
+from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_first, insert_probeN, insert_refN,  \
+    inset_probeCrowding, insert_refCrowing
+import pandas as pd
 
 if __name__ == "__main__":
     is_debug = True
@@ -84,11 +86,28 @@ if __name__ == "__main__":
     insert_new_col_from_three_cols(all_df, "D1numerosity", "D2numerosity", "ref_first", "probeN", insert_probeN)
     # add ref numerosity
     insert_new_col_from_three_cols(all_df, "D1numerosity", "D2numerosity", "ref_first", "refN", insert_refN)
+    # add probe crowding condition
+    insert_new_col_from_three_cols(all_df, "D1Crowding", "D2Crowding", "ref_first", "probeCrowding", inset_probeCrowding)
+    # add ref crowding condition
+    insert_new_col_from_three_cols(all_df, "D1Crowding", "D2Crowding", "ref_first", "refCrowding", insert_refCrowing)
+
+    #%% 4 conditions (ref c, probe c; ref c, probe nc; ref nc, probe c; ref nc, probe nc)
+    # refc_probec = get_sub_df_according2col_value(all_df, "")
+
 
     #%% debug and output
     if is_debug:
         col_names = list(all_df.columns)
-        added_probe_df = all_df[["D1numerosity", "D2numerosity", "ref_first", "probeN", "refN"]]
+        sub_df_cols2check = ["D1numerosity",
+                             "D2numerosity",
+                             "D1Crowding",
+                             "D2Crowding",
+                             "ref_first",
+                             "probeN",
+                             "refN",
+                             "probeCrowding",
+                             "refCrowding"]
+        added_probe_df = all_df[sub_df_cols2check]
 
     if write_to_excel:
         all_df.to_excel("preprocess_exp3a_pilot.xlsx")

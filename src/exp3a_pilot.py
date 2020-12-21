@@ -10,10 +10,11 @@ Introduction:
 from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_valid_columns, \
     drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, get_col_boundary
 from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols, \
-    get_sub_df_according2col_value
-from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN,  \
-    inset_probeCrowding, insert_refCrowing
+    get_sub_df_according2col_value, process_cols, process_col, insert_new_col
+from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN, \
+    inset_probeCrowding, insert_refCrowing, cal_one_minus_value, get_output_results
 import pandas as pd
+import numpy as np
 
 if __name__ == "__main__":
     is_debug = True
@@ -100,6 +101,15 @@ if __name__ == "__main__":
     refcprobenc = get_sub_df_according2col_value(refc, "probeCrowding", 0)
     refncprobec = get_sub_df_according2col_value(refnc, "probeCrowding", 1)
     refncprobenc = get_sub_df_according2col_value(refnc, "probeCrowding", 0)
+
+    #%% output data
+    # participants = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+    # probe_numerosity = np.array([34, 36, 38, 40, 42, 44, 46])
+    # TODO cal probe more proportion (now: ref more proportion)
+    refc_problec_results = get_output_results(refcprobec)
+    refc_problenc_results = get_output_results(refcprobenc)
+    refnc_problec_results = get_output_results(refncprobec)
+    refnc_problenc_results = get_output_results(refncprobenc)
 
     #%% debug and output
     if is_debug:

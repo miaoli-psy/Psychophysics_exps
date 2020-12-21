@@ -58,3 +58,12 @@ def inset_probeCrowding(D1Crowding: float, D2Crowding: float, ref_first_val: flo
         return D2Crowding
     else:
         raise ValueError
+
+
+def cal_one_minus_value(input_value: float) -> float:
+    return 1 - input_value
+
+def get_output_results (input_df):
+    output_results = input_df['is_resp_ref_more'].groupby([input_df["participantN"], input_df["probeN"]]).mean()
+    output_results = output_results.unstack()
+    return output_results

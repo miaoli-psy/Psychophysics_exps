@@ -5,6 +5,8 @@ TODO: What does this code do?
 import pandas as pd
 import matplotlib.pyplot as plt
 from typing import Tuple, Dict, List
+import numpy as np
+import matplotlib.transforms as mtransforms
 
 from commons import process_str
 from point import polar_point, count_point
@@ -81,6 +83,7 @@ def draw_current_rangelist(step_ranges_map: Dict[int, list], step: int, countlis
 
 if __name__ == '__main__':
     is_debug = True
+    is_polar_plot = True
 
     # (1) Read stimuli display
     path = "../displays/"
@@ -95,11 +98,47 @@ if __name__ == '__main__':
     # value(list): range_list [[[angle, angle+step), num_points1], etc]
     step_ranges_map = get_step_ranges_map(step_range, all_positions_list)
 
-    # (3) Draw picture of current range_list
-    curr_step = 12  # degree step: 0-13 (in theory 0-360)
-    curr_countlist_index = 10  # 0-249 (250 displays)
+    # (3) Plot current range_list
+    curr_step = 0 # degree step: 0-13 (in theory 0-360)
+    curr_countlist_index = 249  # 0-249 (250 displays)
     # [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
     curr_rangelist = draw_current_rangelist(step_ranges_map, curr_step, curr_countlist_index)
+
+    if is_polar_plot:
+        xs = np.arange(360)
+        ys = []
+        for y in curr_rangelist:
+            ys.append(y[1])
+        ys = np.array(ys)
+
+        fig = plt.figure(figsize = (5, 10))
+        ax = plt.subplot(2, 1, 1)
+
+        # If we want the same offset for each text instance,
+        # we only need to make one transform.  To get the
+        # transform argument to offset_copy, we need to make the axes
+        # first; the subplot command above is one way to do this.
+        trans_offset = mtransforms.offset_copy(ax.transData, fig = fig,
+                                               x = 0.05, y = 0.10, units = 'inches')
+
+        for x, y in zip(xs, ys):
+            plt.plot(x, y, 'ro')
+            # plt.text(x, y, '%d, %d' % (int(x), int(y)), transform = trans_offset)
+
+        # offset_copy works for polar plots also.
+        ax = plt.subplot(2, 1, 2, projection = 'polar')
+
+        trans_offset = mtransforms.offset_copy(ax.transData, fig = fig,
+                                               y = 6, units = 'dots')
+
+        for x, y in zip(xs, ys):
+            plt.polar(x, y, 'ro')
+            # plt.text(x, y, '%d, %d' % (int(x), int(y)),
+            #          transform = trans_offset,
+            #          horizontalalignment = 'center',
+            #          verticalalignment = 'bottom')
+
+        plt.show()
 
     # Optional: only for debug
     if is_debug:

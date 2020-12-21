@@ -6,6 +6,7 @@ Create time: 2020-12-21 00:08
 IDE: PyCharm
 Introduction: function to analyze exp3a pilot (online) data
 """
+import pandas as pd
 
 
 def insert_is_resp_ref_more(ref_first_val: float, key_resp_keys_val: str):
@@ -63,7 +64,8 @@ def inset_probeCrowding(D1Crowding: float, D2Crowding: float, ref_first_val: flo
 def cal_one_minus_value(input_value: float) -> float:
     return 1 - input_value
 
-def get_output_results (input_df):
+
+def get_output_results(input_df: pd.DataFrame) -> pd.DataFrame:
     output_results = input_df['is_resp_ref_more'].groupby([input_df["participantN"], input_df["probeN"]]).mean()
     output_results = output_results.unstack()
     return output_results

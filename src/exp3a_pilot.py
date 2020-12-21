@@ -15,6 +15,9 @@ from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_pr
     inset_probeCrowding, insert_refCrowing, cal_one_minus_value, get_output_results
 import pandas as pd
 import numpy as np
+from scipy.optimize import curve_fit
+from scipy.stats import norm
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     is_debug = True
@@ -57,7 +60,7 @@ if __name__ == "__main__":
                       "probe_c",
                       "ref_c",
                       "ref_first"]
-    #%% preprocess starts here
+    # %% preprocess starts here
     all_df = preprocess_exp3a_func(data_path, filetype, filename_prefix)
     all_df = keep_valid_columns(all_df, kept_col_names)
 
@@ -79,7 +82,7 @@ if __name__ == "__main__":
     # preprocessed data
     all_df = drop_df_rows_according2_one_col(all_df, col_rt, resp_min, resp_max)
 
-    #%% analysis starts here
+    # %% analysis starts here
     # add numerosity difference between D1 and D2
     all_df["dff_D1D2"] = all_df["D1numerosity"] - all_df["D2numerosity"]
     # add correct answer
@@ -89,11 +92,12 @@ if __name__ == "__main__":
     # add ref numerosity
     insert_new_col_from_three_cols(all_df, "D1numerosity", "D2numerosity", "ref_first", "refN", insert_refN)
     # add probe crowding condition
-    insert_new_col_from_three_cols(all_df, "D1Crowding", "D2Crowding", "ref_first", "probeCrowding", inset_probeCrowding)
+    insert_new_col_from_three_cols(all_df, "D1Crowding", "D2Crowding", "ref_first", "probeCrowding",
+                                   inset_probeCrowding)
     # add ref crowding condition
     insert_new_col_from_three_cols(all_df, "D1Crowding", "D2Crowding", "ref_first", "refCrowding", insert_refCrowing)
 
-    #%% 4 conditions (ref c, probe c; ref c, probe nc; ref nc, probe c; ref nc, probe nc)
+    # %% 4 conditions (ref c, probe c; ref c, probe nc; ref nc, probe c; ref nc, probe nc)
     refc = get_sub_df_according2col_value(all_df, "refCrowding", 1)
     refnc = get_sub_df_according2col_value(all_df, "refCrowding", 0)
     # below are 4 exp conditions
@@ -102,16 +106,111 @@ if __name__ == "__main__":
     refncprobec = get_sub_df_according2col_value(refnc, "probeCrowding", 1)
     refncprobenc = get_sub_df_according2col_value(refnc, "probeCrowding", 0)
 
-    #%% output data
+    # %% output data
     # participants = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    # probe_numerosity = np.array([34, 36, 38, 40, 42, 44, 46])
+
     # TODO cal probe more proportion (now: ref more proportion)
     refc_problec_results = get_output_results(refcprobec)
     refc_problenc_results = get_output_results(refcprobenc)
     refnc_problec_results = get_output_results(refncprobec)
     refnc_problenc_results = get_output_results(refncprobenc)
 
-    #%% debug and output
+    # %% get means
+    refc_problec_results.loc['mean'] = refc_problec_results.mean()
+    refc_problenc_results.loc['mean'] = refc_problenc_results.mean()
+    refnc_problec_results.loc['mean'] = refnc_problec_results.mean()
+    refnc_problenc_results.loc['mean'] = refnc_problenc_results.mean()
+
+    # %% plot average
+    probe_numerosity = np.array([46, 44, 42, 40, 38, 36, 34])
+    yValues_rc_pc = refc_problec_results.values[12]
+    yValues_rc_pnc = refc_problenc_results.values[12]
+    yValues_rnc_pc = refnc_problec_results.values[12]
+    yValues_rnc_pnc = refnc_problenc_results.values[12]
+
+    fig, ax = plt.subplots()
+    ax.plot(probe_numerosity, yValues_rc_pc, alpha = .5, color = 'green', marker = 'o', label = "ref c; probe c")
+    ax.plot(probe_numerosity, yValues_rc_pnc, alpha = .5, color = 'blue', marker = 'o', label = "ref c; probe nc")
+    ax.plot(probe_numerosity, yValues_rnc_pc, alpha = .5, color = 'red', marker = 'o', label = "ref nc; probe c")
+    ax.plot(probe_numerosity, yValues_rnc_pnc, alpha = .5, color = 'pink', marker = 'o', label = "ref nc; probe nc")
+    ax.legend()
+
+    ax.set_xlabel("probe numerosity")
+    ax.set_ylim([0, 1])
+    ax.set_ylabel("proportion ref more")
+
+    plt.show()
+
+    # %%plot individual
+    y_rc_pc = refc_problec_results.values
+    fig2, ax2 = plt.subplots()
+    for y_val in y_rc_pc:
+        ax2.scatter(probe_numerosity, y_val, alpha = .3, color = "grey")
+    ax2.plot(probe_numerosity, yValues_rc_pc, alpha = .8, color = 'green', marker = 'o', label = "ref c; probe c")
+    ax2.legend()
+    ax2.set_xlabel("probe numerosity")
+    ax2.set_ylabel("proportion ref more")
+    ax2.set_ylim([0, 1])
+    plt.show()
+
+    y_rc_pnc = refc_problenc_results.values
+    fig3, ax3 = plt.subplots()
+    for y_val in y_rc_pnc:
+        ax3.scatter(probe_numerosity, y_val, alpha = .3, color = "grey")
+    ax3.plot(probe_numerosity, yValues_rc_pnc, alpha = .8, color = 'blue', marker = 'o', label = "ref c; probe nc")
+    ax3.legend()
+    ax3.set_xlabel("probe numerosity")
+    ax3.set_ylabel("proportion ref more")
+    ax3.set_ylim([0, 1])
+    plt.show()
+
+    y_rnc_pc = refnc_problec_results.values
+    fig4, ax4 = plt.subplots()
+    for y_val in y_rnc_pc:
+        ax4.scatter(probe_numerosity, y_val, alpha = .3, color = "grey")
+    ax4.plot(probe_numerosity, yValues_rnc_pc, alpha = .8, color = 'red', marker = 'o', label = "ref nc; probe c")
+    ax4.legend()
+    ax4.set_xlabel("probe numerosity")
+    ax4.set_ylabel("proportion ref more")
+    ax4.set_ylim([0, 1])
+    plt.show()
+
+    y_rnc_pnc = refnc_problenc_results.values
+    fig5, ax5 = plt.subplots()
+    for y_val in y_rnc_pnc:
+        ax5.scatter(probe_numerosity, y_val, alpha = .3, color = "grey")
+    ax5.plot(probe_numerosity, yValues_rnc_pnc, alpha = .8, color = 'pink', marker = 'o', label = "ref nc; probe nc")
+    ax5.legend()
+    ax5.set_xlabel("probe numerosity")
+    ax5.set_ylabel("proportion ref more")
+    plt.show()
+    # %% fit CDF
+    # x values
+    # xValues = np.array([46, 44, 42, 40, 38, 36, 34])
+    # subjects = 12
+    # condition = 1
+    #
+    # mu = np.zeros((subjects, condition))
+    # sigma = np.zeros((subjects, condition))
+    # yValues = refc_problec_results.values
+    # yyy = yValues[1]
+    #
+    # # cumulative gaussian fit
+    # t = np.linspace(46, 34, 1000)
+    # testrefratios = np.array([0.2, 0.4, 0.6, 0.8, 0.9, 1., 1.1, 1.2, 1.4, 1.6, 1.8])
+    # Pn_final = np.array([0., 0., 0.03, 0.35, 0.47, 0.57, 0.68, 0.73, 0.76, 0.85, 0.91])
+    # Pd_final = np.array([0., 0.03, 0.36, 0.85, 0.97, 0.98, 0.98, 0.99, 1., 1., 1.])
+    #
+    # # mu1, sigma1 = curve_fit(norm.cdf, testrefratios, Pn_final, p0 = [0, 1])[0]
+    # # plt.plot(t, norm.cdf(t, mu1, sigma1), alpha = .5)
+    # # plt.show()
+    #
+    # # for sub in range(0, subjects):
+    # mu, sigma = curve_fit(norm.cdf, xValues, yyy, p0 = [0, 1])[0]
+    # plt.plot(t, norm.cdf(t, mu, sigma), alpha = .5)
+    # plt.show()
+
+    # %% debug and output
     if is_debug:
         col_names = list(all_df.columns)
         sub_df_cols2check = ["D1numerosity",
@@ -128,4 +227,5 @@ if __name__ == "__main__":
         added_probe_df = all_df[sub_df_cols2check]
 
     if write_to_excel:
-        all_df.to_excel("preprocess_exp3a_pilot.xlsx")
+        # all_df.to_excel("preprocess_exp3a_pilot.xlsx")
+        refc_problec_results.to_excel("refc_problec_results")

@@ -40,3 +40,21 @@ def insert_refN(D1numerosity: float, D2numerosity: float, ref_first_val: float):
         return D2numerosity
     else:
         raise ValueError
+
+
+def insert_refCrowing(D1Crowding: float, D2Crowding: float, ref_first_val: float):
+    if ref_first_val == 1.0:
+        return D1Crowding
+    elif ref_first_val == 0.0:
+        return D2Crowding
+    else:
+        raise ValueError
+
+
+def inset_probeCrowding(D1Crowding: float, D2Crowding: float, ref_first_val: float):
+    if ref_first_val == 0.0:
+        return D1Crowding
+    elif ref_first_val == 1.0:
+        return D2Crowding
+    else:
+        raise ValueError

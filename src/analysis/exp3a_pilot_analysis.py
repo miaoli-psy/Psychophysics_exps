@@ -66,6 +66,10 @@ def cal_one_minus_value(input_value: float) -> float:
 
 
 def get_output_results(input_df: pd.DataFrame) -> pd.DataFrame:
-    output_results = input_df['is_resp_ref_more'].groupby([input_df["participantN"], input_df["probeN"]]).mean()
-    output_results = output_results.unstack()
+    output_results = input_df['is_resp_ref_more'].groupby([input_df["participantN"], input_df["ref_first"], input_df["probeN"]]).mean()
+    output_results = output_results.unstack().unstack()
     return output_results
+
+def get_piovt_table(input_df: pd.DataFrame) -> pd.DataFrame:
+    pivot_table = pd.pivot_table(input_df, index = ['ref_first', 'participantN'], columns = ['probeN'],values = ['is_resp_ref_more'])
+    return pivot_table

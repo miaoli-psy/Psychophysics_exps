@@ -12,7 +12,7 @@ from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_va
 from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols, \
     get_sub_df_according2col_value, process_cols, process_col, insert_new_col, get_processed_cols_df
 from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN, \
-    inset_probeCrowding, insert_refCrowing, cal_one_minus_value, get_output_results
+    inset_probeCrowding, insert_refCrowing, cal_one_minus_value, get_output_results, get_piovt_table
 import pandas as pd
 import numpy as np
 from scipy.optimize import curve_fit
@@ -118,13 +118,15 @@ if __name__ == "__main__":
     refncprobenc_probe_first = get_sub_df_according2col_value(refncprobenc, "ref_first", 0)
 
     # %% output data
-    # TODO cal probe more proportion (now: ref more proportion)
+    # proportion ref more
     refc_problec_results = get_output_results(refcprobec)
     refc_problenc_results = get_output_results(refcprobenc)
     refnc_problec_results = get_output_results(refncprobec)
     refnc_problenc_results = get_output_results(refncprobenc)
-    to_minus_one_cols = refnc_problenc_results.columns
-    processed_refnc_problenc_results = get_processed_cols_df(refnc_problenc_results, to_minus_one_cols, cal_one_minus_value)
+
+    pt = get_piovt_table(refcprobec)
+    # to_minus_one_cols = refnc_problenc_results.columns
+    # processed_refnc_problenc_results = get_processed_cols_df(refnc_problenc_results, to_minus_one_cols, cal_one_minus_value)
 
 
 

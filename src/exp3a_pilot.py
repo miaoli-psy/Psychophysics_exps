@@ -6,14 +6,14 @@ Create time: 2020-12-19 23:18
 IDE: PyCharm
 Introduction:
 """
-
+from src.plots.exp3a_pilot_plot import drawplot
 from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_valid_columns, \
     drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, get_col_boundary
 from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols, \
     get_sub_df_according2col_value, process_cols, process_col, insert_new_col, get_processed_cols_df
 from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN, \
     insert_refCrowing, cal_one_minus_value, get_output_results, get_piovt_table, \
-    insert_exp_condition, insert_probeCrowding, get_label4plot
+    insert_exp_condition, insert_probeCrowding
 import pandas as pd
 import numpy as np
 from scipy.optimize import curve_fit
@@ -123,129 +123,13 @@ if __name__ == "__main__":
     results_df.loc["mean_of_ref_first_participants"] = results_df.iloc[6:11].mean()
 
     # %% plots
-    # overall results : average across all participant
     x_values = [34, 36, 38, 40, 42, 44, 46]
-    y_values_rc_pc = results_df["rc_pc"].values[12]
-    y_values_rc_pnc = results_df["rc_pnc"].values[12]
-    y_values_rnc_pc = results_df["rnc_pc"].values[12]
-    y_values_rnc_pnc = results_df["rnc_pnc"].values[12]
     condi_list = ["rc_pc", "rc_pnc", "rnc_pc", "rnc_pnc"]
-
-    fig, ax = plt.subplots()
-    for condi in condi_list:
-        ax.plot(x_values, results_df[condi].values[12], alpha = .5, marker = 'o', label = get_label4plot(condi))
-    ax.legend()
-
-    ax.set_xlabel("probe numerosity")
-    ax.set_ylim([0, 1])
-    ax.set_ylabel("proportion ref more")
-
-    plt.show()
-
-    # ax = plt.gca()
-    # # color = ['green', 'red', 'grey']
-    # ax.set_xlabel("x_title", fontsize = 15)
-    # ax.set_ylabel("y_title", fontsize = 15)
-    # results.plot(kind = 'bar', ax = ax, alpha = 0.6)
-    # plt.show()
-
-    # %% to_minus_one_cols = refnc_problenc_results.columns
-    # processed_refnc_problenc_results = get_processed_cols_df(refnc_problenc_results, to_minus_one_cols, cal_one_minus_value)
-
-    # %% get means
-    # refc_problec_results.loc['mean'] = refc_problec_results.mean()
-    # refc_problenc_results.loc['mean'] = refc_problenc_results.mean()
-    # refnc_problec_results.loc['mean'] = refnc_problec_results.mean()
-    # refnc_problenc_results.loc['mean'] = refnc_problenc_results.mean()
-    #
-    # %% plot average
-    # probe_numerosity = np.array([34, 36, 38, 40, 42, 44, 46])
-    # yValues_rc_pc = refc_problec_results.values[12]
-    # # yValues_rc_pnc = refc_problenc_results.values[12]
-    # # yValues_rnc_pc = refnc_problec_results.values[12]
-    # # yValues_rnc_pnc = refnc_problenc_results.values[12]
-    #
-    # fig, ax = plt.subplots()
-    # ax.plot(probe_numerosity, yValues_rc_pc, alpha = .5, color = 'green', marker = 'o', label = "ref c; probe c")
-    # # ax.plot(probe_numerosity, yValues_rc_pnc, alpha = .5, color = 'blue', marker = 'o', label = "ref c; probe nc")
-    # # ax.plot(probe_numerosity, yValues_rnc_pc, alpha = .5, color = 'red', marker = 'o', label = "ref nc; probe c")
-    # # ax.plot(probe_numerosity, yValues_rnc_pnc, alpha = .5, color = 'pink', marker = 'o', label = "ref nc; probe nc")
-    # ax.legend()
-    #
-    # ax.set_xlabel("probe numerosity")
-    # ax.set_ylim([0, 1])
-    # ax.set_ylabel("proportion ref more")
-    #
-    # plt.show()
-    #
-    # # %%plot individual
-    # y_rc_pc = refc_problec_results.values
-    # fig2, ax2 = plt.subplots()
-    # for y_val in y_rc_pc:
-    #     ax2.scatter(probe_numerosity, y_val, alpha = .3, color = "grey")
-    # ax2.plot(probe_numerosity, yValues_rc_pc, alpha = .8, color = 'green', marker = 'o', label = "ref c; probe c")
-    # ax2.legend()
-    # ax2.set_xlabel("probe numerosity")
-    # ax2.set_ylabel("proportion ref more")
-    # ax2.set_ylim([0, 1])
-    # plt.show()
-    #
-    # y_rc_pnc = refc_problenc_results.values
-    # fig3, ax3 = plt.subplots()
-    # for y_val in y_rc_pnc:
-    #     ax3.scatter(probe_numerosity, y_val, alpha = .3, color = "grey")
-    # ax3.plot(probe_numerosity, yValues_rc_pnc, alpha = .8, color = 'blue', marker = 'o', label = "ref c; probe nc")
-    # ax3.legend()
-    # ax3.set_xlabel("probe numerosity")
-    # ax3.set_ylabel("proportion ref more")
-    # ax3.set_ylim([0, 1])
-    # plt.show()
-    #
-    # y_rnc_pc = refnc_problec_results.values
-    # fig4, ax4 = plt.subplots()
-    # for y_val in y_rnc_pc:
-    #     ax4.scatter(probe_numerosity, y_val, alpha = .3, color = "grey")
-    # ax4.plot(probe_numerosity, yValues_rnc_pc, alpha = .8, color = 'red', marker = 'o', label = "ref nc; probe c")
-    # ax4.legend()
-    # ax4.set_xlabel("probe numerosity")
-    # ax4.set_ylabel("proportion ref more")
-    # ax4.set_ylim([0, 1])
-    # plt.show()
-    #
-    # y_rnc_pnc = refnc_problenc_results.values
-    # fig5, ax5 = plt.subplots()
-    # for y_val in y_rnc_pnc:
-    #     ax5.scatter(probe_numerosity, y_val, alpha = .3, color = "grey")
-    # ax5.plot(probe_numerosity, yValues_rnc_pnc, alpha = .8, color = 'pink', marker = 'o', label = "ref nc; probe nc")
-    # ax5.legend()
-    # ax5.set_xlabel("probe numerosity")
-    # ax5.set_ylabel("proportion ref more")
-    # plt.show()
-    # %% fit CDF
-    # x values
-    # xValues = np.array([46, 44, 42, 40, 38, 36, 34])
-    # subjects = 12
-    # condition = 1
-    #
-    # mu = np.zeros((subjects, condition))
-    # sigma = np.zeros((subjects, condition))
-    # yValues = refc_problec_results.values
-    # yyy = yValues[1]
-    #
-    # # cumulative gaussian fit
-    # t = np.linspace(46, 34, 1000)
-    # testrefratios = np.array([0.2, 0.4, 0.6, 0.8, 0.9, 1., 1.1, 1.2, 1.4, 1.6, 1.8])
-    # Pn_final = np.array([0., 0., 0.03, 0.35, 0.47, 0.57, 0.68, 0.73, 0.76, 0.85, 0.91])
-    # Pd_final = np.array([0., 0.03, 0.36, 0.85, 0.97, 0.98, 0.98, 0.99, 1., 1., 1.])
-    #
-    # # mu1, sigma1 = curve_fit(norm.cdf, testrefratios, Pn_final, p0 = [0, 1])[0]
-    # # plt.plot(t, norm.cdf(t, mu1, sigma1), alpha = .5)
-    # # plt.show()
-    #
-    # # for sub in range(0, subjects):
-    # mu, sigma = curve_fit(norm.cdf, xValues, yyy, p0 = [0, 1])[0]
-    # plt.plot(t, norm.cdf(t, mu, sigma), alpha = .5)
-    # plt.show()
+    alpha = .5
+    marker = "o"
+    # row number 12 all participants, 13 probe first group, 14 ref first group
+    row_number = 14
+    drawplot(results_df, x_values, condi_list, row_number, alpha, marker)
 
     # %% debug and output
     if is_debug:

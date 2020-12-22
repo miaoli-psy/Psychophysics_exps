@@ -93,12 +93,5 @@ def get_piovt_table(input_df: pd.DataFrame) -> pd.DataFrame:
     return pivot_table
 
 
-def get_label4plot(condi: str) -> str:
-    if condi == "rc_pc":
-        return "crowding reference and crowding probe"
-    elif condi == "rc_pnc":
-        return "crowding reference and no-crowding probe"
-    elif condi == "rnc_pc":
-        return  "no-crowding reference and crowding probe"
-    elif condi == "rnc_pnc":
-        return "no-crowding reference and no-crowding probe"
+
+

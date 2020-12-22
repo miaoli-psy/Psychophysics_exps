@@ -102,37 +102,64 @@ if __name__ == "__main__":
     # indicate different condition with extra columns
     insert_new_col_from_two_cols(all_df, "ref_c", "probe_c", "ref_probe_condi", insert_exp_condition)
 
-    # %% output data
-    pt = get_piovt_table(all_df)
+    # exp conditions in separate df for plots
+    refc = get_sub_df_according2col_value(all_df, "refCrowding", 1)
+    refnc = get_sub_df_according2col_value(all_df, "refCrowding", 0)
+    # below are four exp conditions
+    refcprobec = get_sub_df_according2col_value(refc, "probeCrowding", 1)
+    refcprobenc = get_sub_df_according2col_value(refc, "probeCrowding", 0)
+    refncprobec = get_sub_df_according2col_value(refnc, "probeCrowding", 1)
+    refncprobenc = get_sub_df_according2col_value(refnc, "probeCrowding", 0)
 
-    # to_minus_one_cols = refnc_problenc_results.columns
+    # %% output dataframe
+    # pivot table
+    pt = get_piovt_table(all_df)
+    # groupby()
+    results_df = get_output_results(all_df)
+    # get means of result_df
+    results_df.loc["mean_across_all_participants"] = results_df.mean()
+    # means across participants by different group (ref first or not)
+    results_df.loc["mean_of_probe_first_participants"] = results_df.iloc[0:5].mean()
+    results_df.loc["mean_of_ref_first_participants"] = results_df.iloc[6:11].mean()
+
+    # %% plots
+    # overall results : average across all participant
+
+    # ax = plt.gca()
+    # # color = ['green', 'red', 'grey']
+    # ax.set_xlabel("x_title", fontsize = 15)
+    # ax.set_ylabel("y_title", fontsize = 15)
+    # results.plot(kind = 'bar', ax = ax, alpha = 0.6)
+    # plt.show()
+
+    # %% to_minus_one_cols = refnc_problenc_results.columns
     # processed_refnc_problenc_results = get_processed_cols_df(refnc_problenc_results, to_minus_one_cols, cal_one_minus_value)
 
-    # # %% get means
-    # refc_problec_results.loc['mean'] = refc_problec_results.mean()
+    # %% get means
+    refc_problec_results.loc['mean'] = refc_problec_results.mean()
     # refc_problenc_results.loc['mean'] = refc_problenc_results.mean()
     # refnc_problec_results.loc['mean'] = refnc_problec_results.mean()
     # refnc_problenc_results.loc['mean'] = refnc_problenc_results.mean()
     #
-    # # %% plot average
-    # probe_numerosity = np.array([46, 44, 42, 40, 38, 36, 34])
-    # yValues_rc_pc = refc_problec_results.values[12]
+    # %% plot average
+    probe_numerosity = np.array([34, 36, 38, 40, 42, 44, 46])
+    yValues_rc_pc = refc_problec_results.values[12]
     # yValues_rc_pnc = refc_problenc_results.values[12]
     # yValues_rnc_pc = refnc_problec_results.values[12]
     # yValues_rnc_pnc = refnc_problenc_results.values[12]
-    #
-    # fig, ax = plt.subplots()
-    # ax.plot(probe_numerosity, yValues_rc_pc, alpha = .5, color = 'green', marker = 'o', label = "ref c; probe c")
+
+    fig, ax = plt.subplots()
+    ax.plot(probe_numerosity, yValues_rc_pc, alpha = .5, color = 'green', marker = 'o', label = "ref c; probe c")
     # ax.plot(probe_numerosity, yValues_rc_pnc, alpha = .5, color = 'blue', marker = 'o', label = "ref c; probe nc")
     # ax.plot(probe_numerosity, yValues_rnc_pc, alpha = .5, color = 'red', marker = 'o', label = "ref nc; probe c")
     # ax.plot(probe_numerosity, yValues_rnc_pnc, alpha = .5, color = 'pink', marker = 'o', label = "ref nc; probe nc")
-    # ax.legend()
-    #
-    # ax.set_xlabel("probe numerosity")
-    # ax.set_ylim([0, 1])
-    # ax.set_ylabel("proportion ref more")
-    #
-    # plt.show()
+    ax.legend()
+
+    ax.set_xlabel("probe numerosity")
+    ax.set_ylim([0, 1])
+    ax.set_ylabel("proportion ref more")
+
+    plt.show()
     #
     # # %%plot individual
     # y_rc_pc = refc_problec_results.values

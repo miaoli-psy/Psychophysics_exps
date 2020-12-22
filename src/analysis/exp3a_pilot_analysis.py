@@ -66,7 +66,7 @@ def insert_exp_condition(ref_c: float, probe_c: float):
         return f"rc_pc"
     elif ref_c == 1.0 and probe_c == 0.0:
         return f"rc_pnc"
-    elif ref_c == 0.0 and probe_c ==1.0:
+    elif ref_c == 0.0 and probe_c == 1.0:
         return f"rnc_pc"
     elif ref_c == 0.0 and probe_c == 0.0:
         return f"rnc_pnc"
@@ -79,7 +79,8 @@ def cal_one_minus_value(input_value: float) -> float:
 
 
 def get_output_results(input_df: pd.DataFrame) -> pd.DataFrame:
-    output_results = input_df['is_resp_ref_more'].groupby([input_df["participantN"], input_df["ref_first"], input_df["probeN"]]).mean()
+    output_results = input_df['is_resp_ref_more'].groupby(
+            [input_df["ref_first"], input_df["participantN"],input_df["probeN"],input_df["ref_probe_condi"]]).mean()
     output_results = output_results.unstack().unstack()
     return output_results
 
@@ -87,6 +88,6 @@ def get_output_results(input_df: pd.DataFrame) -> pd.DataFrame:
 def get_piovt_table(input_df: pd.DataFrame) -> pd.DataFrame:
     pivot_table = pd.pivot_table(input_df,
                                  index = ["ref_first", "participantN"],
-                                 columns = ["ref_probe_condi",  "probeN"],
+                                 columns = ["ref_probe_condi", "probeN"],
                                  values = ["is_resp_ref_more"])
     return pivot_table

@@ -13,7 +13,7 @@ from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_n
     get_sub_df_according2col_value, process_cols, process_col, insert_new_col, get_processed_cols_df
 from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN, \
     insert_refCrowing, cal_one_minus_value, get_output_results, get_piovt_table, \
-    insert_exp_condition, insert_probeCrowding
+    insert_exp_condition, insert_probeCrowding, get_label4plot
 import pandas as pd
 import numpy as np
 from scipy.optimize import curve_fit
@@ -116,14 +116,31 @@ if __name__ == "__main__":
     pt = get_piovt_table(all_df)
     # groupby()
     results_df = get_output_results(all_df)
-    # get means of result_df
+    # add means of result_df
     results_df.loc["mean_across_all_participants"] = results_df.mean()
-    # means across participants by different group (ref first or not)
+    # add means across participants by different group (ref first or not)
     results_df.loc["mean_of_probe_first_participants"] = results_df.iloc[0:5].mean()
     results_df.loc["mean_of_ref_first_participants"] = results_df.iloc[6:11].mean()
 
     # %% plots
     # overall results : average across all participant
+    x_values = [34, 36, 38, 40, 42, 44, 46]
+    y_values_rc_pc = results_df["rc_pc"].values[12]
+    y_values_rc_pnc = results_df["rc_pnc"].values[12]
+    y_values_rnc_pc = results_df["rnc_pc"].values[12]
+    y_values_rnc_pnc = results_df["rnc_pnc"].values[12]
+    condi_list = ["rc_pc", "rc_pnc", "rnc_pc", "rnc_pnc"]
+
+    fig, ax = plt.subplots()
+    for condi in condi_list:
+        ax.plot(x_values, results_df[condi].values[12], alpha = .5, marker = 'o', label = get_label4plot(condi))
+    ax.legend()
+
+    ax.set_xlabel("probe numerosity")
+    ax.set_ylim([0, 1])
+    ax.set_ylabel("proportion ref more")
+
+    plt.show()
 
     # ax = plt.gca()
     # # color = ['green', 'red', 'grey']
@@ -136,30 +153,30 @@ if __name__ == "__main__":
     # processed_refnc_problenc_results = get_processed_cols_df(refnc_problenc_results, to_minus_one_cols, cal_one_minus_value)
 
     # %% get means
-    refc_problec_results.loc['mean'] = refc_problec_results.mean()
+    # refc_problec_results.loc['mean'] = refc_problec_results.mean()
     # refc_problenc_results.loc['mean'] = refc_problenc_results.mean()
     # refnc_problec_results.loc['mean'] = refnc_problec_results.mean()
     # refnc_problenc_results.loc['mean'] = refnc_problenc_results.mean()
     #
     # %% plot average
-    probe_numerosity = np.array([34, 36, 38, 40, 42, 44, 46])
-    yValues_rc_pc = refc_problec_results.values[12]
-    # yValues_rc_pnc = refc_problenc_results.values[12]
-    # yValues_rnc_pc = refnc_problec_results.values[12]
-    # yValues_rnc_pnc = refnc_problenc_results.values[12]
-
-    fig, ax = plt.subplots()
-    ax.plot(probe_numerosity, yValues_rc_pc, alpha = .5, color = 'green', marker = 'o', label = "ref c; probe c")
-    # ax.plot(probe_numerosity, yValues_rc_pnc, alpha = .5, color = 'blue', marker = 'o', label = "ref c; probe nc")
-    # ax.plot(probe_numerosity, yValues_rnc_pc, alpha = .5, color = 'red', marker = 'o', label = "ref nc; probe c")
-    # ax.plot(probe_numerosity, yValues_rnc_pnc, alpha = .5, color = 'pink', marker = 'o', label = "ref nc; probe nc")
-    ax.legend()
-
-    ax.set_xlabel("probe numerosity")
-    ax.set_ylim([0, 1])
-    ax.set_ylabel("proportion ref more")
-
-    plt.show()
+    # probe_numerosity = np.array([34, 36, 38, 40, 42, 44, 46])
+    # yValues_rc_pc = refc_problec_results.values[12]
+    # # yValues_rc_pnc = refc_problenc_results.values[12]
+    # # yValues_rnc_pc = refnc_problec_results.values[12]
+    # # yValues_rnc_pnc = refnc_problenc_results.values[12]
+    #
+    # fig, ax = plt.subplots()
+    # ax.plot(probe_numerosity, yValues_rc_pc, alpha = .5, color = 'green', marker = 'o', label = "ref c; probe c")
+    # # ax.plot(probe_numerosity, yValues_rc_pnc, alpha = .5, color = 'blue', marker = 'o', label = "ref c; probe nc")
+    # # ax.plot(probe_numerosity, yValues_rnc_pc, alpha = .5, color = 'red', marker = 'o', label = "ref nc; probe c")
+    # # ax.plot(probe_numerosity, yValues_rnc_pnc, alpha = .5, color = 'pink', marker = 'o', label = "ref nc; probe nc")
+    # ax.legend()
+    #
+    # ax.set_xlabel("probe numerosity")
+    # ax.set_ylim([0, 1])
+    # ax.set_ylabel("proportion ref more")
+    #
+    # plt.show()
     #
     # # %%plot individual
     # y_rc_pc = refc_problec_results.values

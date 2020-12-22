@@ -12,7 +12,8 @@ from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, keep_va
 from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols, \
     get_sub_df_according2col_value, process_cols, process_col, insert_new_col, get_processed_cols_df
 from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN, \
-    inset_probeCrowding, insert_refCrowing, cal_one_minus_value, get_output_results, get_piovt_table
+    insert_refCrowing, cal_one_minus_value, get_output_results, get_piovt_table, \
+    insert_exp_condition, insert_probeCrowding
 import pandas as pd
 import numpy as np
 from scipy.optimize import curve_fit
@@ -60,7 +61,7 @@ if __name__ == "__main__":
                       "probe_c",
                       "ref_c",
                       "ref_first"]
-    #%% preprocess starts here
+    # %% preprocess starts here
     all_df = preprocess_exp3a_func(data_path, filetype, filename_prefix)
     all_df = keep_valid_columns(all_df, kept_col_names)
 
@@ -82,7 +83,7 @@ if __name__ == "__main__":
     # preprocessed data
     all_df = drop_df_rows_according2_one_col(all_df, col_rt, resp_min, resp_max)
 
-    #%% analysis starts here
+    # %% analysis starts here
     # add numerosity difference between D1 and D2
     all_df["dff_D1D2"] = all_df["D1numerosity"] - all_df["D2numerosity"]
     # add correct answer
@@ -93,43 +94,19 @@ if __name__ == "__main__":
     insert_new_col_from_three_cols(all_df, "D1numerosity", "D2numerosity", "ref_first", "refN", insert_refN)
     # add probe crowding condition
     insert_new_col_from_three_cols(all_df, "D1Crowding", "D2Crowding", "ref_first", "probeCrowding",
-                                   inset_probeCrowding)
+                                   insert_probeCrowding)
     # add ref crowding condition
     insert_new_col_from_three_cols(all_df, "D1Crowding", "D2Crowding", "ref_first", "refCrowding", insert_refCrowing)
 
-    #%% experiment conditions
-    refc = get_sub_df_according2col_value(all_df, "refCrowding", 1)
-    refnc = get_sub_df_according2col_value(all_df, "refCrowding", 0)
-
-    # below are 4 exp conditions (ref c, probe c; ref c, probe nc; ref nc, probe c; ref nc, probe nc)
-    refcprobec = get_sub_df_according2col_value(refc, "probeCrowding", 1)
-    refcprobenc = get_sub_df_according2col_value(refc, "probeCrowding", 0)
-    refncprobec = get_sub_df_according2col_value(refnc, "probeCrowding", 1)
-    refncprobenc = get_sub_df_according2col_value(refnc, "probeCrowding", 0)
-
-    # below are 4 * 2 = 8 exp conditions with different participant group (ref first group, probe first group)
-    refcprobec_ref_first = get_sub_df_according2col_value(refcprobec, "ref_first", 1)
-    refcprobec_probe_first = get_sub_df_according2col_value(refcprobec, "ref_first", 0)
-    refcprobenc_ref_first = get_sub_df_according2col_value(refcprobenc, "ref_first", 1)
-    refcprobenc_probe_first = get_sub_df_according2col_value(refcprobenc, "ref_first", 0)
-    refncprobec_ref_first = get_sub_df_according2col_value(refncprobec, "ref_first", 1)
-    refncprobec_probe_first = get_sub_df_according2col_value(refncprobec, "ref_first", 0)
-    refncprobenc_ref_first = get_sub_df_according2col_value(refncprobenc, "ref_first", 1)
-    refncprobenc_probe_first = get_sub_df_according2col_value(refncprobenc, "ref_first", 0)
+    # %% experiment conditions
+    # indicate different condition with extra columns
+    insert_new_col_from_two_cols(all_df, "ref_c", "probe_c", "ref_probe_condi", insert_exp_condition)
 
     # %% output data
-    # proportion ref more
-    refc_problec_results = get_output_results(refcprobec)
-    refc_problenc_results = get_output_results(refcprobenc)
-    refnc_problec_results = get_output_results(refncprobec)
-    refnc_problenc_results = get_output_results(refncprobenc)
+    pt = get_piovt_table(all_df)
 
-    pt = get_piovt_table(refcprobec)
     # to_minus_one_cols = refnc_problenc_results.columns
     # processed_refnc_problenc_results = get_processed_cols_df(refnc_problenc_results, to_minus_one_cols, cal_one_minus_value)
-
-
-
 
     # # %% get means
     # refc_problec_results.loc['mean'] = refc_problec_results.mean()
@@ -239,9 +216,10 @@ if __name__ == "__main__":
                              "probeN",
                              "refN",
                              "probeCrowding",
-                             "refCrowding"]
-        added_probe_df = all_df[sub_df_cols2check]
+                             "refCrowding",
+                             "ref_probe_condi"]
+        df2check = all_df[sub_df_cols2check]
 
     if write_to_excel:
-        # all_df.to_excel("preprocess_exp3a_pilot.xlsx")
-        refc_problec_results.to_excel("refc_problec_results")
+        all_df.to_excel("preprocess_exp3a_pilot.xlsx")
+        pt.to_excel("pivot_table_exp3a_pilot.xlsx")

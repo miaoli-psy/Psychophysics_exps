@@ -52,13 +52,26 @@ def insert_refCrowing(D1Crowding: float, D2Crowding: float, ref_first_val: float
         raise ValueError
 
 
-def inset_probeCrowding(D1Crowding: float, D2Crowding: float, ref_first_val: float):
+def insert_probeCrowding(D1Crowding: float, D2Crowding: float, ref_first_val: float):
     if ref_first_val == 0.0:
         return D1Crowding
     elif ref_first_val == 1.0:
         return D2Crowding
     else:
         raise ValueError
+
+
+def insert_exp_condition(ref_c: float, probe_c: float):
+    if ref_c == 1.0 and probe_c == 1.0:
+        return f"rc_pc"
+    elif ref_c == 1.0 and probe_c == 0.0:
+        return f"rc_pnc"
+    elif ref_c == 0.0 and probe_c ==1.0:
+        return f"rnc_pc"
+    elif ref_c == 0.0 and probe_c == 0.0:
+        return f"rnc_pnc"
+    else:
+        raise Exception(f"condition {ref_c, probe_c}not in defined experiment conditions")
 
 
 def cal_one_minus_value(input_value: float) -> float:
@@ -70,6 +83,10 @@ def get_output_results(input_df: pd.DataFrame) -> pd.DataFrame:
     output_results = output_results.unstack().unstack()
     return output_results
 
+
 def get_piovt_table(input_df: pd.DataFrame) -> pd.DataFrame:
-    pivot_table = pd.pivot_table(input_df, index = ['ref_first', 'participantN'], columns = ['probeN'],values = ['is_resp_ref_more'])
+    pivot_table = pd.pivot_table(input_df,
+                                 index = ["ref_first", "participantN"],
+                                 columns = ["ref_probe_condi",  "probeN"],
+                                 values = ["is_resp_ref_more"])
     return pivot_table

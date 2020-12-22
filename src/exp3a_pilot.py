@@ -125,11 +125,11 @@ if __name__ == "__main__":
     # %% plots
     x_values = [34, 36, 38, 40, 42, 44, 46]
     condi_list = ["rc_pc", "rc_pnc", "rnc_pc", "rnc_pnc"]
-    alpha = .5
-    marker = "o"
-    # row number 12 all participants, 13 probe first group, 14 ref first group
-    row_number = 14
-    drawplot(results_df, x_values, condi_list, row_number, alpha, marker)
+
+    # row number: possible 0-14; 0-11 (12 participants) 12 all participants, 13 probe first group, 14 ref first group
+    for row in range(15):
+        drawplot(results_df, x_values, condi_list, row_number = row)
+
 
     # %% debug and output
     if is_debug:

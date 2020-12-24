@@ -1,4 +1,4 @@
-## data analysis pipeline for psychophysics exps
+## Data pre-process and analysis pipeline for psychophysics exps
 
 ### *Introduction*  
 

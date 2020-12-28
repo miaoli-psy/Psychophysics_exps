@@ -1,4 +1,6 @@
-## Data pre-process and analysis pipeline for numerosity_exps
+## Numerosity exps
+
+### Data preprocessing and analysis pipelines
 
 ### *Introduction*  
 

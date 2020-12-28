@@ -29,7 +29,7 @@ if __name__ == '__main__':
     step_ranges_map = get_step_ranges_map(step_range, all_positions_list)
 
     # (3) Plot current range_list
-    curr_step = 0  # degree step: 0-13 (in theory 0-360)
+    curr_step = 12  # degree step: 0-13 (in theory 0-360)
     curr_countlist_index = 249  # 0-249 (250 displays)
     # [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
     curr_rangelist = get_current_rangelist_to_draw(step_ranges_map, curr_step, curr_countlist_index)

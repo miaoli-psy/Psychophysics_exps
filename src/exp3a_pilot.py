@@ -24,11 +24,11 @@ import matplotlib.pyplot as plt
 if __name__ == "__main__":
     is_debug = True
     write_to_excel = False
-    data_path = "../data/rawdata_exp3a_pilot/"
-    filename_prefix = "P"
-    filetype = ".csv"
+    DATA_PATH = "../data/rawdata_exp3a_pilot/"
+    FILENAME_PREFIX = "P"
+    FILETYPE = ".csv"
     # %% preprocess starts here
-    all_df = preprocess_exp3a_func(data_path, filetype, filename_prefix)
+    all_df = preprocess_exp3a_func(DATA_PATH, FILETYPE, FILENAME_PREFIX)
     all_df = keep_valid_columns(all_df, KEPT_COL_NAMES)
 
     # drop practice trials: drop all rows with NaNs in key_resp.keys
@@ -95,7 +95,6 @@ if __name__ == "__main__":
     # row number: possible 0-14; 0-11 (12 participants) 12 all participants, 13 probe first group, 14 ref first group
     for row in range(15):
         drawplot(results_df, x_values, condi_list, row_number = row)
-
 
     # %% debug and output
     if is_debug:

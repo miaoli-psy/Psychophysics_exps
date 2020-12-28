@@ -18,8 +18,6 @@ def get_col_names(simuli_df):
     return c_names
 
 
-# __prefix means: this function is a private function
-# which only be used as a helper sub-function in a bigger function
 def get_draw_ndisc_formate(curr_rangelist):
     # [[[0,1], 0],...] -> [(0.5, 0)...]
     # [[[1,3], 1],...] -> [(2.0, 1)...]
@@ -63,3 +61,10 @@ def get_step_ranges_map(step_range: Tuple[int], all_positions_list: list):
         __add_current_positions_to_map(steps, count_list, step_ranges_map)
 
     return step_ranges_map
+
+
+def get_current_rangelist_to_draw(step_ranges_map: Dict[int, list], step: int, countlist_index: int):
+    curr_rangelist = step_ranges_map[step][countlist_index]
+    return curr_rangelist
+
+# TODO: draw picture of current range_list

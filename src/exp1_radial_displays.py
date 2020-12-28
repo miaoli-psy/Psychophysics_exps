@@ -4,21 +4,21 @@ TODO: What does this code do?
 """
 import pandas as pd
 import matplotlib.pyplot as plt
-
 import numpy as np
 import matplotlib.transforms as mtransforms
-
-from src.analysis.exp1_radial_displays_analysis import get_step_ranges_map, get_col_names, get_draw_ndisc_formate
-from src.plots.exp1_radial_displays_plot import draw_current_rangelist, draw_ndisc_at_ray
+from src.analysis.exp1_radial_displays_analysis import get_step_ranges_map, get_col_names, get_draw_ndisc_formate, \
+    get_current_rangelist_to_draw
+from src.plots.exp1_radial_displays_plot import draw_ndisc_at_ray
 
 if __name__ == '__main__':
     is_debug = True
-    is_polar_plot = True
+    has_polar_plot = True
+    has_plot = True
 
     # (1) Read stimuli display
-    path = "../displays/"
-    filename = "update_stim_info_full.xlsx"
-    simuli_df = pd.read_excel(path + filename)
+    PATH = "../displays/"
+    FILENAME = "update_stim_info_full.xlsx"
+    simuli_df = pd.read_excel(PATH + FILENAME)
 
     # (2) Get step_ranges_map: key: step, value: range_list
     # max step = 12 deg (around 11.42 deg, defined by the size of crowding zones)
@@ -29,12 +29,17 @@ if __name__ == '__main__':
     step_ranges_map = get_step_ranges_map(step_range, all_positions_list)
 
     # (3) Plot current range_list
-    curr_step = 0 # degree step: 0-13 (in theory 0-360)
+    curr_step = 0  # degree step: 0-13 (in theory 0-360)
     curr_countlist_index = 249  # 0-249 (250 displays)
     # [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
-    curr_rangelist = draw_current_rangelist(step_ranges_map, curr_step, curr_countlist_index)
+    curr_rangelist = get_current_rangelist_to_draw(step_ranges_map, curr_step, curr_countlist_index)
 
-    if is_polar_plot:
+    if has_plot:
+        # plot in Cartesian coordinates
+        formate_rangelist = get_draw_ndisc_formate(curr_rangelist)
+        draw_ndisc_at_ray(formate_rangelist)
+
+    if has_polar_plot:
         xs = np.arange(360)
         ys = []
         for y in curr_rangelist:
@@ -75,6 +80,3 @@ if __name__ == '__main__':
         c_names = get_col_names(simuli_df)
         # draw_temp(polar) # polar in sub_function cannot run here
 
-        # plot in Cartesian coordinates
-        formate_rangelist = get_draw_ndisc_formate(curr_rangelist)
-        draw_ndisc_at_ray(formate_rangelist)

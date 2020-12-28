@@ -15,15 +15,11 @@ from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_n
 from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN, \
     insert_refCrowing, cal_one_minus_value, get_output_results, get_piovt_table, \
     insert_exp_condition, insert_probeCrowding
-import pandas as pd
-import numpy as np
-from scipy.optimize import curve_fit
-from scipy.stats import norm
-import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     is_debug = True
     write_to_excel = False
+    save_plots = False
     DATA_PATH = "../data/rawdata_exp3a_pilot/"
     FILENAME_PREFIX = "P"
     FILETYPE = ".csv"
@@ -92,10 +88,6 @@ if __name__ == "__main__":
     x_values = [34, 36, 38, 40, 42, 44, 46]
     condi_list = ["rc_pc", "rc_pnc", "rnc_pc", "rnc_pnc"]
 
-    # row number: possible 0-14; 0-11 (12 participants) 12 all participants, 13 probe first group, 14 ref first group
-    for row in range(15):
-        drawplot(results_df, x_values, condi_list, row_number = row)
-
     # %% debug and output
     if is_debug:
         col_names = list(all_df.columns)
@@ -104,3 +96,9 @@ if __name__ == "__main__":
     if write_to_excel:
         all_df.to_excel("preprocess_exp3a_pilot.xlsx")
         pt.to_excel("pivot_table_exp3a_pilot.xlsx")
+
+    if save_plots:
+        # row number: possible 0-14; 0-11 (12 participants) 12 all participants, 13 probe first group, 14 ref first
+        # group
+        for row in range(15):
+            drawplot(results_df, x_values, condi_list, row_number = row)

@@ -60,3 +60,12 @@ def insert_new_col_from_three_cols(input_df: pd.DataFrame, old_col1: str, old_co
 
 def get_sub_df_according2col_value(input_df: pd.DataFrame, col_name: str, col_value) -> pd.DataFrame:
     return input_df.loc[input_df[col_name] == col_value]
+
+
+def change_col_value_type(input_df: pd.DataFrame, col_name: str, new_type):
+    """
+    :param input_df:
+    :param col_name:
+    :param new_type: could be int, float, str.
+    """
+    input_df[col_name] = input_df[col_name].astype(new_type)

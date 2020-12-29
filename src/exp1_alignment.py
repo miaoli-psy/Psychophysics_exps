@@ -8,7 +8,8 @@ Introduction:
 """
 import pandas as pd
 
-from src.commons.process_dataframe import change_col_value_type
+from src.commons.process_dataframe import change_col_value_type, keep_valid_columns
+from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
 if __name__ == '__main__':
     is_debug = True
@@ -33,19 +34,19 @@ if __name__ == '__main__':
     change_col_value_type(data_to_merge, "index_stimuliInfo", str)
     change_col_value_type(data_to_merge, "N_disk", int)
 
+    # remove duplicated cols
+    stimuli_to_merge = keep_valid_columns(stimuli_to_merge, KEPT_COL_NAMES_STIMU_DF)
+
     # merge data with stimuli info
-    my_data = pd.merge(data_to_merge,
-                       stimuli_to_merge,
-                       how = 'left',
-                       on = ['index_stimuliInfo', 'N_disk', 'crowdingcons', 'winsize'])
+    all_df = pd.merge(data_to_merge,
+                      stimuli_to_merge,
+                      how = 'left',
+                      on = ['index_stimuliInfo', 'N_disk', 'crowdingcons', 'winsize'])
 
     # %% preprocess starts here
-
-
-
-
+    my_data = keep_valid_columns(all_df, KEPT_COL_NAMES)
 
     if is_debug:
         col_names_stimuli = list(stimuli_to_merge.columns)
         col_names_data = list(data_to_merge)
-        col_names_my_data = list(my_data)
+        col_names_all_data = list(all_df)

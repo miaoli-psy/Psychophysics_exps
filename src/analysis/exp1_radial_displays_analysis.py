@@ -63,6 +63,18 @@ def get_step_ranges_map(step_range: Tuple[int], all_positions_list: list):
     return step_ranges_map
 
 
+def get_alignment_value_per_display(curr_rangelist):
+    """
+    :param curr_rangelist: [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
+    :return:
+    """
+    sum_alignment_value = 0
+    for angle_value_group in curr_rangelist:
+        sum_alignment_value = sum_alignment_value + angle_value_group[1]
+    curr_alignment_value = round(sum_alignment_value/360, 4)
+    return curr_alignment_value
+
+
 def get_current_rangelist_to_draw(step_ranges_map: Dict[int, list], step: int, countlist_index: int):
     curr_rangelist = step_ranges_map[step][countlist_index]
     return curr_rangelist

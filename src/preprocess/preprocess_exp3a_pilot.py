@@ -8,24 +8,11 @@ Introduction: functions for preprocessed data of crowding and numerosity exp3a (
 """
 from src.preprocess.sub import merge_all_data
 import pandas as pd
-import copy
-import math
 
 
 def preprocess_exp3a_func(data_path: str, filetype: str, filename_prefix: str) -> pd.DataFrame:
     all_df = merge_all_data.merge_all_file2dataframe(data_path, filetype, filename_prefix)
     return all_df
-
-
-def keep_valid_columns(df: pd.DataFrame, kept_columns_list: list) -> pd.DataFrame:
-    all_col_name_list = list(df.columns)
-    all_col_name_copy_list = copy.deepcopy(all_col_name_list)
-    drop_name_list = list()
-    for name in all_col_name_copy_list:
-        if name not in kept_columns_list:
-            drop_name_list.append(name)
-    df = df.drop(drop_name_list, axis = 1)
-    return df
 
 
 def drop_df_nan_rows_according2cols(df: pd.DataFrame, cols: list) -> pd.DataFrame:

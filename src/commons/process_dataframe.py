@@ -69,3 +69,14 @@ def change_col_value_type(input_df: pd.DataFrame, col_name: str, new_type):
     :param new_type: could be int, float, str.
     """
     input_df[col_name] = input_df[col_name].astype(new_type)
+
+
+def keep_valid_columns(df: pd.DataFrame, kept_columns_list: list) -> pd.DataFrame:
+    all_col_name_list = list(df.columns)
+    all_col_name_copy_list = copy.deepcopy(all_col_name_list)
+    drop_name_list = list()
+    for name in all_col_name_copy_list:
+        if name not in kept_columns_list:
+            drop_name_list.append(name)
+    df = df.drop(drop_name_list, axis = 1)
+    return df

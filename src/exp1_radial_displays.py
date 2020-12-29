@@ -15,6 +15,7 @@ if __name__ == '__main__':
     has_polar_plot = False
     has_plot = False
     has_indi_alinement_value = True
+    write_to_excel = False
 
     # (1) Read stimuli display
     PATH = "../displays/"
@@ -55,6 +56,9 @@ if __name__ == '__main__':
     simuli_df["alignment_v_step_0"] = alignment_value_dict[0]
     simuli_df["alignment_v_step_6"] = alignment_value_dict[6]
     simuli_df["alignment_v_step_12"] = alignment_value_dict[12]
+
+    if write_to_excel:
+        simuli_df.to_excel("exp1_stim_info.xlsx")
 
 
     if has_plot:

@@ -8,11 +8,13 @@ Introduction:
 """
 import pandas as pd
 
+from src.analysis.exp1_alignment_value_analysis import get_pivot_table
 from src.commons.process_dataframe import change_col_value_type, keep_valid_columns
 from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
 if __name__ == '__main__':
     is_debug = True
+    write_to_excel = True
 
     # read stimuli info and data
     PATH_STIMULI = "../displays/"
@@ -43,10 +45,16 @@ if __name__ == '__main__':
                       how = 'left',
                       on = ['index_stimuliInfo', 'N_disk', 'crowdingcons', 'winsize'])
 
-    # %% preprocess starts here
+    # %% preprocess
     my_data = keep_valid_columns(all_df, KEPT_COL_NAMES)
 
+    # %% output
+    pt = get_pivot_table(my_data)
+
+    # %% debug and write to excel
     if is_debug:
         col_names_stimuli = list(stimuli_to_merge.columns)
         col_names_data = list(data_to_merge)
         col_names_all_data = list(all_df)
+    if write_to_excel:
+        pt.to_excel("exp1_alignment_value_results.xlsx")

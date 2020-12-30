@@ -8,6 +8,7 @@ Introduction:
 """
 
 from src.commons import process_str
+from src.commons.process_number import get_weighted_mean
 from src.point import polar_point, count_point
 from typing import Tuple, Dict, List
 
@@ -63,16 +64,16 @@ def get_step_ranges_map(step_range: Tuple[int], all_positions_list: list):
     return step_ranges_map
 
 
-def get_alignment_value_per_display(curr_rangelist):
-    """
-    :param curr_rangelist: [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
-    :return:
-    """
-    sum_alignment_value = 0
-    for angle_value_group in curr_rangelist:
-        sum_alignment_value = sum_alignment_value + angle_value_group[1]
-    curr_alignment_value = round(sum_alignment_value/360, 4)
-    return curr_alignment_value
+# def get_alignment_value_per_display(curr_rangelist):
+#     """
+#     :param curr_rangelist:
+#     :return:
+#     """
+#     sum_alignment_value = 0
+#     for angle_value_group in curr_rangelist:
+#         sum_alignment_value = sum_alignment_value + angle_value_group[1]
+#     curr_alignment_value = round(sum_alignment_value/360, 4)
+#     return curr_alignment_value
 
 
 def get_alignment_disc_num(curr_rangelist, angle_step = 12):
@@ -102,6 +103,18 @@ def get_alignment_disc_num(curr_rangelist, angle_step = 12):
                 else:
                     raise ValueError
     return count_0_disc, count_1_disc, count_2_discs, count_3_discs, count_4_discs, count_5_discs
+
+
+def get_alignment_value(curr_rangelist, angle = 12, weight = [0, 0, 2, 3, 4, 5]):
+    """
+    :param curr_rangelist: [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
+    :return: current alignmnet value, list of 6 numbers: number of sectors
+    """
+    n0, n1, n2, n3, n4, n5 = get_alignment_disc_num(curr_rangelist, angle_step = angle)
+    n_sectors = [n0, n1, n2, n3, n4, n5]
+
+    curr_alignment_value = get_weighted_mean([n0, n1, n2, n3, n4, n5], weight)
+    return curr_alignment_value, n_sectors
 
 
 def get_current_rangelist_to_draw(step_ranges_map: Dict[int, list], step: int, countlist_index: int):

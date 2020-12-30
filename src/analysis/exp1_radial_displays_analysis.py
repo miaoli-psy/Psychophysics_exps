@@ -75,6 +75,35 @@ def get_alignment_value_per_display(curr_rangelist):
     return curr_alignment_value
 
 
+def get_alignment_disc_num(curr_rangelist, angle_step = 12):
+    count_0_disc = 0
+    count_1_disc = 0
+    count_2_discs = 0
+    count_3_discs = 0
+    count_4_discs = 0
+    count_5_discs = 0
+    for angle_value_group in curr_rangelist:
+        if angle_step == 0:
+            raise ValueError
+        else:
+            if angle_value_group[0][0] % angle_step == 0:
+                if angle_value_group[1] == 0:
+                    count_0_disc += 1
+                elif angle_value_group[1] == 1:
+                    count_1_disc += 1
+                elif angle_value_group[1] == 2:
+                    count_2_discs += 1
+                elif angle_value_group[1] == 3:
+                    count_3_discs += 1
+                elif angle_value_group[1] == 4:
+                    count_4_discs += 1
+                elif angle_value_group[1] == 5:
+                    count_5_discs += 1
+                else:
+                    raise ValueError
+    return count_0_disc, count_1_disc, count_2_discs, count_3_discs, count_4_discs, count_5_discs
+
+
 def get_current_rangelist_to_draw(step_ranges_map: Dict[int, list], step: int, countlist_index: int):
     curr_rangelist = step_ranges_map[step][countlist_index]
     return curr_rangelist

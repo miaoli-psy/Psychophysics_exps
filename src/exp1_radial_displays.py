@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.transforms as mtransforms
 from src.analysis.exp1_radial_displays_analysis import get_step_ranges_map, get_col_names, get_draw_ndisc_formate, \
-    get_current_rangelist_to_draw, get_alignment_value_per_display
+    get_current_rangelist_to_draw, get_alignment_value_per_display, get_alignment_disc_num
 from src.plots.exp1_radial_displays_plot import draw_ndisc_at_ray
 
 if __name__ == '__main__':
@@ -33,12 +33,14 @@ if __name__ == '__main__':
     if has_indi_alinement_value:
         # (3) get the current range_list for each display - to draw
         curr_step = 12  # degree step: 0-12 (in theory 0-360)
-        curr_countlist_index = 249  # 0-249 (250 displays)
+        curr_countlist_index = 247  # 0-249 (250 displays)
         # [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
         curr_rangelist = get_current_rangelist_to_draw(step_ranges_map, curr_step, curr_countlist_index)
 
         # (4) calculate the alignment value for each display
-        curr_alignment_value = get_alignment_value_per_display(curr_rangelist)
+        # curr_alignment_value = get_alignment_value_per_display(curr_rangelist)
+        n0, n1, n2, n3, n4, n5 = get_alignment_disc_num(curr_rangelist, angle_step = curr_step)
+        print(n0, n1, n2, n3, n4, n5)
 
     # calculate alignment values (at given angle step: 0, 6, 12 deg)
     included_step_range = [0, 6, 12]
@@ -56,8 +58,6 @@ if __name__ == '__main__':
     simuli_df["alignment_v_step_0"] = alignment_value_dict[0]
     simuli_df["alignment_v_step_6"] = alignment_value_dict[6]
     simuli_df["alignment_v_step_12"] = alignment_value_dict[12]
-
-
 
     if write_to_excel:
         simuli_df.to_excel("exp1_stim_info.xlsx")

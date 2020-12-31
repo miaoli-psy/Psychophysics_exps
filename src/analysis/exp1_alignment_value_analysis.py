@@ -12,6 +12,6 @@ import pandas as pd
 def get_pivot_table(input_df: pd.DataFrame) -> pd.DataFrame:
     pivot_table = pd.pivot_table(input_df,
                                  index = ["participant_N"],
-                                 columns = ["crowdingcons", "alignment_v_step_12"],
+                                 columns = ["winsize", "crowdingcons", "alignment_v_step_12"],
                                  values = ["deviation_score"])
     return pivot_table

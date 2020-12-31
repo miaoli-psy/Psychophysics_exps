@@ -63,6 +63,14 @@ def get_step_ranges_map(step_range: Tuple[int], all_positions_serise: list):
 
     return step_ranges_map
 
+def get_algnment_rangelist(step_range: Tuple[int], input_posi_list: list):
+    step_ranges_map = dict()
+    step_start, step_end = step_range[0], step_range[1]
+    steps = [i for i in range(step_start, step_end)]
+
+    count_list = __get_count_list(input_posi_list)
+    __add_current_positions_to_map(steps, count_list,step_ranges_map)
+    return step_ranges_map
 
 # def get_alignment_value_per_display(curr_rangelist):
 #     """

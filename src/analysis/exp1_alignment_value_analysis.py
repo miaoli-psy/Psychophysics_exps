@@ -9,9 +9,14 @@ Introduction:
 import pandas as pd
 
 
-def get_pivot_table(input_df: pd.DataFrame) -> pd.DataFrame:
+def get_pivot_table(input_df: pd.DataFrame, index, columns, values) -> pd.DataFrame:
+    """
+    :param input_df:
+    :param index, cp;imns and values: list of strs - df col names
+    :return: pivot table
+    """
     pivot_table = pd.pivot_table(input_df,
-                                 index = ["participant_N"],
-                                 columns = ["winsize", "crowdingcons", "alignment_v_step_12"],
-                                 values = ["deviation_score"])
+                                 index = index,
+                                 columns = columns,
+                                 values = values)
     return pivot_table

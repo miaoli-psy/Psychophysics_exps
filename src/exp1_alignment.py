@@ -49,7 +49,11 @@ if __name__ == '__main__':
     my_data = keep_valid_columns(all_df, KEPT_COL_NAMES)
 
     # %% output
-    pt = get_pivot_table(my_data)
+    angle = 12
+    pt = get_pivot_table(my_data,
+                         index = ["participant_N"],
+                         columns = ["crowdingcons", "alignment_v_step_%s" % angle],
+                         values = ["deviation_score"])
 
     # %% debug and write to excel
     if is_debug:

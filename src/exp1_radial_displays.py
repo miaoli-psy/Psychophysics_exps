@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.transforms as mtransforms
 from src.analysis.exp1_radial_displays_analysis import get_step_ranges_map, get_col_names, get_draw_ndisc_formate, \
-    get_current_rangelist_to_draw, get_alignment_disc_num, get_alignment_value
+    get_current_rangelist_to_draw, get_alignment_disc_num, get_alignment_value, get_algnment_rangelist
 from src.commons.process_number import get_weighted_mean
 from src.plots.exp1_radial_displays_plot import draw_ndisc_at_ray
 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     step_range = (0, 13)
     all_positions_serise = simuli_df.positions_list
     # key(int):    angle step 
-    # value(list): range_list [[[angle, angle+step), num_points1], etc]
+    # value(list): range_list [ [[angle, angle+step), num_points1], etc]*360, *250
     step_ranges_map = get_step_ranges_map(step_range, all_positions_serise)
 
     if has_indi_alinement_value:
@@ -41,7 +41,9 @@ if __name__ == '__main__':
         # (4) calculate the alignment value for each display
         # curr_alignment_value = get_alignment_value_per_display(curr_rangelist)
         # n2: number of ray that contains n number of discs
-        curr_alignment_value, n_sectors = get_alignment_value(curr_rangelist, angle = 6, weight = [0, 0, 2, 3, 4, 5])
+        curr_alignment_value, n_sectors = get_alignment_value(curr_rangelist, angle = 12, weight = [0, 0, 2, 3, 4, 5])
+        print(curr_alignment_value)
+
 
     # calculate alignment values (at given angle step:  6, 12 deg)
     included_step_range = [6, 12]

@@ -26,10 +26,10 @@ if __name__ == '__main__':
     # (2) Get step_ranges_map: key: step, value: range_list
     # max step = 12 deg (around 11.42 deg, defined by the size of crowding zones)
     step_range = (0, 13)
-    all_positions_list = simuli_df.positions_list
+    all_positions_serise = simuli_df.positions_list
     # key(int):    angle step 
     # value(list): range_list [[[angle, angle+step), num_points1], etc]
-    step_ranges_map = get_step_ranges_map(step_range, all_positions_list)
+    step_ranges_map = get_step_ranges_map(step_range, all_positions_serise)
 
     if has_indi_alinement_value:
         # (3) get the current range_list for each display - to draw

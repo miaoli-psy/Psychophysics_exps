@@ -50,13 +50,13 @@ def __add_current_positions_to_map(steps: List[int], count_list: list, step_rang
         __add_ranges_to_map(step_ranges_map, range_list, step)
 
 
-def get_step_ranges_map(step_range: Tuple[int], all_positions_list: list):
+def get_step_ranges_map(step_range: Tuple[int], all_positions_serise: list):
     # key: step, value: range_list
     step_ranges_map = dict()
     step_start, step_end = step_range[0], step_range[1]
     steps = [i for i in range(step_start, step_end)]
 
-    for curr_positions in all_positions_list:
+    for curr_positions in all_positions_serise:
         # count_list: disc num for given angle: [[angle, point_count_number], etc]
         count_list = __get_count_list(curr_positions)
         __add_current_positions_to_map(steps, count_list, step_ranges_map)

@@ -52,7 +52,7 @@ if __name__ == '__main__':
     angle = 12
     pt = get_pivot_table(my_data,
                          index = ["participant_N"],
-                         columns = ["crowdingcons", "alignment_v_step_%s" % angle],
+                         columns = ["crowdingcons", "alignment_v_step_%s_count_beam" % angle],
                          values = ["deviation_score"])
 
     # %% debug and write to excel

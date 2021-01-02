@@ -84,7 +84,7 @@ def get_algnment_rangelist(step_range: Tuple[int], input_posi_list: list):
 #     return curr_alignment_value
 
 
-def get_alignment_disc_num(curr_rangelist, angle_step = 12):
+def get_alignment_disc_num(curr_rangelist, angle_step =1):
     count_0_disc = 0
     count_1_disc = 0
     count_2_discs = 0
@@ -113,16 +113,19 @@ def get_alignment_disc_num(curr_rangelist, angle_step = 12):
     return count_0_disc, count_1_disc, count_2_discs, count_3_discs, count_4_discs, count_5_discs
 
 
-def get_alignment_value(curr_rangelist, angle = 12, weight = [0, 0, 2, 3, 4, 5]):
+def get_alignment_value(curr_rangelist, step = 1,  weight = [0, 0, 2, 3, 4, 5], is_counting = False):
     """
     :param curr_rangelist: [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
     :return: current alignmnet value, list of 6 numbers: number of sectors
     """
-    n0, n1, n2, n3, n4, n5 = get_alignment_disc_num(curr_rangelist, angle_step = angle)
+    n0, n1, n2, n3, n4, n5 = get_alignment_disc_num(curr_rangelist, angle_step = step)
     n_sectors = [n0, n1, n2, n3, n4, n5]
 
     curr_alignment_value = get_weighted_mean([n0, n1, n2, n3, n4, n5], weight)
-    return curr_alignment_value, n_sectors
+    if is_counting:
+        return n3+n4+n5, n_sectors
+    else:
+        return curr_alignment_value, n_sectors
 
 
 def get_current_rangelist_to_draw(step_ranges_map: Dict[int, list], step: int, countlist_index: int):

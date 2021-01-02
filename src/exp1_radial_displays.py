@@ -16,7 +16,7 @@ if __name__ == '__main__':
     has_polar_plot = False
     has_plot = False
     has_indi_alinement_value = True
-    write_to_excel = False
+    write_to_excel = True
 
     # (1) Read stimuli display
     PATH = "../displays/"
@@ -34,21 +34,20 @@ if __name__ == '__main__':
     if has_indi_alinement_value:
         # (3) get the current range_list for each display - to draw
         curr_step = 12  # degree step: 0-12 (in theory 0-360)
-        curr_countlist_index = 248  # 0-249 (250 displays)
+        curr_countlist_index = 224  # 0-249 (250 displays)
         # [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
         curr_rangelist = get_current_rangelist_to_draw(step_ranges_map, curr_step, curr_countlist_index)
 
         # (4) calculate the alignment value for each display
-        # curr_alignment_value = get_alignment_value_per_display(curr_rangelist)
-        # n2: number of ray that contains n number of discs
-        curr_alignment_value, n_sectors = get_alignment_value(curr_rangelist, angle = 12, weight = [0, 0, 2, 3, 4, 5])
-        print(curr_alignment_value)
-
+        # n2: number of sectors that contain n number of discs
+        curr_alignment_value, n_sectors = get_alignment_value(curr_rangelist, step = 1, weight = [0, 0, 0, 3, 4, 5],
+                                                              is_counting = False)
+        print(curr_alignment_value, n_sectors)
 
     # calculate alignment values (at given angle step:  6, 12 deg)
     included_step_range = [6, 12]
     sub_step_range_map = {k: v for k, v in step_ranges_map.items() if k in included_step_range}
-    weight = [0, 0, 2, 3, 4, 5]
+    weight = [0, 0, 0, 3, 4, 5]
 
     alignment_value_dict = dict()
     # key: angle step
@@ -60,7 +59,7 @@ if __name__ == '__main__':
         alignment_values = list()
         n_sectors_list = list()
         for range_list in all_range_list:
-            alignment_value, n_sectors = get_alignment_value(range_list, angle = step_range, weight = weight)
+            alignment_value, n_sectors = get_alignment_value(range_list, step = 1, weight = weight, is_counting = True)
             alignment_values.append(alignment_value)
             n_sectors_list.append(n_sectors)
         alignment_value_dict.update({step_range: alignment_values})

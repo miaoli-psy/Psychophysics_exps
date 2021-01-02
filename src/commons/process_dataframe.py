@@ -80,3 +80,16 @@ def keep_valid_columns(df: pd.DataFrame, kept_columns_list: list) -> pd.DataFram
             drop_name_list.append(name)
     df = df.drop(drop_name_list, axis = 1)
     return df
+
+
+def get_pivot_table(input_df: pd.DataFrame, index, columns, values) -> pd.DataFrame:
+    """
+    :param input_df:
+    :param index, cp;imns and values: list of strs - df col names
+    :return: pivot table
+    """
+    pivot_table = pd.pivot_table(input_df,
+                                 index = index,
+                                 columns = columns,
+                                 values = values)
+    return pivot_table

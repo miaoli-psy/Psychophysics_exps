@@ -8,8 +8,7 @@ Introduction:
 """
 import pandas as pd
 
-from src.analysis.exp1_alignment_value_analysis import get_pivot_table
-from src.commons.process_dataframe import change_col_value_type, keep_valid_columns
+from src.commons.process_dataframe import change_col_value_type, keep_valid_columns, get_pivot_table
 from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
 if __name__ == '__main__':

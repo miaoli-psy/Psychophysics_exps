@@ -32,7 +32,7 @@ def merge_all_file2dataframe(data_path: str, filetype: str, filename_prefix: str
 
 
 if __name__ == "__main__":
-    data_path = "../../../data/rawdata_exp3a_pilot/"
+    data_path = "../../../data/exp3_data/exp3_pilot_data/rawdata/"
     filename_prefix = "P"
     filetype = ".csv"
     all_df = merge_all_file2dataframe(data_path, filetype, filename_prefix)

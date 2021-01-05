@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from statannot import add_stat_annotation
 
-PATH = "../data/exp1_rerun_data/"
+PATH = "../../data/exp1_rerun_data/"
 DATA_FILE2PLOT = "exp1_rerun_data2plot.xlsx"
 save_plot = False
 

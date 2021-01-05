@@ -13,11 +13,11 @@ from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
 if __name__ == '__main__':
     is_debug = True
-    write_to_excel = True
+    write_to_excel = False
 
     # read stimuli info and data
     PATH_STIMULI = "../displays/"
-    PATH_DATA = "../data/"
+    PATH_DATA = "../data/exp1_rerun_data/"
     STIMULI_FILENAME = "exp1_stim_info.xlsx"
     DATA_FILENAME = "cleanedTotalData_fullinfo_v2.xlsx"
 

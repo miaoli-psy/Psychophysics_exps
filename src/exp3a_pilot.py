@@ -19,7 +19,7 @@ if __name__ == "__main__":
     is_debug = True
     write_to_excel = False
     save_plots = False
-    DATA_PATH = "../data/rawdata_exp3a_pilot/"
+    DATA_PATH = "../data/exp3_data/exp3_pilot_data/rawdata/"
     FILENAME_PREFIX = "P"
     FILETYPE = ".csv"
     # %% preprocess starts here

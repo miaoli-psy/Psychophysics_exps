@@ -91,3 +91,7 @@ def interplote_result_dict_start(result_dict: dict)->dict:
             if value[0][0] != 100:
                 value.insert(0, (100, 0))
     return result_dict
+
+def normolizedLD(y_val: list):
+    return [float(i)/max(y_val) for i in y_val]
+

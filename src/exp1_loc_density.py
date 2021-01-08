@@ -7,14 +7,14 @@ IDE: PyCharm
 Introduction:
 """
 
-from scipy.stats import poisson
 import pandas as pd
 import numpy as np
+from scipy import stats
 
 from src.analysis.exp1_local_density_analysis import dict_pix_to_deg, get_result_dict, interplote_result_dict_start, \
-    normolizedLD
-from src.commons.fitfuncs import get_lambda
+    get_fitted_res
 from src.commons.process_dataframe import process_col
+from src.commons.process_dict import get_sub_dict
 from src.commons.process_str import str_to_list
 
 if __name__ == '__main__':
@@ -39,17 +39,56 @@ if __name__ == '__main__':
     # covert pixel to deg
     result_dict_c = dict_pix_to_deg(result_dict_c, 1)
     result_dict_nc = dict_pix_to_deg(result_dict_nc, 1)
+    # possible keys
+    k_c_03 = [21, 22, 23, 24, 25]
+    k_c_04 = [31, 32, 33, 34, 35]
+    k_c_05 = [41, 42, 43, 44, 45]
+    k_c_06 = [49, 50, 51, 52, 53]
+    k_c_07 = [54, 55, 56, 57, 58]
+    # data to fit
+    res_dict_c_03 = get_sub_dict(result_dict_c, k_c_03)
+    res_dict_c_04 = get_sub_dict(result_dict_c, k_c_04)
+    res_dict_c_05 = get_sub_dict(result_dict_c, k_c_05)
+    res_dict_c_06 = get_sub_dict(result_dict_c, k_c_06)
+    res_dict_c_07 = get_sub_dict(result_dict_c, k_c_07)
 
-    res_list = list()
-    for numerosity, loc_density_list in result_dict_c.items():
-        for loc_density in loc_density_list:
-            x_value = list()
-            y_value = list()
-            for loc_tuple in loc_density:
-                x_value.append(loc_tuple[0])
-                y_value.append(loc_tuple[1])
-            np_array = np.array([x_value, normolizedLD(y_value)]).transpose()
-            res_list.append(get_lambda(np_array))
+    res_dict_nc_03 = get_sub_dict(result_dict_nc, k_c_03)
+    res_dict_nc_04 = get_sub_dict(result_dict_nc, k_c_04)
+    res_dict_nc_05 = get_sub_dict(result_dict_nc, k_c_05)
+    res_dict_nc_06 = get_sub_dict(result_dict_nc, k_c_06)
+    res_dict_nc_07 = get_sub_dict(result_dict_nc, k_c_07)
+    # fit here
+    fitted_c_03 = get_fitted_res(res_dict_c_03)
+    fitted_c_04 = get_fitted_res(res_dict_c_04)
+    fitted_c_05 = get_fitted_res(res_dict_c_05)
+    fitted_c_06 = get_fitted_res(res_dict_c_06)
+    fitted_c_07 = get_fitted_res(res_dict_c_07)
+
+    fitted_nc_03 = get_fitted_res(res_dict_nc_03)
+    fitted_nc_04 = get_fitted_res(res_dict_nc_04)
+    fitted_nc_05 = get_fitted_res(res_dict_nc_05)
+    fitted_nc_06 = get_fitted_res(res_dict_nc_06)
+    fitted_nc_07 = get_fitted_res(res_dict_nc_07)
+
+    # collect all fitted lambda here
+    fitted_lambda = np.column_stack([fitted_c_03,
+                                     fitted_c_04,
+                                     fitted_c_05,
+                                     fitted_c_06,
+                                     fitted_c_07,
+                                     fitted_nc_03,
+                                     fitted_nc_04,
+                                     fitted_nc_05,
+                                     fitted_nc_06,
+                                     fitted_nc_07])
+
+    # independent t test
+    # index 0, 5 -> crowding vs. no-crowding in winsize 03
+    # index 1, 6 -> winsize 04
+    # index 2, 7 -> winsize 05
+    # index 3, 8 -> winsize 06
+    # index 4, 9 -> winsize 07
+    t, p = stats.ttest_ind(fitted_lambda[:, 0], fitted_lambda[:, 5])
 
 # #%% fit a line to the economic data
 # from numpy import sin

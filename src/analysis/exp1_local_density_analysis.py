@@ -6,6 +6,8 @@ Create time: 2021-01-08 18:29
 IDE: PyCharm
 Introduction:
 """
+import numpy as np
+from src.commons.fitfuncs import get_lambda
 from src.commons.process_number import cal_eccentricity
 
 
@@ -84,7 +86,7 @@ def get_result_dict(posis_dict):
     return result_dict
 
 
-def interplote_result_dict_start(result_dict: dict)->dict:
+def interplote_result_dict_start(result_dict: dict) -> dict:
     """make sure every display local density starts from (100,...)"""
     for key, values in result_dict.items():
         for value in values:
@@ -92,6 +94,20 @@ def interplote_result_dict_start(result_dict: dict)->dict:
                 value.insert(0, (100, 0))
     return result_dict
 
-def normolizedLD(y_val: list):
-    return [float(i)/max(y_val) for i in y_val]
 
+def __normolizedLD(y_val: list):
+    return [float(i) / max(y_val) for i in y_val]
+
+
+def get_fitted_res(input_dict) -> list:
+    res_list = list()
+    for numerosity, loc_density_list in input_dict.items():
+        for loc_density in loc_density_list:
+            x_value = list()
+            y_value = list()
+            for loc_tuple in loc_density:
+                x_value.append(loc_tuple[0])
+                y_value.append(loc_tuple[1])
+            np_array = np.array([x_value, __normolizedLD(y_value)]).transpose()
+            res_list.append(get_lambda(np_array))
+    return res_list

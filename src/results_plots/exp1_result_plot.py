@@ -27,10 +27,10 @@ ax = sns.barplot(x = x,
                  y = y,
                  data = df_toplot,
                  hue = hue,
-                 capsize = .1,
+                 capsize = .05,
                  palette = ["royalblue", "orangered"],
                  alpha = 0.5,
-                 ci = None)
+                 ci = 68)
 
 ax = sns.swarmplot(x = x,
                    y = y,

@@ -10,14 +10,20 @@ Introduction:
 import pandas as pd
 import numpy as np
 from scipy import stats
+import matplotlib.pyplot as plt
+
+from scipy.stats import poisson
 
 from src.analysis.exp1_local_density_analysis import dict_pix_to_deg, get_result_dict, interplote_result_dict_start, \
-    get_fitted_res
+    get_fitted_res, get_sample_plot_x_y
+from src.commons.fitfuncs import get_lambda
 from src.commons.process_dataframe import process_col
 from src.commons.process_dict import get_sub_dict
 from src.commons.process_str import str_to_list
 
+
 if __name__ == '__main__':
+    save_plot = False
     PATH = "../displays/"
     FILE = "update_stim_info_full.xlsx"
     stimuli_df = pd.read_excel(PATH + FILE)
@@ -90,75 +96,27 @@ if __name__ == '__main__':
     # index 4, 9 -> winsize 07
     t, p = stats.ttest_ind(fitted_lambda[:, 0], fitted_lambda[:, 5])
 
-# #%% fit a line to the economic data
-# from numpy import sin
-# from numpy import sqrt
-# from numpy import arange
-# from pandas import read_csv
-#
-# from matplotlib import pyplot
-#
-#
-# # define the true objective function
-# def objective(x, a, b, c, d):
-#     return a * sin(b - x) + c * x ** 2 + d
-#
-# # load the dataset
-# url = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/longley.csv'
-# dataframe = read_csv(url, header = None)
-# data = dataframe.values
-# # choose the input and output variables
-# x, y = data[:, 4], data[:, -1]
-# # curve fit
-# popt1, _ = curve_fit(objective, x, y)
-# # summarize the parameter values
-# a, b, c, d = popt1
-# print(popt1)
-# # plot input vs output
-# pyplot.scatter(x, y)
-# # define a sequence of inputs between the smallest and largest known inputs
-# x_line = arange(min(x), max(x), 1)
-# # calculate the output for the range
-# y_line = objective(x_line, a, b, c, d)
-# # create a line plot for the mapping function
-# pyplot.plot(x_line, y_line, '--', color = 'red')
-# pyplot.show()
-#
-# # %%
-# import numpy as np
-# import matplotlib.pyplot as plt
-# from scipy.stats import norm
-# from scipy.optimize import curve_fit
-# from scipy.special import gammaln # x! = Gamma(x+1)
-#
-# meanlife = 550e-6
-# decay_lifetimes = 1/np.random.poisson((1/meanlife), size=100000)
-#
-# def transformation_and_jacobian(x):
-#     return 1./x, 1./x**2.
-#
-# def tfm_normal_pdf(x, lam):
-#     y, J = transformation_and_jacobian(x)
-#     return norm.pdf(y, lam, np.sqrt(lam)) * J
-#
-# def tfm_poisson_pdf(x, mu):
-#     y, J = transformation_and_jacobian(x)
-#     # For numerical stability, compute exp(log(f(x)))
-#     return np.exp(y * np.log(mu) - mu - gammaln(y + 1.)) * J
-#
-# hist, bins = np.histogram(decay_lifetimes, bins=50, density=True)
-# width = 0.8*(bins[1]-bins[0])
-# center = (bins[:-1]+bins[1:])/2
-# plt.bar(center, hist, align='center', width=width, label = 'Normalised data')
-#
-# # Important: Choose a reasonable starting point
-# p0 = 1 / np.mean(decay_lifetimes)
-#
-# norm_opt, _ = curve_fit(tfm_normal_pdf, center, hist, p0=p0)
-# pois_opt, _ = curve_fit(tfm_poisson_pdf, center, hist, p0=p0)
-#
-# plt.plot(center, tfm_normal_pdf(center, *norm_opt), 'g--', label='(Transformed) Normal fit')
-# plt.plot(center, tfm_poisson_pdf(center, *pois_opt), 'r--', label='(Transformed) Poisson fit')
-# plt.legend(loc = 'best')
-# plt.tight_layout()
-# plt.show()
+    # a sample fit
+    # no-crowding data
+    to_plot_array = get_sample_plot_x_y(res_dict_nc_07, key = 55, list_index = 0)
+    # crowding data
+    to_plot_array2 = get_sample_plot_x_y(res_dict_c_07, key = 55, list_index = 0)
+    # plot starts here
+    fig, ax = plt.subplots()
+    # plot original data
+    ax.plot(to_plot_array[:, 0], to_plot_array[:, 1], 'bo', label = "no-crowding display", alpha = 0.5)
+    ax.plot(to_plot_array2[:, 0], to_plot_array2[:, 1], 'ro', label = "crowding display", alpha = 0.5)
+    # get fitted y
+    opty = get_lambda(to_plot_array)
+    opty2 = get_lambda(to_plot_array2)
+    # plot fitted data
+    ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty), 'b+', label = 'CDF Poisson fit no-crowding')
+    ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty2), 'r+', label = 'CDF Poisson fit crowding')
+    # customize the plot
+    plt.legend(loc = 'best')
+    ax.set_xlabel("Eccentricity", fontsize = 15)
+    ax.set_ylabel("Local density", fontsize = 15)
+    ax.set_title("Sample displays(numerosity 55): no crowding vs. crowding", fontsize = 12)
+    plt.show()
+    if save_plot:
+        fig.savefig("sampleplot.svg")

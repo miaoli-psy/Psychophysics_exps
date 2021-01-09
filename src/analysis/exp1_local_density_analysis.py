@@ -111,3 +111,11 @@ def get_fitted_res(input_dict) -> list:
             np_array = np.array([x_value, __normolizedLD(y_value)]).transpose()
             res_list.append(get_lambda(np_array))
     return res_list
+
+
+def get_sample_plot_x_y(input_dict, key, list_index):
+    x, y = list(), list()
+    for loc_tuple in input_dict[key][list_index]:
+        x.append(loc_tuple[0])
+        y.append(loc_tuple[1])
+    return np.array([x, __normolizedLD(y)]).transpose()

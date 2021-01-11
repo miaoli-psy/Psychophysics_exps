@@ -50,4 +50,5 @@ KEPT_COL_NAMES = ["crowdingcons",
                   "alig_v_angle6_step6_sectors",
                   "alig_v_angle12_step12_sectors",
                   "alig_v_line_step1",
-                  "alig_v_line_step1_sectors"]
+                  "alig_v_line_step1_sectors",
+                  "list_index"]

@@ -7,13 +7,16 @@ IDE: PyCharm
 Introduction:
 """
 import pandas as pd
+from scipy.stats import stats
 
-from src.commons.process_dataframe import change_col_value_type, keep_valid_columns, get_pivot_table
+from src.analysis.exp1_alignment_analysis import get_data_to_analysis
+from src.commons.process_dataframe import change_col_value_type, keep_valid_columns, get_pivot_table, \
+    get_sub_df_according2col_value
 from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
 if __name__ == '__main__':
     is_debug = True
-    write_to_excel = True
+    write_to_excel = False
 
     # read stimuli info and data
     PATH_STIMULI = "../displays/"
@@ -60,11 +63,46 @@ if __name__ == '__main__':
                          index = ["participant_N"],
                          columns = ["winsize", "crowdingcons", alignment[n]],
                          values = ["deviation_score"])
+    # %% correlation
+    my_data_c = get_sub_df_according2col_value(my_data, "crowdingcons", 1)
+    # data for each winsize
+    w03_c = get_sub_df_according2col_value(my_data_c, "winsize", 0.3)
+    w04_c = get_sub_df_according2col_value(my_data_c, "winsize", 0.4)
+    w05_c = get_sub_df_according2col_value(my_data_c, "winsize", 0.5)
+    w06_c = get_sub_df_according2col_value(my_data_c, "winsize", 0.6)
+    w07_c = get_sub_df_according2col_value(my_data_c, "winsize", 0.7)
 
-    # %% debug and write to excel
+    # w03_c = w03_c["deviation_score"].groupby(
+    #         [w03_c["alig_v_angle12_step1"], w03_c["N_disk"], w03_c["list_index"]]).mean()
+    # # convert index to column
+    # w03_c = w03_c.reset_index(level = ["alig_v_angle12_step1", "list_index", "N_disk"])
+
+    # which alignment value 0-4
+    n = 1
+    w03_c = get_data_to_analysis(w03_c, "deviation_score", alignment[n], "N_disk", "list_index")
+    w04_c = get_data_to_analysis(w04_c, "deviation_score", alignment[n], "N_disk", "list_index")
+    w05_c = get_data_to_analysis(w05_c, "deviation_score", alignment[n], "N_disk", "list_index")
+    w06_c = get_data_to_analysis(w06_c, "deviation_score", alignment[n], "N_disk", "list_index")
+    w07_c = get_data_to_analysis(w07_c, "deviation_score", alignment[n], "N_disk", "list_index")
+
+    r03, p03 = stats.pearsonr(w03_c["deviation_score"], w03_c[alignment[n]])
+    r04, p04 = stats.pearsonr(w04_c["deviation_score"], w04_c[alignment[n]])
+    r05, p05 = stats.pearsonr(w05_c["deviation_score"], w05_c[alignment[n]])
+    r06, p06 = stats.pearsonr(w06_c["deviation_score"], w06_c[alignment[n]])
+    r07, p07 = stats.pearsonr(w07_c["deviation_score"], w07_c[alignment[n]])
+
+    print(f"correlation coefficient is {round(r03, 2)}, and p-value is {round(p03, 4)} for numerosity range 21-25")
+    print(f"correlation coefficient is {round(r04, 2)}, and p-value is {round(p04, 4)} for numerosity range 31-35")
+    print(f"correlation coefficient is {round(r05, 2)}, and p-value is {round(p05, 4)} for numerosity range 41-45")
+    print(f"correlation coefficient is {round(r06, 2)}, and p-value is {round(p06, 4)} for numerosity range 49-53")
+    print(f"correlation coefficient is {round(r07, 2)}, and p-value is {round(p07, 4)} for numerosity range 54-58")
+
+
+
+# %% debug and write to excel
     if is_debug:
         col_names_stimuli = list(stimuli_to_merge.columns)
         col_names_data = list(data_to_merge)
-        col_names_all_data = list(all_df)
+        col_names_my_data = list(my_data)
     if write_to_excel:
         pt.to_excel("exp1_alig_%s.xlsx" % n)

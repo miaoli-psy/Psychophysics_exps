@@ -13,7 +13,7 @@ from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
 if __name__ == '__main__':
     is_debug = True
-    write_to_excel = False
+    write_to_excel = True
 
     # read stimuli info and data
     PATH_STIMULI = "../displays/"
@@ -48,10 +48,17 @@ if __name__ == '__main__':
     my_data = keep_valid_columns(all_df, KEPT_COL_NAMES)
 
     # %% output
-    angle = 12
+    alignment = ["alig_v_angle6_step1",
+                 "alig_v_angle12_step1",
+                 "alig_v_angle6_step6",
+                 "alig_v_angle12_step12",
+                 "alig_v_line_step1"]
+    # index of alignment list
+    n = 4
+    # pivot table
     pt = get_pivot_table(my_data,
                          index = ["participant_N"],
-                         columns = ["crowdingcons", "alignment_v_step_%s_count_beam" % angle],
+                         columns = ["winsize", "crowdingcons", alignment[n]],
                          values = ["deviation_score"])
 
     # %% debug and write to excel
@@ -60,4 +67,4 @@ if __name__ == '__main__':
         col_names_data = list(data_to_merge)
         col_names_all_data = list(all_df)
     if write_to_excel:
-        pt.to_excel("exp1_alignment_value_results.xlsx")
+        pt.to_excel("exp1_alig_%s.xlsx" % n)

@@ -8,6 +8,8 @@ Introduction:
 """
 import pandas as pd
 from scipy.stats import stats
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from src.analysis.exp1_alignment_analysis import get_data_to_analysis
 from src.commons.process_dataframe import change_col_value_type, keep_valid_columns, get_pivot_table, \
@@ -96,10 +98,58 @@ if __name__ == '__main__':
     print(f"correlation coefficient is {round(r05, 2)}, and p-value is {round(p05, 4)} for numerosity range 41-45")
     print(f"correlation coefficient is {round(r06, 2)}, and p-value is {round(p06, 4)} for numerosity range 49-53")
     print(f"correlation coefficient is {round(r07, 2)}, and p-value is {round(p07, 4)} for numerosity range 54-58")
+    # %%plots
+    sns.set(style = 'white', color_codes = True)
+    sns.set_style("ticks", {"xtick.major.size": 5, "ytick.major.size": 3})
+    fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)
 
+    sns.regplot(x = alignment[n], y = "deviation_score", data = w03_c, x_jitter = 0.5, ax = axes[0, 0])
+    sns.regplot(x = alignment[n], y = "deviation_score", data = w04_c, x_jitter = 0.5, ax = axes[0, 1])
+    sns.regplot(x = alignment[n], y = "deviation_score", data = w05_c, x_jitter = 0.5, ax = axes[0, 2])
+    sns.regplot(x = alignment[n], y = "deviation_score", data = w06_c, x_jitter = 0.5, ax = axes[1, 0])
+    sns.regplot(x = alignment[n], y = "deviation_score", data = w07_c, x_jitter = 0.5, ax = axes[1, 1])
 
+    # set x, y limits
+    axes[0, 0].set_ylim(-2, 6)
+    axes[0, 1].set_ylim(-2, 6)
+    axes[0, 2].set_ylim(-2, 6)
+    axes[1, 0].set_ylim(-2, 6)
+    axes[1, 1].set_ylim(-2, 6)
 
-# %% debug and write to excel
+    # set x,y label
+    axes[0, 0].set(xlabel = '', ylabel = '')
+    axes[0, 1].set(xlabel = '', ylabel = '')
+    axes[0, 2].set(xlabel = '', ylabel = '')
+    axes[1, 0].set(xlabel = '', ylabel = '')
+    axes[1, 1].set(xlabel = "alignment value", ylabel = '')
+
+    axes[1, 1].xaxis.label.set_size(20)
+
+    # peasorn r
+    fig.text(0.28, 0.85, 'r = %s' % (round(r03, 2)), va = 'center', fontsize = 15)
+    fig.text(0.56, 0.85, 'r = %s' % (round(r04, 2)), va = 'center', fontsize = 15)
+    fig.text(0.83, 0.85, 'r = %s' % (round(r05, 2)), va = 'center', fontsize = 15)
+    fig.text(0.28, 0.43, 'r = %s' % (round(r06, 2)), va = 'center', fontsize = 15)
+    fig.text(0.56, 0.43, 'r = %s' % (round(r07, 2)), va = 'center', fontsize = 15)
+
+    fig.text(0.15, 0.89, '(a) numerosity range: 21-25', fontsize = 14)
+    fig.text(0.43, 0.89, '(b) numerosity range: 31-35', fontsize = 14)
+    fig.text(0.7, 0.89, '(c) numerosity range: 41-45', fontsize = 14)
+    fig.text(0.15, 0.47, '(d) numerosity range: 49-53', fontsize = 14)
+    fig.text(0.43, 0.47, '(e) numerosity range: 54-58', fontsize = 14)
+
+    # remoing the borders and ticks of the last subplot
+    axes[1, 2].spines['top'].set_visible(False)
+    axes[1, 2].spines['left'].set_visible(False)
+    axes[1, 2].spines['right'].set_visible(False)
+    axes[1, 2].spines['bottom'].set_visible(False)
+    # removing the tick marks
+    axes[1, 2].tick_params(bottom = False, left = False)
+
+    # removing the x label
+    axes[1, 2].xaxis.set_visible(False)
+    plt.show()
+    # %% debug and write to excel
     if is_debug:
         col_names_stimuli = list(stimuli_to_merge.columns)
         col_names_data = list(data_to_merge)

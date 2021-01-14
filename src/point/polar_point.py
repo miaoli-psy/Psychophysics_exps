@@ -48,16 +48,20 @@ def __get_angle(posi:Tuple[float]) -> float:
     return angle
 
 
-def get_polar_coordinates(inputposilist:List[Tuple[float]]) -> List[Tuple[int]]:
+def get_polar_coordinates(inputposilist:List[Tuple[float]], int = False) -> List[Tuple[int]]:
     """
     get polar coordinates for all disc positions
     """
-    radius = [round(__get_radius(p)) for p in inputposilist]
-    angle = [round(__get_angle(p)) for p in inputposilist]
+    if int:
+        radius = [round(__get_radius(p)) for p in inputposilist]
+        angle = [round(__get_angle(p)) for p in inputposilist]
+    else:
+        radius = [round(__get_radius(p), 2) for p in inputposilist]
+        angle = [round(__get_angle(p), 2) for p in inputposilist]
     
     polar_coordinates = []
     for x, y in zip(angle, radius):
-        polar_coordinates.append((x,y))
+        polar_coordinates.append((x, y))
     
     # sort by tuple's first value (angle)
     polar_coordinates.sort()

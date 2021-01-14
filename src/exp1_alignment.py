@@ -18,7 +18,7 @@ from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
 if __name__ == '__main__':
     is_debug = True
-    write_to_excel = False
+    write_to_excel = True
 
     # read stimuli info and data
     PATH_STIMULI = "../displays/"
@@ -26,14 +26,14 @@ if __name__ == '__main__':
     STIMULI_FILENAME = "exp1_stim_info.xlsx"
     DATA_FILENAME = "cleanedTotalData_fullinfo_v2.xlsx"
 
-    stimuli_to_merge = pd.read_excel(PATH_STIMULI + STIMULI_FILENAME)
+    stimuli_to_merge_ori = pd.read_excel(PATH_STIMULI + STIMULI_FILENAME)
     data_to_merge = pd.read_excel(PATH_DATA + DATA_FILENAME)
 
     # unify col value type
-    change_col_value_type(stimuli_to_merge, "crowdingcons", int)
-    change_col_value_type(stimuli_to_merge, "winsize", float)
-    change_col_value_type(stimuli_to_merge, "index_stimuliInfo", str)
-    change_col_value_type(stimuli_to_merge, "N_disk", int)
+    change_col_value_type(stimuli_to_merge_ori, "crowdingcons", int)
+    change_col_value_type(stimuli_to_merge_ori, "winsize", float)
+    change_col_value_type(stimuli_to_merge_ori, "index_stimuliInfo", str)
+    change_col_value_type(stimuli_to_merge_ori, "N_disk", int)
 
     change_col_value_type(data_to_merge, "crowdingcons", int)
     change_col_value_type(data_to_merge, "winsize", float)
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     change_col_value_type(data_to_merge, "N_disk", int)
 
     # remove duplicated cols
-    stimuli_to_merge = keep_valid_columns(stimuli_to_merge, KEPT_COL_NAMES_STIMU_DF)
+    stimuli_to_merge = keep_valid_columns(stimuli_to_merge_ori, KEPT_COL_NAMES_STIMU_DF)
 
     # merge data with stimuli info
     all_df = pd.merge(data_to_merge,
@@ -53,13 +53,20 @@ if __name__ == '__main__':
     my_data = keep_valid_columns(all_df, KEPT_COL_NAMES)
 
     # %% output
-    alignment = ["alig_v_angle6_step1",
+    alignment = ["alig_v_angle6_step6_cont",
+                 "alig_v_angle12_step12_cont",
+                 "alig_v_angle6_step1_count",
+                 "alig_v_angle12_step1_count",
+                 "alig_v_line_step1_cont",
+                 "alig_v_angle6_step1_squared_w",
+                 "alig_v_angle12_step1_squared_w",
+                 "alig_v_angle6_step1",
                  "alig_v_angle12_step1",
                  "alig_v_angle6_step6",
-                 "alig_v_angle12_step12",
-                 "alig_v_line_step1"]
+                 "alig_v_angle12_step12"]
+
     # index of alignment list
-    n = 4
+    n = 8
     # pivot table
     pt = get_pivot_table(my_data,
                          index = ["participant_N"],
@@ -80,7 +87,7 @@ if __name__ == '__main__':
     # w03_c = w03_c.reset_index(level = ["alig_v_angle12_step1", "list_index", "N_disk"])
 
     # which alignment value 0-4
-    n = 1
+    n = 10
     w03_c = get_data_to_analysis(w03_c, "deviation_score", alignment[n], "N_disk", "list_index")
     w04_c = get_data_to_analysis(w04_c, "deviation_score", alignment[n], "N_disk", "list_index")
     w05_c = get_data_to_analysis(w05_c, "deviation_score", alignment[n], "N_disk", "list_index")
@@ -151,7 +158,7 @@ if __name__ == '__main__':
     plt.show()
     # %% debug and write to excel
     if is_debug:
-        col_names_stimuli = list(stimuli_to_merge.columns)
+        col_names_stimuli = list(stimuli_to_merge_ori.columns)
         col_names_data = list(data_to_merge)
         col_names_my_data = list(my_data)
     if write_to_excel:

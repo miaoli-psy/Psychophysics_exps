@@ -39,7 +39,7 @@ def __add_ranges_to_map(step_ranges_map: Dict[int, List[list]], range_list, step
 
 def __get_count_list(curr_positions: list) -> list:
     curr_positions_list = process_str.str_to_list(curr_positions)
-    polar = polar_point.get_polar_coordinates(curr_positions_list)
+    polar = polar_point.get_polar_coordinates(curr_positions_list, int = True)
     count_list = count_point.get_point_count_list(polar)
     return count_list
 
@@ -72,17 +72,6 @@ def get_algnment_rangelist(step_range: Tuple[int], input_posi_list: list):
     __add_current_positions_to_map(steps, count_list,step_ranges_map)
     return step_ranges_map
 
-# def get_alignment_value_per_display(curr_rangelist):
-#     """
-#     :param curr_rangelist:
-#     :return:
-#     """
-#     sum_alignment_value = 0
-#     for angle_value_group in curr_rangelist:
-#         sum_alignment_value = sum_alignment_value + angle_value_group[1]
-#     curr_alignment_value = round(sum_alignment_value/360, 4)
-#     return curr_alignment_value
-
 
 def get_alignment_disc_num(curr_rangelist, angle_step =1):
     count_0_disc = 0
@@ -113,7 +102,7 @@ def get_alignment_disc_num(curr_rangelist, angle_step =1):
     return count_0_disc, count_1_disc, count_2_discs, count_3_discs, count_4_discs, count_5_discs
 
 
-def get_alignment_value(curr_rangelist, step = 1,  weight = [0, 0, 2, 3, 4, 5], is_counting = False):
+def get_alignment_value(curr_rangelist, weight: list, step = 1, is_counting = False):
     """
     :param curr_rangelist: [[[angle, angle+step), num_points1], [[angle+1, angle+step+1), num_points1], etc]
     :return: current alignmnet value, list of 6 numbers: number of sectors
@@ -131,5 +120,7 @@ def get_alignment_value(curr_rangelist, step = 1,  weight = [0, 0, 2, 3, 4, 5], 
 def get_current_rangelist_to_draw(step_ranges_map: Dict[int, list], step: int, countlist_index: int):
     curr_rangelist = step_ranges_map[step][countlist_index]
     return curr_rangelist
+
+
 
 # TODO: draw picture of current range_list

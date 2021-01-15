@@ -82,6 +82,12 @@ def keep_valid_columns(df: pd.DataFrame, kept_columns_list: list) -> pd.DataFram
     return df
 
 
+def get_col_names(simuli_df):
+    # check df coloum names
+    c_names = simuli_df.columns.to_list()
+    return c_names
+
+
 def get_pivot_table(input_df: pd.DataFrame, index, columns, values) -> pd.DataFrame:
     """
     :param input_df:

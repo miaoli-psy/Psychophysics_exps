@@ -63,16 +63,27 @@ def counter2list(input_counter):
 
 
 def get_beam_n(input_posi_list, angle_size = 12):
-
+    """
+    :param input_posi_list: col from display dataframe, list like str
+    :param angle_size: beam size that use to scan the whole displays
+    :return: number of beams that contained 1-6 discs
+    """
+    # convert the str to list
     input_posi_list = str_to_list(input_posi_list)
+    # get the polar coordinate of all positions
     polar_posis = get_polar_coordinates(input_posi_list)
+    # the initial start edge
     ini_start_angle = polar_posis[0][0]
+    # the end edge
     ini_end_angle = ini_start_angle + angle_size
+    # get result ranges
     ranges = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)
+    # for each region, calculate the number of discs
     ndisc_list = list()
     for beam in ranges:
         ndisc = count_ndisc_in_range(polar_posis, beam[0], beam[1])
         ndisc_list.append(ndisc)
+    # count the occurrence
     count_beams = Counter(ndisc_list)
     count_beams_output = counter2list(count_beams)
     return count_beams_output

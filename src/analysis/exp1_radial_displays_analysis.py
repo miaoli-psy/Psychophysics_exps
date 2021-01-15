@@ -13,12 +13,6 @@ from src.point import polar_point, count_point
 from typing import Tuple, Dict, List
 
 
-def get_col_names(simuli_df):
-    # check df coloum names
-    c_names = simuli_df.columns.to_list()
-    return c_names
-
-
 def get_draw_ndisc_formate(curr_rangelist):
     # [[[0,1], 0],...] -> [(0.5, 0)...]
     # [[[1,3], 1],...] -> [(2.0, 1)...]

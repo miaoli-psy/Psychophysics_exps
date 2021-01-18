@@ -12,7 +12,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import exp1_radial_display2
 
-from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, add_color_code
+from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, add_color_code, \
+    normalize_deviation, normalize_alignment_v, rename_norm_col
 from src.commons.process_dataframe import change_col_value_type, keep_valid_columns, get_pivot_table, \
     get_sub_df_according2col_value, insert_new_col
 from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
@@ -69,7 +70,7 @@ if __name__ == "__main__":
                          values = ["deviation_score"])
     # %% correlation
     # crowding = 0, 1, 2 for no-crowding, crowding and all data
-    my_data = get_analysis_dataframe(my_data, crowding = 2)
+    my_data = get_analysis_dataframe(my_data, crowding = 1)
 
     # data for each winsize
     w03 = get_sub_df_according2col_value(my_data, "winsize", 0.3)
@@ -101,25 +102,77 @@ if __name__ == "__main__":
     print(f"correlation coefficient is {round(r05, 2)}, and p-value is {round(p05, 4)} for numerosity range 41-45")
     print(f"correlation coefficient is {round(r06, 2)}, and p-value is {round(p06, 4)} for numerosity range 49-53")
     print(f"correlation coefficient is {round(r07, 2)}, and p-value is {round(p07, 4)} for numerosity range 54-58")
-    # %%plots
-    # add color coded
+    # %% normalization
+    w03_norm_deviation = normalize_deviation(w03)
+    w04_norm_deviation = normalize_deviation(w04)
+    w05_norm_deviation = normalize_deviation(w05)
+    w06_norm_deviation = normalize_deviation(w06)
+    w07_norm_deviation = normalize_deviation(w07)
 
+    w03_norm_align_v = normalize_alignment_v(w03, alignment_col = alignment[n])
+    w04_norm_align_v = normalize_alignment_v(w04, alignment_col = alignment[n])
+    w05_norm_align_v = normalize_alignment_v(w05, alignment_col = alignment[n])
+    w06_norm_align_v = normalize_alignment_v(w06, alignment_col = alignment[n])
+    w07_norm_align_v = normalize_alignment_v(w07, alignment_col = alignment[n])
+    # rename normed cols
+    old_name_dev = "deviation_score"
+    new_name_dev = "deviation_score_norm"
+    old_name_alig = alignment[n]
+    new_name_alig = alignment[n] + "_norm"
+    w03_norm_deviation = rename_norm_col(w03_norm_deviation, old_name_dev, new_name_dev)
+    w04_norm_deviation = rename_norm_col(w04_norm_deviation, old_name_dev, new_name_dev)
+    w05_norm_deviation = rename_norm_col(w05_norm_deviation, old_name_dev, new_name_dev)
+    w06_norm_deviation = rename_norm_col(w06_norm_deviation, old_name_dev, new_name_dev)
+    w07_norm_deviation = rename_norm_col(w07_norm_deviation, old_name_dev, new_name_dev)
+    w03_norm_align_v = rename_norm_col(w03_norm_align_v, old_name_alig, new_name_alig)
+    w04_norm_align_v = rename_norm_col(w04_norm_align_v, old_name_alig, new_name_alig)
+    w05_norm_align_v = rename_norm_col(w05_norm_align_v, old_name_alig, new_name_alig)
+    w06_norm_align_v = rename_norm_col(w06_norm_align_v, old_name_alig, new_name_alig)
+    w07_norm_align_v = rename_norm_col(w07_norm_align_v, old_name_alig, new_name_alig)
+    # contact orig dataframe with new normalized dataframe
+    w03 = pd.concat([w03, w03_norm_deviation, w03_norm_align_v], axis=1)
+    w04 = pd.concat([w04, w04_norm_deviation, w04_norm_align_v], axis=1)
+    w05 = pd.concat([w05, w05_norm_deviation, w05_norm_align_v], axis=1)
+    w06 = pd.concat([w06, w06_norm_deviation, w06_norm_align_v], axis=1)
+    w07 = pd.concat([w07, w07_norm_deviation, w07_norm_align_v], axis=1)
+
+    # check _rs
+    r03_new, p03_new = stats.pearsonr(w03["deviation_score_norm"], w03[alignment[n]+"_norm"])
+    r04_new, p04_new = stats.pearsonr(w04["deviation_score_norm"], w04[alignment[n]+"_norm"])
+    r05_new, p05_new = stats.pearsonr(w05["deviation_score_norm"], w05[alignment[n]+"_norm"])
+    r06_new, p06_new = stats.pearsonr(w06["deviation_score_norm"], w06[alignment[n]+"_norm"])
+    r07_new, p07_new = stats.pearsonr(w07["deviation_score_norm"], w07[alignment[n]+"_norm"])
+
+    # %%plots
+    # ini plot
     sns.set(style = "white", color_codes = True)
     sns.set_style("ticks", {"xtick.major.size": 5, "ytick.major.size": 3})
+    # some parameters
+    x = alignment[n]+"_norm"
+    y = "deviation_score_norm"
+    jitter = 0.05
+    color = "gray"
+    # plot starts here
     fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)
-
-    sns.regplot(x = alignment[n], y = "deviation_score", data = w03, x_jitter = 0.5, ax = axes[0, 0])
-    sns.regplot(x = alignment[n], y = "deviation_score", data = w04, x_jitter = 0.5, ax = axes[0, 1])
-    sns.regplot(x = alignment[n], y = "deviation_score", data = w05, x_jitter = 0.5, ax = axes[0, 2])
-    sns.regplot(x = alignment[n], y = "deviation_score", data = w06, x_jitter = 0.5, ax = axes[1, 0])
-    sns.regplot(x = alignment[n], y = "deviation_score", data = w07, x_jitter = 0.5, ax = axes[1, 1])
+    sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07['colorcode']}, color = color)
 
     # set x, y limits
-    axes[0, 0].set_ylim(-2, 6)
-    axes[0, 1].set_ylim(-2, 6)
-    axes[0, 2].set_ylim(-2, 6)
-    axes[1, 0].set_ylim(-2, 6)
-    axes[1, 1].set_ylim(-2, 6)
+    axes[0, 0].set_ylim(-1.1, 1.1)
+    axes[0, 1].set_ylim(-1.1, 1.1)
+    axes[0, 2].set_ylim(-1.1, 1.1)
+    axes[1, 0].set_ylim(-1.1, 1.1)
+    axes[1, 1].set_ylim(-1.1, 1.1)
+
+    axes[0, 0].set_xlim(-0.1, 1.1)
+    axes[0, 1].set_xlim(-0.1, 1.1)
+    axes[0, 2].set_xlim(-0.1, 1.1)
+    axes[1, 0].set_xlim(-0.1, 1.1)
+    axes[1, 1].set_xlim(-0.1, 1.1)
+
 
     # set x,y label
     axes[0, 0].set(xlabel = "", ylabel = "")

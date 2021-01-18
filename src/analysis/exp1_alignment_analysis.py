@@ -7,6 +7,7 @@ IDE: PyCharm
 Introduction:
 """
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 from src.commons.process_dataframe import get_sub_df_according2col_value
 
@@ -31,7 +32,8 @@ def get_analysis_dataframe(my_data, crowding):
         raise Exception(f"crowding == {crowding} is not recognized. 0 for no-crowding, 1 for crowding, 2 for all")
 
 
-def __get_groupby_df(input_df: pd.DataFrame, val_col: str, col_name1: str, col_name2: str, col_name3: str, col_name4: str):
+def __get_groupby_df(input_df: pd.DataFrame, val_col: str, col_name1: str, col_name2: str, col_name3: str,
+                     col_name4: str):
     return input_df[val_col].groupby(
             [input_df[col_name1], input_df[col_name2], input_df[col_name3], input_df[col_name4]]).mean()
 
@@ -40,6 +42,30 @@ def __convert_index2column(input_df: pd.DataFrame, col_name1: str, col_name2: st
     return input_df.reset_index(level = [col_name1, col_name2, col_name3, col_name4])
 
 
-def get_data_to_analysis(input_df: pd.DataFrame, val_col: str, col_name1: str, col_name2: str, col_name3: str, col_name4: str):
+def get_data_to_analysis(input_df: pd.DataFrame, val_col: str, col_name1: str, col_name2: str, col_name3: str,
+                         col_name4: str):
     grouped = __get_groupby_df(input_df, val_col, col_name1, col_name2, col_name3, col_name4)
     return __convert_index2column(grouped, col_name1, col_name2, col_name3, col_name4)
+
+
+def normalize_deviation(input_df: pd.DataFrame):
+    """
+    :param input_df:dataframe contains col "deviation_score"
+    :return: new dataframe contains only normalized "deviation_score" range within(-1, 1)
+    """
+    min_max_scaler = MinMaxScaler(feature_range = (-1, 1))
+    return pd.DataFrame(min_max_scaler.fit_transform(input_df[["deviation_score"]]), columns = ["deviation_score"])
+
+
+def normalize_alignment_v(input_df: pd.DataFrame, alignment_col: str):
+    """
+    :param input_df: dataframe contains col alignment values
+    :param alignment_col: alignment_col name
+    :return: new dataframe contains only normalized alignment_col range within(0, 1)
+    """
+    min_max_scaler = MinMaxScaler(feature_range = (0, 1))
+    return pd.DataFrame(min_max_scaler.fit_transform(input_df[[alignment_col]]), columns = [alignment_col])
+
+
+def rename_norm_col(input_df: pd.DataFrame, old_name: str, new_name: str):
+    return input_df.rename(columns = {old_name: new_name})

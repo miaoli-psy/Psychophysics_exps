@@ -18,7 +18,9 @@ KEPT_COL_NAMES_STIMU_DF = ["crowdingcons",
                            "align_v_size6",
                            "align_v_size6_count",
                            "align_v_size3",
-                           "align_v_size3_count"]
+                           "align_v_size3_count",
+                           "align_v_size1",
+                           "align_v_size1_count"]
 
 KEPT_COL_NAMES = ["crowdingcons",
                   "Display",
@@ -48,5 +50,7 @@ KEPT_COL_NAMES = ["crowdingcons",
                   "align_v_size6",
                   "align_v_size6_count",
                   "align_v_size3",
-                  "align_v_size3_count"]
+                  "align_v_size3_count",
+                  "align_v_size1",
+                  "align_v_size1_count"]
 

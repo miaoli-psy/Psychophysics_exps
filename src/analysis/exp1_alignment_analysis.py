@@ -12,13 +12,28 @@ from sklearn.preprocessing import MinMaxScaler
 from src.commons.process_dataframe import get_sub_df_according2col_value
 
 
-def add_color_code(crowding_cons: str):
+def add_color_code_by_crowdingcons(crowding_cons: str):
     if crowding_cons == 0:
         return "royalblue"
     elif crowding_cons == 1:
         return "orangered"
     else:
         raise Exception(f"crowding_cons == {crowding_cons} is not recognized. O for no-crowding, 1 for crowding")
+
+
+def add_color_code_by_winsize(N_disk: str):
+    if 21 <= N_disk <= 25:
+        return "cornflowerblue"
+    elif 31 <= N_disk <= 35:
+        return "orange"
+    elif 41 <= N_disk <= 45:
+        return "limegreen"
+    elif 49 <= N_disk <= 53:
+        return "red"
+    elif 54 <= N_disk <= 58:
+        return "mediumpurple"
+    else:
+        raise Exception(f"N_disk == {N_disk} is not recognized. 24-25, 31-35, 41-45, 49-53, 54-58 are allowed")
 
 
 def get_analysis_dataframe(my_data, crowding):

@@ -11,16 +11,31 @@ from scipy.stats import stats
 import matplotlib.pyplot as plt
 import seaborn as sns
 import exp1_radial_display2
+from matplotlib.lines import Line2D
 
-from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, add_color_code, \
-    normalize_deviation, normalize_alignment_v, rename_norm_col
+from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, \
+    add_color_code_by_crowdingcons, \
+    normalize_deviation, normalize_alignment_v, rename_norm_col, add_color_code_by_winsize
 from src.commons.process_dataframe import change_col_value_type, keep_valid_columns, get_pivot_table, \
     get_sub_df_according2col_value, insert_new_col
 from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
 if __name__ == "__main__":
     is_debug = True
-    write_to_excel = True
+    write_to_excel = False
+    check_r = False
+    pivot_table = False
+
+    crowdingcons = 1 # 0, 1, 2 for no-crowding, crowding and all data
+    indx_align_n = 5 # 0-7
+    alignment = ["align_v_size12",
+                 "align_v_size12_count",
+                 "align_v_size6",
+                 "align_v_size6_count",
+                 "align_v_size3",
+                 "align_v_size3_count",
+                 "align_v_size1",
+                 "align_v_size1_count"]
 
     # read stimuli info and data
     PATH_DATA = "../data/exp1_rerun_data/"
@@ -52,25 +67,17 @@ if __name__ == "__main__":
     # %% preprocess
     my_data = keep_valid_columns(all_df, KEPT_COL_NAMES)
     # add color coded for crowding and no-crowding displays
-    insert_new_col(my_data, "crowdingcons", 'colorcode', add_color_code)
+    insert_new_col(my_data, "crowdingcons", 'colorcode', add_color_code_by_crowdingcons)
 
-    # %% output
-    alignment = ["align_v_size12",
-                 "align_v_size12_count",
-                 "align_v_size6",
-                 "align_v_size6_count",
-                 "align_v_size3",
-                 "align_v_size3_count"]
-    # index of alignment list
-    n = 1
-    # pivot table
-    pt = get_pivot_table(my_data,
-                         index = ["participant_N"],
-                         columns = ["winsize", "crowdingcons", alignment[n]],
-                         values = ["deviation_score"])
+    # %% pivot table
+    if pivot_table:
+        pt = get_pivot_table(my_data,
+                             index = ["participant_N"],
+                             columns = ["winsize", "crowdingcons", alignment[indx_align_n]],
+                             values = ["deviation_score"])
     # %% correlation
     # crowding = 0, 1, 2 for no-crowding, crowding and all data
-    my_data = get_analysis_dataframe(my_data, crowding = 1)
+    my_data = get_analysis_dataframe(my_data, crowding = crowdingcons)
 
     # data for each winsize
     w03 = get_sub_df_according2col_value(my_data, "winsize", 0.3)
@@ -85,17 +92,17 @@ if __name__ == "__main__":
     # w03_c = w03_c.reset_index(level = ["alig_v_angle12_step1", "list_index", "N_disk"])
 
     # which alignment value 0-4
-    w03 = get_data_to_analysis(w03, "deviation_score", alignment[n], "N_disk", "list_index", "colorcode")
-    w04 = get_data_to_analysis(w04, "deviation_score", alignment[n], "N_disk", "list_index", "colorcode")
-    w05 = get_data_to_analysis(w05, "deviation_score", alignment[n], "N_disk", "list_index", "colorcode")
-    w06 = get_data_to_analysis(w06, "deviation_score", alignment[n], "N_disk", "list_index", "colorcode")
-    w07 = get_data_to_analysis(w07, "deviation_score", alignment[n], "N_disk", "list_index", "colorcode")
+    w03 = get_data_to_analysis(w03, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
+    w04 = get_data_to_analysis(w04, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
+    w05 = get_data_to_analysis(w05, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
+    w06 = get_data_to_analysis(w06, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
+    w07 = get_data_to_analysis(w07, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
 
-    r03, p03 = stats.pearsonr(w03["deviation_score"], w03[alignment[n]])
-    r04, p04 = stats.pearsonr(w04["deviation_score"], w04[alignment[n]])
-    r05, p05 = stats.pearsonr(w05["deviation_score"], w05[alignment[n]])
-    r06, p06 = stats.pearsonr(w06["deviation_score"], w06[alignment[n]])
-    r07, p07 = stats.pearsonr(w07["deviation_score"], w07[alignment[n]])
+    r03, p03 = stats.pearsonr(w03["deviation_score"], w03[alignment[indx_align_n]])
+    r04, p04 = stats.pearsonr(w04["deviation_score"], w04[alignment[indx_align_n]])
+    r05, p05 = stats.pearsonr(w05["deviation_score"], w05[alignment[indx_align_n]])
+    r06, p06 = stats.pearsonr(w06["deviation_score"], w06[alignment[indx_align_n]])
+    r07, p07 = stats.pearsonr(w07["deviation_score"], w07[alignment[indx_align_n]])
 
     print(f"correlation coefficient is {round(r03, 2)}, and p-value is {round(p03, 4)} for numerosity range 21-25")
     print(f"correlation coefficient is {round(r04, 2)}, and p-value is {round(p04, 4)} for numerosity range 31-35")
@@ -109,16 +116,16 @@ if __name__ == "__main__":
     w06_norm_deviation = normalize_deviation(w06)
     w07_norm_deviation = normalize_deviation(w07)
 
-    w03_norm_align_v = normalize_alignment_v(w03, alignment_col = alignment[n])
-    w04_norm_align_v = normalize_alignment_v(w04, alignment_col = alignment[n])
-    w05_norm_align_v = normalize_alignment_v(w05, alignment_col = alignment[n])
-    w06_norm_align_v = normalize_alignment_v(w06, alignment_col = alignment[n])
-    w07_norm_align_v = normalize_alignment_v(w07, alignment_col = alignment[n])
+    w03_norm_align_v = normalize_alignment_v(w03, alignment_col = alignment[indx_align_n])
+    w04_norm_align_v = normalize_alignment_v(w04, alignment_col = alignment[indx_align_n])
+    w05_norm_align_v = normalize_alignment_v(w05, alignment_col = alignment[indx_align_n])
+    w06_norm_align_v = normalize_alignment_v(w06, alignment_col = alignment[indx_align_n])
+    w07_norm_align_v = normalize_alignment_v(w07, alignment_col = alignment[indx_align_n])
     # rename normed cols
     old_name_dev = "deviation_score"
     new_name_dev = "deviation_score_norm"
-    old_name_alig = alignment[n]
-    new_name_alig = alignment[n] + "_norm"
+    old_name_alig = alignment[indx_align_n]
+    new_name_alig = alignment[indx_align_n] + "_norm"
     w03_norm_deviation = rename_norm_col(w03_norm_deviation, old_name_dev, new_name_dev)
     w04_norm_deviation = rename_norm_col(w04_norm_deviation, old_name_dev, new_name_dev)
     w05_norm_deviation = rename_norm_col(w05_norm_deviation, old_name_dev, new_name_dev)
@@ -137,18 +144,47 @@ if __name__ == "__main__":
     w07 = pd.concat([w07, w07_norm_deviation, w07_norm_align_v], axis=1)
 
     # check _rs
-    r03_new, p03_new = stats.pearsonr(w03["deviation_score_norm"], w03[alignment[n]+"_norm"])
-    r04_new, p04_new = stats.pearsonr(w04["deviation_score_norm"], w04[alignment[n]+"_norm"])
-    r05_new, p05_new = stats.pearsonr(w05["deviation_score_norm"], w05[alignment[n]+"_norm"])
-    r06_new, p06_new = stats.pearsonr(w06["deviation_score_norm"], w06[alignment[n]+"_norm"])
-    r07_new, p07_new = stats.pearsonr(w07["deviation_score_norm"], w07[alignment[n]+"_norm"])
+    if check_r:
+        r03_new, p03_new = stats.pearsonr(w03["deviation_score_norm"], w03[alignment[indx_align_n] + "_norm"])
 
-    # %%plots
+    # %%plot
+    # combine all normalized data
+    my_data_new = pd.concat([w03, w04, w05, w06, w07], axis = 0, sort = True)
+    # add colorcode by winsize
+    insert_new_col(my_data_new, "N_disk", 'colorcode_ws', add_color_code_by_winsize)
+    # single correlation combining all numerosity ranges
+    r, p = stats.pearsonr(my_data_new["deviation_score_norm"], my_data_new[alignment[indx_align_n] + "_norm"])
+    print(f"correlation coefficient is {round(r, 2)}, and p-value is {round(p, 4)} combining all numerosity ranges")
+    # some parameters of the plot
+    x_all = alignment[indx_align_n] + "_norm"
+    y_all = "deviation_score_norm"
+    markersize = 8
+    line_color = "w"
+    marker = "o"
+    colors = ["cornflowerblue", "orange", "limegreen", "red", "mediumpurple"]
+    labels = ['21-25', '31-35', '41-45', '49-53', '54-58']
+    # plot starts her
+    fig1, ax1 = plt.subplots()
+    sns.regplot(x = x_all, y = y_all, data = my_data_new, x_jitter = 0.01,
+                scatter_kws = {"facecolors": my_data_new["colorcode_ws"]}, color = "gray")
+
+    # add legend for each winsize
+    circle_legend = [Line2D([0], [0], marker = marker, color = line_color, label = labels[0], markerfacecolor = colors[0], markersize = markersize),
+                     Line2D([0], [0], marker = marker, color = line_color, label = labels[1], markerfacecolor = colors[1], markersize = markersize),
+                     Line2D([0], [0], marker = marker, color = line_color, label = labels[2], markerfacecolor = colors[2], markersize = markersize),
+                     Line2D([0], [0], marker = marker, color = line_color, label = labels[3], markerfacecolor = colors[3], markersize = markersize),
+                     Line2D([0], [0], marker = marker, color = line_color, label = labels[4], markerfacecolor = colors[4], markersize = markersize)]
+    plt.legend(handles = circle_legend, bbox_to_anchor=(1.12, 1.05))
+    # write r and p
+    fig1.text(0.85, 0.65, "r = %s" % (round(r, 2)), va = "center", fontsize = 15)
+    fig1.text(0.85, 0.60, "p = %s" % (round(p, 4)), va = "center", fontsize = 15)
+    plt.show()
+    # %%plots-separate winsize
     # ini plot
     sns.set(style = "white", color_codes = True)
     sns.set_style("ticks", {"xtick.major.size": 5, "ytick.major.size": 3})
     # some parameters
-    x = alignment[n]+"_norm"
+    x = alignment[indx_align_n] + "_norm"
     y = "deviation_score_norm"
     jitter = 0.05
     color = "gray"
@@ -173,13 +209,12 @@ if __name__ == "__main__":
     axes[1, 0].set_xlim(-0.1, 1.1)
     axes[1, 1].set_xlim(-0.1, 1.1)
 
-
     # set x,y label
     axes[0, 0].set(xlabel = "", ylabel = "")
     axes[0, 1].set(xlabel = "", ylabel = "")
     axes[0, 2].set(xlabel = "", ylabel = "")
     axes[1, 0].set(xlabel = "", ylabel = "")
-    axes[1, 1].set(xlabel = "alignment value: %s" %(alignment[n]), ylabel = "")
+    axes[1, 1].set(xlabel = "alignment value: %s" %(alignment[indx_align_n]), ylabel = "")
 
     axes[1, 1].xaxis.label.set_size(20)
 
@@ -222,4 +257,4 @@ if __name__ == "__main__":
         col_names_data = list(data_to_merge)
         col_names_my_data = list(my_data)
     if write_to_excel:
-        pt.to_excel("exp1_alig_%s.xlsx" % n)
+        pt.to_excel("exp1_alig_%s.xlsx" % indx_align_n)

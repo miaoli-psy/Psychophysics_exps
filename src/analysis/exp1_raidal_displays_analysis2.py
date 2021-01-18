@@ -63,7 +63,7 @@ def counter2list(input_counter):
     return [input_counter[1], input_counter[2], input_counter[3], input_counter[4], input_counter[5], input_counter[6]]
 
 
-def get_beam_n(input_posi_list, angle_size = 12):
+def get_beam_n(input_posi_list, angle_size):
     """
     :param input_posi_list: col from display dataframe, list like str
     :param angle_size: beam size that use to scan the whole displays

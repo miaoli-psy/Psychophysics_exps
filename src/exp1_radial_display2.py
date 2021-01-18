@@ -29,6 +29,7 @@ stimuli_df = pd.read_excel(PATH + FILENAME)
 stimuli_df["beam_n_size12"] = stimuli_df["positions_list"].apply(get_beam_n, args = (12,))
 stimuli_df["beam_n_size6"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6,))
 stimuli_df["beam_n_size3"] = stimuli_df["positions_list"].apply(get_beam_n, args = (3,))
+stimuli_df["beam_n_size1"] = stimuli_df["positions_list"].apply(get_beam_n, args = (1,))
 # weight for each value
 weight = [0, 0, 3, 4, 5, 6]
 # cal alignment values
@@ -44,6 +45,10 @@ stimuli_df["align_v_size3"] = stimuli_df["beam_n_size3"].apply(cal_alignment_val
                                                                args = (weight, False))
 stimuli_df["align_v_size3_count"] = stimuli_df["beam_n_size3"].apply(cal_alignment_value,
                                                                      args = (weight, True))
+stimuli_df["align_v_size1"] = stimuli_df["beam_n_size1"].apply(cal_alignment_value,
+                                                               args = (weight, False))
+stimuli_df["align_v_size1_count"] = stimuli_df["beam_n_size1"].apply(cal_alignment_value,
+                                                                     args = (weight, True))
 # individual display alignment value
 if indi_display:
     display_n = 120  # 0-249
@@ -54,7 +59,7 @@ if indi_display:
 
     # some parameters, started and ended where
     ini_start_angle = polar_posis[0][0]
-    angle_size = 3
+    angle_size = 1
     ini_end_angle = ini_start_angle + angle_size
     # get the ranges
     my_range = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)

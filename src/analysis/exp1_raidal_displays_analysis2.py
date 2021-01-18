@@ -8,6 +8,7 @@ Introduction:
 """
 from collections import Counter
 
+from src.commons.process_number import get_weighted_mean
 from src.commons.process_str import str_to_list
 from src.point.polar_point import get_polar_coordinates
 
@@ -87,3 +88,11 @@ def get_beam_n(input_posi_list, angle_size = 12):
     count_beams = Counter(ndisc_list)
     count_beams_output = counter2list(count_beams)
     return count_beams_output
+
+
+def cal_alignment_value(beam_n, weight: list, is_counting = False):
+    if is_counting:
+        return beam_n[2] + beam_n[3] + beam_n[4] + beam_n[5]
+    else:
+        return get_weighted_mean(beam_n, weight)
+

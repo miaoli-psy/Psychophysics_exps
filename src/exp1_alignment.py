@@ -26,8 +26,8 @@ if __name__ == "__main__":
     check_r = False
     pivot_table = False
 
-    crowdingcons = 1 # 0, 1, 2 for no-crowding, crowding and all data
-    indx_align_n = 5 # 0-7
+    crowdingcons = 2 # 0, 1, 2 for no-crowding, crowding and all data
+    indx_align_n = 1 # 0-7
     alignment = ["align_v_size12",
                  "align_v_size12_count",
                  "align_v_size6",

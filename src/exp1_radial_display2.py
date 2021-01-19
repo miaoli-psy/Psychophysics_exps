@@ -10,7 +10,7 @@ import pandas as pd
 from collections import Counter
 
 from src.analysis.exp1_raidal_displays_analysis2 import get_angle_range, count_ndisc_in_range, get_beam_n, counter2list, \
-    cal_alignment_value
+    cal_alignment_value, get_angle_range_no_overlap
 from src.commons.process_dataframe import get_col_names
 from src.commons.process_str import str_to_list
 from src.point.polar_point import get_polar_coordinates
@@ -26,32 +26,35 @@ FILENAME = "update_stim_info_full.xlsx"
 stimuli_df = pd.read_excel(PATH + FILENAME)
 # get and insert new col "n_beams" into stimuli dataframe
 # number of beams that contains 1, 2, 3, 4, 5, 6 disc
-stimuli_df["beam_n_size12"] = stimuli_df["positions_list"].apply(get_beam_n, args = (12,))
-stimuli_df["beam_n_size6"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6,))
-stimuli_df["beam_n_size3"] = stimuli_df["positions_list"].apply(get_beam_n, args = (3,))
-stimuli_df["beam_n_size1"] = stimuli_df["positions_list"].apply(get_beam_n, args = (1,))
+overlap_range = False
+stimuli_df["beam_n_size12"] = stimuli_df["positions_list"].apply(get_beam_n, args = (12, overlap_range))
+stimuli_df["beam_n_size6"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6, overlap_range))
+stimuli_df["beam_n_size3"] = stimuli_df["positions_list"].apply(get_beam_n, args = (3, overlap_range))
+stimuli_df["beam_n_size1"] = stimuli_df["positions_list"].apply(get_beam_n, args = (1, overlap_range))
 # weight for each value
-weight = [0, 0, 3, 4, 5, 6]
+weight = [0, 0, 0, 1, 1, 1]
+# count 3 or more/ 4 or more
+count_edge = 3
 # cal alignment values
 stimuli_df["align_v_size12"] = stimuli_df["beam_n_size12"].apply(cal_alignment_value,
-                                                                 args = (weight, False))
+                                                                 args = (weight, False, count_edge))
 stimuli_df["align_v_size12_count"] = stimuli_df["beam_n_size12"].apply(cal_alignment_value,
-                                                                       args = (weight, True))
+                                                                       args = (weight, True, count_edge))
 stimuli_df["align_v_size6"] = stimuli_df["beam_n_size6"].apply(cal_alignment_value,
-                                                               args = (weight, False))
+                                                               args = (weight, False, count_edge))
 stimuli_df["align_v_size6_count"] = stimuli_df["beam_n_size6"].apply(cal_alignment_value,
-                                                                     args = (weight, True))
+                                                                     args = (weight, True, count_edge))
 stimuli_df["align_v_size3"] = stimuli_df["beam_n_size3"].apply(cal_alignment_value,
-                                                               args = (weight, False))
+                                                               args = (weight, False, count_edge))
 stimuli_df["align_v_size3_count"] = stimuli_df["beam_n_size3"].apply(cal_alignment_value,
-                                                                     args = (weight, True))
+                                                                     args = (weight, True, count_edge))
 stimuli_df["align_v_size1"] = stimuli_df["beam_n_size1"].apply(cal_alignment_value,
-                                                               args = (weight, False))
+                                                               args = (weight, False, count_edge))
 stimuli_df["align_v_size1_count"] = stimuli_df["beam_n_size1"].apply(cal_alignment_value,
-                                                                     args = (weight, True))
+                                                                     args = (weight, True, count_edge))
 # individual display alignment value
 if indi_display:
-    display_n = 120  # 0-249
+    display_n = 224  # 0-249
     posis_str = stimuli_df.positions_list[display_n]
     posis = str_to_list(posis_str)
     # get polar positions for a single display
@@ -59,10 +62,12 @@ if indi_display:
 
     # some parameters, started and ended where
     ini_start_angle = polar_posis[0][0]
-    angle_size = 1
+    angle_size = 12
     ini_end_angle = ini_start_angle + angle_size
     # get the ranges
     my_range = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)
+    if not overlap_range:
+        my_range = get_angle_range_no_overlap(my_range, angle_size = angle_size)
     # get number of discs in each range
     ndisc_list = list()
     for beam in my_range:

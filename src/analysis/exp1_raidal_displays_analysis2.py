@@ -36,6 +36,19 @@ def get_angle_range(polar_posi_list, ini_start_angle = 0, ini_end_angle = 12):
     return range_list
 
 
+def get_angle_range_no_overlap(overlap_range_list, angle_size = 12):
+    my_range_no_overlap = [overlap_range_list[0]]
+    threshold = overlap_range_list[0][1]
+    for r in overlap_range_list[1:]:
+        curr_angle = r[0]
+        if curr_angle > threshold:
+            threshold = curr_angle + angle_size
+            if threshold >= 360:
+                threshold = threshold - 360
+            my_range_no_overlap.append((curr_angle, threshold))
+    return my_range_no_overlap
+
+
 def count_ndisc_in_range(polar_posi_list, range_start, range_end):
     """
     :param polar_posi_list: a list of polar positions
@@ -63,8 +76,9 @@ def counter2list(input_counter):
     return [input_counter[1], input_counter[2], input_counter[3], input_counter[4], input_counter[5], input_counter[6]]
 
 
-def get_beam_n(input_posi_list, angle_size):
+def get_beam_n(input_posi_list, angle_size, overlap_range = True):
     """
+    :param overlap_range: if False, no overlap beam regions
     :param input_posi_list: col from display dataframe, list like str
     :param angle_size: beam size that use to scan the whole displays
     :return: number of beams that contained 1-6 discs
@@ -79,6 +93,8 @@ def get_beam_n(input_posi_list, angle_size):
     ini_end_angle = ini_start_angle + angle_size
     # get result ranges
     ranges = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)
+    if not overlap_range:
+        ranges = get_angle_range_no_overlap(ranges, angle_size)
     # for each region, calculate the number of discs
     ndisc_list = list()
     for beam in ranges:
@@ -90,9 +106,12 @@ def get_beam_n(input_posi_list, angle_size):
     return count_beams_output
 
 
-def cal_alignment_value(beam_n, weight: list, is_counting = False):
+def cal_alignment_value(beam_n, weight: list, is_counting = False, count_edge = 4):
     if is_counting:
-        return beam_n[2] + beam_n[3] + beam_n[4] + beam_n[5]
+        if count_edge == 4:
+            return beam_n[3] + beam_n[4] + beam_n[5]
+        elif count_edge == 3:
+            return beam_n[2] + beam_n[3] + beam_n[4] + beam_n[5]
     else:
         return get_weighted_mean(beam_n, weight)
 

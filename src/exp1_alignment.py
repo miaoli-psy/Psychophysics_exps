@@ -104,11 +104,23 @@ if __name__ == "__main__":
     r06, p06 = stats.pearsonr(w06["deviation_score"], w06[alignment[indx_align_n]])
     r07, p07 = stats.pearsonr(w07["deviation_score"], w07[alignment[indx_align_n]])
 
-    print(f"correlation coefficient is {round(r03, 2)}, and p-value is {round(p03, 4)} for numerosity range 21-25")
-    print(f"correlation coefficient is {round(r04, 2)}, and p-value is {round(p04, 4)} for numerosity range 31-35")
-    print(f"correlation coefficient is {round(r05, 2)}, and p-value is {round(p05, 4)} for numerosity range 41-45")
-    print(f"correlation coefficient is {round(r06, 2)}, and p-value is {round(p06, 4)} for numerosity range 49-53")
-    print(f"correlation coefficient is {round(r07, 2)}, and p-value is {round(p07, 4)} for numerosity range 54-58")
+    r03_1, p03_1 = stats.pearsonr(w03["N_disk"], w03[alignment[indx_align_n]])
+    r04_1, p04_1 = stats.pearsonr(w04["N_disk"], w04[alignment[indx_align_n]])
+    r05_1, p05_1 = stats.pearsonr(w05["N_disk"], w05[alignment[indx_align_n]])
+    r06_1, p06_1 = stats.pearsonr(w06["N_disk"], w06[alignment[indx_align_n]])
+    r07_1, p07_1 = stats.pearsonr(w07["N_disk"], w07[alignment[indx_align_n]])
+
+    print(f"r =  {round(r03, 2)} between deviation score and align v, p = {round(p03, 4)} for 21-25")
+    print(f"r =  {round(r04, 2)} between deviation score and align v, p = {round(p04, 4)} for 31-35")
+    print(f"r =  {round(r05, 2)} between deviation score and align v, p = {round(p05, 4)} for 41-45")
+    print(f"r =  {round(r06, 2)} between deviation score and align v, p = {round(p06, 4)} for 49-53")
+    print(f"r =  {round(r07, 2)} between deviation score and align v, p = {round(p07, 4)} for 54-58")
+
+    print(f"r = {round(r03_1, 2)} between numerosity and align v, p = {round(p03_1, 4)} for 21-25")
+    print(f"r = {round(r04_1, 2)} between numerosity and align v, p = {round(p04_1, 4)} for 31-35")
+    print(f"r = {round(r05_1, 2)} between numerosity and align v, p = {round(p05_1, 4)} for 41-45")
+    print(f"r = {round(r06_1, 2)} between numerosity and align v, p = {round(p06_1, 4)} for 49-53")
+    print(f"r = {round(r07_1, 2)} between numerosity and align v, p = {round(p07_1, 4)} for 54-58")
     # %% normalization
     w03_norm_deviation = normalize_deviation(w03)
     w04_norm_deviation = normalize_deviation(w04)
@@ -154,7 +166,9 @@ if __name__ == "__main__":
     insert_new_col(my_data_new, "N_disk", 'colorcode_ws', add_color_code_by_winsize)
     # single correlation combining all numerosity ranges
     r, p = stats.pearsonr(my_data_new["deviation_score_norm"], my_data_new[alignment[indx_align_n] + "_norm"])
-    print(f"correlation coefficient is {round(r, 2)}, and p-value is {round(p, 4)} combining all numerosity ranges")
+    r2, p2 = stats.pearsonr(my_data_new["N_disk"], my_data_new[alignment[indx_align_n] + "_norm"])
+    print(f"r ={round(r, 2)} between deviation score and align v, and p = {round(p, 4)} combining all numerosity ranges")
+    print(f"r ={round(r2, 2)}, and p = {round(p2, 4)} between numerosity and align v combining all n ranges")
     # some parameters of the plot
     x_all = alignment[indx_align_n] + "_norm"
     y_all = "deviation_score_norm"
@@ -179,7 +193,7 @@ if __name__ == "__main__":
     fig1.text(0.85, 0.65, "r = %s" % (round(r, 2)), va = "center", fontsize = 15)
     fig1.text(0.85, 0.60, "p = %s" % (round(p, 4)), va = "center", fontsize = 15)
     plt.show()
-    # %%plots-separate winsize
+    # %%plots-separate winsize correlation between alignment value and deviation score
     # ini plot
     sns.set(style = "white", color_codes = True)
     sns.set_style("ticks", {"xtick.major.size": 5, "ytick.major.size": 3})
@@ -239,6 +253,57 @@ if __name__ == "__main__":
     fig.text(0.43, 0.47, "(e) numerosity range: 54-58", fontsize = 14)
 
     fig.text(0.08, 0.5, 'Deviation Scores', va = 'center', rotation = 'vertical', fontsize = 20)
+
+    # remoing the borders and ticks of the last subplot
+    axes[1, 2].spines["top"].set_visible(False)
+    axes[1, 2].spines["left"].set_visible(False)
+    axes[1, 2].spines["right"].set_visible(False)
+    axes[1, 2].spines["bottom"].set_visible(False)
+    # removing the tick marks
+    axes[1, 2].tick_params(bottom = False, left = False)
+
+    # removing the x label
+    axes[1, 2].xaxis.set_visible(False)
+    plt.show()
+    # %%plots-separate winsize - correlation between alignment value and numerosity
+    # ini plot
+    sns.set(style = "white", color_codes = True)
+    sns.set_style("ticks", {"xtick.major.size": 5, "ytick.major.size": 3})
+    # some parameters
+    x = "N_disk"
+    y = alignment[indx_align_n] + "_norm"
+    jitter = 0.05
+    color = "gray"
+    # plot starts here
+    fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)
+    sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0],
+                scatter_kws = {'facecolors': w03['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1],
+                scatter_kws = {'facecolors': w04['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2],
+                scatter_kws = {'facecolors': w05['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0],
+                scatter_kws = {'facecolors': w06['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1],
+                scatter_kws = {'facecolors': w07['colorcode']}, color = color)
+
+    # set x, y limits
+    axes[0, 0].set_ylim(-0.1, 1.1)
+    axes[0, 1].set_ylim(-0.1, 1.1)
+    axes[0, 2].set_ylim(-0.1, 1.1)
+    axes[1, 0].set_ylim(-0.1, 1.1)
+    axes[1, 1].set_ylim(-0.1, 1.1)
+
+    # set x,y label
+    axes[0, 0].set(xlabel = "", ylabel = "")
+    axes[0, 1].set(xlabel = "", ylabel = "")
+    axes[0, 2].set(xlabel = "", ylabel = "")
+    axes[1, 0].set(xlabel = "", ylabel = "")
+    axes[1, 1].set(xlabel = "numerosity", ylabel = "")
+
+    axes[1, 1].xaxis.label.set_size(20)
+
+    fig.text(0.07, 0.5, "alignment value: %s" % (alignment[indx_align_n]), va = 'center', rotation = 'vertical', fontsize = 20)
 
     # remoing the borders and ticks of the last subplot
     axes[1, 2].spines["top"].set_visible(False)

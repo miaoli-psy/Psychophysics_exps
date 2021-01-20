@@ -35,6 +35,34 @@ def add_color_code_by_winsize(N_disk: str):
     else:
         raise Exception(f"N_disk == {N_disk} is not recognized. 24-25, 31-35, 41-45, 49-53, 54-58 are allowed")
 
+def add_color_code_5levels(N_disk: str, crowdingcons: str):
+    if N_disk == 21 or N_disk == 31 or N_disk == 41 or N_disk == 49 or N_disk == 54:
+        if crowdingcons == 0:
+            return "#b3d9ff"
+        else:
+            return "#ffb9d3"
+    elif N_disk == 22 or N_disk == 32 or N_disk == 42 or N_disk == 50 or N_disk == 55:
+        if crowdingcons == 0:
+            return "#99ccff"
+        else:
+            return "#ffcc99"
+    elif N_disk == 23 or N_disk == 33 or N_disk == 43 or N_disk == 51 or N_disk == 56:
+        if crowdingcons == 0:
+            return "#88bfff"
+        else:
+            return "#ffbf80"
+    elif N_disk == 24 or N_disk == 34 or N_disk == 44 or N_disk == 52 or N_disk == 57:
+        if crowdingcons == 0:
+            return "#66b3ff"
+        else:
+            return "#ffb366"
+    elif N_disk == 25 or N_disk == 35 or N_disk == 45 or N_disk == 53 or N_disk == 58:
+        if crowdingcons == 0:
+            return "#4da6ff"
+        else:
+            return "#ffa64d"
+    else:
+        raise Exception(f"N_disk == {N_disk} is not correct")
 
 def get_analysis_dataframe(my_data, crowding):
     if crowding == 1:
@@ -48,19 +76,19 @@ def get_analysis_dataframe(my_data, crowding):
 
 
 def __get_groupby_df(input_df: pd.DataFrame, val_col: str, col_name1: str, col_name2: str, col_name3: str,
-                     col_name4: str):
+                     col_name4: str, col_name5: str):
     return input_df[val_col].groupby(
-            [input_df[col_name1], input_df[col_name2], input_df[col_name3], input_df[col_name4]]).mean()
+            [input_df[col_name1], input_df[col_name2], input_df[col_name3], input_df[col_name4], input_df[col_name5]]).mean()
 
 
-def __convert_index2column(input_df: pd.DataFrame, col_name1: str, col_name2: str, col_name3: str, col_name4: str):
-    return input_df.reset_index(level = [col_name1, col_name2, col_name3, col_name4])
+def __convert_index2column(input_df: pd.DataFrame, col_name1: str, col_name2: str, col_name3: str, col_name4: str, col_name5: str):
+    return input_df.reset_index(level = [col_name1, col_name2, col_name3, col_name4, col_name5])
 
 
 def get_data_to_analysis(input_df: pd.DataFrame, val_col: str, col_name1: str, col_name2: str, col_name3: str,
-                         col_name4: str):
-    grouped = __get_groupby_df(input_df, val_col, col_name1, col_name2, col_name3, col_name4)
-    return __convert_index2column(grouped, col_name1, col_name2, col_name3, col_name4)
+                         col_name4: str, col_name5: str):
+    grouped = __get_groupby_df(input_df, val_col, col_name1, col_name2, col_name3, col_name4, col_name5)
+    return __convert_index2column(grouped, col_name1, col_name2, col_name3, col_name4, col_name5)
 
 
 def normalize_deviation(input_df: pd.DataFrame):

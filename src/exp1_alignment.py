@@ -15,9 +15,9 @@ from matplotlib.lines import Line2D
 
 from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, \
     add_color_code_by_crowdingcons, \
-    normalize_deviation, normalize_alignment_v, rename_norm_col, add_color_code_by_winsize
+    normalize_deviation, normalize_alignment_v, rename_norm_col, add_color_code_by_winsize, add_color_code_5levels
 from src.commons.process_dataframe import change_col_value_type, keep_valid_columns, get_pivot_table, \
-    get_sub_df_according2col_value, insert_new_col
+    get_sub_df_according2col_value, insert_new_col, insert_new_col_from_two_cols
 from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
 if __name__ == "__main__":
@@ -25,8 +25,9 @@ if __name__ == "__main__":
     write_to_excel = False
     check_r = False
     pivot_table = False
-
-    crowdingcons = 2 # 0, 1, 2 for no-crowding, crowding and all data
+    # TODO parameters to define
+    separate_each_n = True # True for 5 reg lines in each plot for 5 numerosities
+    crowdingcons = 1 # 0, 1, 2 for no-crowding, crowding and all data
     indx_align_n = 1 # 0-7
     alignment = ["align_v_size12",
                  "align_v_size12_count",
@@ -68,6 +69,8 @@ if __name__ == "__main__":
     my_data = keep_valid_columns(all_df, KEPT_COL_NAMES)
     # add color coded for crowding and no-crowding displays
     insert_new_col(my_data, "crowdingcons", 'colorcode', add_color_code_by_crowdingcons)
+    # color coded
+    insert_new_col_from_two_cols(my_data, "N_disk", "crowdingcons", "colorcode5levels", add_color_code_5levels)
 
     # %% pivot table
     if pivot_table:
@@ -92,11 +95,11 @@ if __name__ == "__main__":
     # w03_c = w03_c.reset_index(level = ["alig_v_angle12_step1", "list_index", "N_disk"])
 
     # which alignment value 0-4
-    w03 = get_data_to_analysis(w03, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
-    w04 = get_data_to_analysis(w04, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
-    w05 = get_data_to_analysis(w05, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
-    w06 = get_data_to_analysis(w06, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
-    w07 = get_data_to_analysis(w07, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode")
+    w03 = get_data_to_analysis(w03, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
+    w04 = get_data_to_analysis(w04, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
+    w05 = get_data_to_analysis(w05, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
+    w06 = get_data_to_analysis(w06, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
+    w07 = get_data_to_analysis(w07, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
 
     r03, p03 = stats.pearsonr(w03["deviation_score"], w03[alignment[indx_align_n]])
     r04, p04 = stats.pearsonr(w04["deviation_score"], w04[alignment[indx_align_n]])
@@ -155,6 +158,37 @@ if __name__ == "__main__":
     w06 = pd.concat([w06, w06_norm_deviation, w06_norm_align_v], axis=1)
     w07 = pd.concat([w07, w07_norm_deviation, w07_norm_align_v], axis=1)
 
+    # separate for each numerosity
+    N_disk = "N_disk"
+    w03_a = get_sub_df_according2col_value(w03, N_disk, 21)
+    w03_b = get_sub_df_according2col_value(w03, N_disk, 22)
+    w03_c = get_sub_df_according2col_value(w03, N_disk, 23)
+    w03_d = get_sub_df_according2col_value(w03, N_disk, 24)
+    w03_e = get_sub_df_according2col_value(w03, N_disk, 25)
+
+    w04_a = get_sub_df_according2col_value(w04, N_disk, 31)
+    w04_b = get_sub_df_according2col_value(w04, N_disk, 32)
+    w04_c = get_sub_df_according2col_value(w04, N_disk, 33)
+    w04_d = get_sub_df_according2col_value(w04, N_disk, 34)
+    w04_e = get_sub_df_according2col_value(w04, N_disk, 35)
+
+    w05_a = get_sub_df_according2col_value(w05, N_disk, 41)
+    w05_b = get_sub_df_according2col_value(w05, N_disk, 42)
+    w05_c = get_sub_df_according2col_value(w05, N_disk, 43)
+    w05_d = get_sub_df_according2col_value(w05, N_disk, 44)
+    w05_e = get_sub_df_according2col_value(w05, N_disk, 45)
+
+    w06_a = get_sub_df_according2col_value(w06, N_disk, 49)
+    w06_b = get_sub_df_according2col_value(w06, N_disk, 50)
+    w06_c = get_sub_df_according2col_value(w06, N_disk, 51)
+    w06_d = get_sub_df_according2col_value(w06, N_disk, 52)
+    w06_e = get_sub_df_according2col_value(w06, N_disk, 53)
+
+    w07_a = get_sub_df_according2col_value(w07, N_disk, 54)
+    w07_b = get_sub_df_according2col_value(w07, N_disk, 55)
+    w07_c = get_sub_df_according2col_value(w07, N_disk, 56)
+    w07_d = get_sub_df_according2col_value(w07, N_disk, 57)
+    w07_e = get_sub_df_according2col_value(w07, N_disk, 58)
     # check _rs
     if check_r:
         r03_new, p03_new = stats.pearsonr(w03["deviation_score_norm"], w03[alignment[indx_align_n] + "_norm"])
@@ -200,16 +234,48 @@ if __name__ == "__main__":
     # some parameters
     x = alignment[indx_align_n] + "_norm"
     y = "deviation_score_norm"
-    jitter = 0.05
+    jitter = 0.001
     color = "gray"
+    color_reg_line = ["#d9d9d9", "#bfbfbf", "#a6a6a6", "#8c8c8c", "#737373"]
     # plot starts here
     fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)
-    sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03['colorcode']}, color = color)
-    sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04['colorcode']}, color = color)
-    sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05['colorcode']}, color = color)
-    sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06['colorcode']}, color = color)
-    sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07['colorcode']}, color = color)
-
+    if not separate_each_n:
+        sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03['colorcode']}, color = color)
+        sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04['colorcode']}, color = color)
+        sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05['colorcode']}, color = color)
+        sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06['colorcode']}, color = color)
+        sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07['colorcode']}, color = color)
+    else:
+        # range 21-25
+        sns.regplot(x = x, y = y, data = w03_a, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03_a['colorcode5levels']}, color = color_reg_line[0], ci = None)
+        sns.regplot(x = x, y = y, data = w03_b, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03_b['colorcode5levels']}, color = color_reg_line[1], ci = None)
+        sns.regplot(x = x, y = y, data = w03_c, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03_c['colorcode5levels']}, color = color_reg_line[2], ci = None)
+        sns.regplot(x = x, y = y, data = w03_d, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03_d['colorcode5levels']}, color = color_reg_line[3], ci = None)
+        sns.regplot(x = x, y = y, data = w03_e, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03_e['colorcode5levels']}, color = color_reg_line[4], ci = None)
+        # range 31-35
+        sns.regplot(x = x, y = y, data = w04_a, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04_a['colorcode5levels']}, color = color_reg_line[0], ci = None)
+        sns.regplot(x = x, y = y, data = w04_b, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04_b['colorcode5levels']}, color = color_reg_line[1], ci = None)
+        sns.regplot(x = x, y = y, data = w04_c, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04_c['colorcode5levels']}, color = color_reg_line[2], ci = None)
+        sns.regplot(x = x, y = y, data = w04_d, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04_d['colorcode5levels']}, color = color_reg_line[3], ci = None)
+        sns.regplot(x = x, y = y, data = w04_e, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04_e['colorcode5levels']}, color = color_reg_line[4], ci = None)
+        # range 41-45
+        sns.regplot(x = x, y = y, data = w05_a, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05_a['colorcode5levels']}, color = color_reg_line[0], ci = None)
+        sns.regplot(x = x, y = y, data = w05_b, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05_b['colorcode5levels']}, color = color_reg_line[1], ci = None)
+        sns.regplot(x = x, y = y, data = w05_c, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05_c['colorcode5levels']}, color = color_reg_line[2], ci = None)
+        sns.regplot(x = x, y = y, data = w05_d, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05_d['colorcode5levels']}, color = color_reg_line[3], ci = None)
+        sns.regplot(x = x, y = y, data = w05_e, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05_e['colorcode5levels']}, color = color_reg_line[4], ci = None)
+        # range 49-53
+        sns.regplot(x = x, y = y, data = w06_a, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06_a['colorcode5levels']}, color = color_reg_line[0], ci = None)
+        sns.regplot(x = x, y = y, data = w06_b, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06_b['colorcode5levels']}, color = color_reg_line[1], ci = None)
+        sns.regplot(x = x, y = y, data = w06_c, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06_c['colorcode5levels']}, color = color_reg_line[2], ci = None)
+        sns.regplot(x = x, y = y, data = w06_d, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06_d['colorcode5levels']}, color = color_reg_line[3], ci = None)
+        sns.regplot(x = x, y = y, data = w06_e, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06_e['colorcode5levels']}, color = color_reg_line[4], ci = None)
+        # range 54-58
+        sns.regplot(x = x, y = y, data = w07_a, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07_a['colorcode5levels']}, color = color_reg_line[0], ci = None)
+        sns.regplot(x = x, y = y, data = w07_b, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07_b['colorcode5levels']}, color = color_reg_line[1], ci = None)
+        sns.regplot(x = x, y = y, data = w07_c, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07_c['colorcode5levels']}, color = color_reg_line[2], ci = None)
+        sns.regplot(x = x, y = y, data = w07_d, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07_d['colorcode5levels']}, color = color_reg_line[3], ci = None)
+        sns.regplot(x = x, y = y, data = w07_e, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07_e['colorcode5levels']}, color = color_reg_line[4], ci = None)
     # set x, y limits
     axes[0, 0].set_ylim(-1.1, 1.1)
     axes[0, 1].set_ylim(-1.1, 1.1)
@@ -232,19 +298,20 @@ if __name__ == "__main__":
 
     axes[1, 1].xaxis.label.set_size(20)
 
+    if not separate_each_n:
     # peasorn r
-    fig.text(0.28, 0.85, "r = %s" % (round(r03, 2)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.85, "r = %s" % (round(r04, 2)), va = "center", fontsize = 15)
-    fig.text(0.83, 0.85, "r = %s" % (round(r05, 2)), va = "center", fontsize = 15)
-    fig.text(0.28, 0.43, "r = %s" % (round(r06, 2)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.43, "r = %s" % (round(r07, 2)), va = "center", fontsize = 15)
+        fig.text(0.28, 0.85, "r = %s" % (round(r03, 2)), va = "center", fontsize = 15)
+        fig.text(0.56, 0.85, "r = %s" % (round(r04, 2)), va = "center", fontsize = 15)
+        fig.text(0.83, 0.85, "r = %s" % (round(r05, 2)), va = "center", fontsize = 15)
+        fig.text(0.28, 0.43, "r = %s" % (round(r06, 2)), va = "center", fontsize = 15)
+        fig.text(0.56, 0.43, "r = %s" % (round(r07, 2)), va = "center", fontsize = 15)
 
-    # p-val
-    fig.text(0.28, 0.75, "p = %s" % (round(p03, 4)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.75, "p = %s" % (round(p04, 4)), va = "center", fontsize = 15)
-    fig.text(0.83, 0.75, "p = %s" % (round(p05, 4)), va = "center", fontsize = 15)
-    fig.text(0.28, 0.33, "p = %s" % (round(p06, 4)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.33, "p = %s" % (round(p07, 4)), va = "center", fontsize = 15)
+        # p-val
+        fig.text(0.28, 0.75, "p = %s" % (round(p03, 4)), va = "center", fontsize = 15)
+        fig.text(0.56, 0.75, "p = %s" % (round(p04, 4)), va = "center", fontsize = 15)
+        fig.text(0.83, 0.75, "p = %s" % (round(p05, 4)), va = "center", fontsize = 15)
+        fig.text(0.28, 0.33, "p = %s" % (round(p06, 4)), va = "center", fontsize = 15)
+        fig.text(0.56, 0.33, "p = %s" % (round(p07, 4)), va = "center", fontsize = 15)
 
     fig.text(0.15, 0.89, "(a) numerosity range: 21-25", fontsize = 14)
     fig.text(0.43, 0.89, "(b) numerosity range: 31-35", fontsize = 14)
@@ -252,7 +319,7 @@ if __name__ == "__main__":
     fig.text(0.15, 0.47, "(d) numerosity range: 49-53", fontsize = 14)
     fig.text(0.43, 0.47, "(e) numerosity range: 54-58", fontsize = 14)
 
-    fig.text(0.08, 0.5, 'Deviation Scores', va = 'center', rotation = 'vertical', fontsize = 20)
+    fig.text(0.08, 0.5, 'Normalized Deviation Scores', va = 'center', rotation = 'vertical', fontsize = 20)
 
     # remoing the borders and ticks of the last subplot
     axes[1, 2].spines["top"].set_visible(False)

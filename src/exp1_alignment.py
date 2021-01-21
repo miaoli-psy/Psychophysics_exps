@@ -40,10 +40,10 @@ if __name__ == "__main__":
 
     # read stimuli info and data
     PATH_DATA = "../data/exp1_rerun_data/"
-    DATA_FILENAME = "cleanedTotalData_fullinfo_v2.xlsx"
+    FILENAME_DATA = "cleanedTotalData_fullinfo_v2.xlsx"
     # stimuli dataframe read from exp1_raidal_display2.py
     stimuli_to_merge_ori = exp1_radial_display2.stimuli_df
-    data_to_merge = pd.read_excel(PATH_DATA + DATA_FILENAME)
+    data_to_merge = pd.read_excel(PATH_DATA + FILENAME_DATA)
 
     # unify col value type
     change_col_value_type(stimuli_to_merge_ori, "crowdingcons", int)

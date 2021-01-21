@@ -35,6 +35,7 @@ def add_color_code_by_winsize(N_disk: str):
     else:
         raise Exception(f"N_disk == {N_disk} is not recognized. 24-25, 31-35, 41-45, 49-53, 54-58 are allowed")
 
+
 def add_color_code_5levels(N_disk: str, crowdingcons: str):
     if N_disk == 21 or N_disk == 31 or N_disk == 41 or N_disk == 49 or N_disk == 54:
         if crowdingcons == 0:

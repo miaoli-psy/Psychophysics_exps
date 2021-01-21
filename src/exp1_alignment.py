@@ -25,7 +25,7 @@ if __name__ == "__main__":
     write_to_excel = False
     check_r = False
     pivot_table = False
-    # TODO parameters to define
+    # TODO set parameters
     separate_each_n = True # True for 5 reg lines in each plot for 5 numerosities
     crowdingcons = 1 # 0, 1, 2 for no-crowding, crowding and all data
     indx_align_n = 1 # 0-7

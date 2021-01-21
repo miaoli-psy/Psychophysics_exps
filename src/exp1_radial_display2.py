@@ -26,6 +26,7 @@ FILENAME = "update_stim_info_full.xlsx"
 stimuli_df = pd.read_excel(PATH + FILENAME)
 # get and insert new col "n_beams" into stimuli dataframe
 # number of beams that contains 1, 2, 3, 4, 5, 6 disc
+# TODO set parameters
 overlap_range = True
 stimuli_df["beam_n_size12"] = stimuli_df["positions_list"].apply(get_beam_n, args = (12, overlap_range))
 stimuli_df["beam_n_size6"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6, overlap_range))

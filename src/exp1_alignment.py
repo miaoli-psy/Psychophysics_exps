@@ -296,7 +296,7 @@ if __name__ == "__main__":
     axes[1, 0].set(xlabel = "", ylabel = "")
     axes[1, 1].set(xlabel = "alignment value: %s" %(alignment[indx_align_n]), ylabel = "")
 
-    axes[1, 1].xaxis.label.set_size(20)
+
 
     if not separate_each_n:
     # peasorn r

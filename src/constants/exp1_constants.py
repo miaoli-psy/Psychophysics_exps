@@ -22,6 +22,11 @@ KEPT_COL_NAMES_STIMU_DF = ["crowdingcons",
                            "align_v_size1",
                            "align_v_size1_count"]
 
+KEPT_COL_NAMES_STIMU_DF2 = ["crowdingcons",
+                            "winsize",
+                            "index_stimuliInfo",
+                            "N_disk"]
+
 KEPT_COL_NAMES = ["crowdingcons",
                   "Display",
                   "N_disk",
@@ -53,4 +58,17 @@ KEPT_COL_NAMES = ["crowdingcons",
                   "align_v_size3_count",
                   "align_v_size1",
                   "align_v_size1_count"]
+
+KEPT_COL_NAMES2 = ["crowdingcons",
+                  "Display",
+                  "N_disk",
+                  "participant_N",
+                  "whichBlock",
+                  "deviation_score",
+                  "index_stimuliInfo",
+                  "winsize",
+                  "count_number",
+                  "positions",
+                  "density_itemsperdeg2",
+                  "list_index"]
 

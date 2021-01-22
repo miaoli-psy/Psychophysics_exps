@@ -37,19 +37,6 @@ def get_angle_range(polar_posi_list, ini_start_angle = 0, ini_end_angle = 12):
     return range_list
 
 
-# def get_angle_range_no_overlap(input_range_list, angle_size = 12):
-#     my_range_no_overlap = [input_range_list[0]]
-#     threshold = input_range_list[0][1]
-#     for r in input_range_list[1:]:
-#         curr_angle = r[0]
-#         if curr_angle > threshold:
-#             threshold = curr_angle + angle_size
-#             if threshold >= 360:
-#                 threshold = threshold - 360
-#             my_range_no_overlap.append((curr_angle, threshold))
-#     return my_range_no_overlap
-
-
 def get_angle_range_no_overlap(input_overlap_range_list, start_n):
     """
     :param input_overlap_range_list: range that overlaps
@@ -117,7 +104,7 @@ def cal_alignment_value(beam_n, count_edge = 3):
         return beam_n[2] + beam_n[3] + beam_n[4] + beam_n[5]
 
 
-def get_beam_n(input_posi_list, angle_size, count_edge = 3):
+def get_avrg_alignment_v(input_posi_list, angle_size, count_edge = 3):
     """
     :param overlap_range: if False, no overlap beam regions
     :param input_posi_list: col from display dataframe, list like str
@@ -149,5 +136,29 @@ def get_beam_n(input_posi_list, angle_size, count_edge = 3):
         align_v_list.append(align_v)
     alignment_v = statistics.mean(align_v_list)
     return alignment_v
+
+
+def get_beam_n(input_posi_list, angle_size):
+    # convert the str to list
+    input_posi_list = str_to_list(input_posi_list)
+    # get the polar coordinate of all positions
+    polar_posis = get_polar_coordinates(input_posi_list)
+    # the initial start edge
+    ini_start_angle = polar_posis[0][0]
+    # the end edge
+    ini_end_angle = ini_start_angle + angle_size
+    # get result ranges
+    ranges_overlap = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)
+    ndisc_list = list()
+    for beams in ranges_overlap:
+        n_disc = count_ndisc_in_range(polar_posis, beams[0], beams[1])
+        ndisc_list.append(n_disc)
+    count_beams = Counter(ndisc_list)
+    count_beams_output = counter2list(count_beams)
+    return count_beams_output
+
+
+def get_one_beam_n_from_list(beam_n_list, n):
+    return beam_n_list[n]
 
 

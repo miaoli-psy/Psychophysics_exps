@@ -28,9 +28,9 @@ if __name__ == "__main__":
     check_r = False
     pivot_table = False
     # TODO set parameters
-    separate_each_n = True # True for 5 reg lines in each plot for 5 numerosities
-    crowdingcons = 1 # 0, 1, 2 for no-crowding, crowding and all data
-    indx_align_n = 0 # 0-3
+    separate_each_n = False # True for 5 reg lines in each plot for 5 numerosities
+    crowdingcons = 2 # 0, 1, 2 for no-crowding, crowding and all data
+    indx_align_n = 1 # 0-3
     alignment = ["align_v_size12",
                  "align_v_size6",
                  "align_v_size3",
@@ -105,13 +105,14 @@ if __name__ == "__main__":
     r06, p06 = stats.pearsonr(w06["deviation_score"], w06[alignment[indx_align_n]])
     r07, p07 = stats.pearsonr(w07["deviation_score"], w07[alignment[indx_align_n]])
 
-    method = "pearson"
-    partial_corr_03 = pg.partial_corr(w03, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-    partial_corr_04 = pg.partial_corr(w04, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-    partial_corr_05 = pg.partial_corr(w05, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-    partial_corr_06 = pg.partial_corr(w06, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-    partial_corr_07 = pg.partial_corr(w07, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-    partial_corr = pd.concat([partial_corr_03, partial_corr_04, partial_corr_05, partial_corr_06, partial_corr_07], axis = 0)
+    if not indx_align_n == 3:
+        method = "pearson"
+        partial_corr_03 = pg.partial_corr(w03, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+        partial_corr_04 = pg.partial_corr(w04, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+        partial_corr_05 = pg.partial_corr(w05, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+        partial_corr_06 = pg.partial_corr(w06, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+        partial_corr_07 = pg.partial_corr(w07, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+        partial_corr = pd.concat([partial_corr_03, partial_corr_04, partial_corr_05, partial_corr_06, partial_corr_07], axis = 0)
 
     r03_1, p03_1 = stats.pearsonr(w03["N_disk"], w03[alignment[indx_align_n]])
     r04_1, p04_1 = stats.pearsonr(w04["N_disk"], w04[alignment[indx_align_n]])
@@ -119,11 +120,11 @@ if __name__ == "__main__":
     r06_1, p06_1 = stats.pearsonr(w06["N_disk"], w06[alignment[indx_align_n]])
     r07_1, p07_1 = stats.pearsonr(w07["N_disk"], w07[alignment[indx_align_n]])
 
-    print(f"r =  {round(r03, 2)} between deviation score and align v, p = {round(p03, 4)} for 21-25")
-    print(f"r =  {round(r04, 2)} between deviation score and align v, p = {round(p04, 4)} for 31-35")
-    print(f"r =  {round(r05, 2)} between deviation score and align v, p = {round(p05, 4)} for 41-45")
-    print(f"r =  {round(r06, 2)} between deviation score and align v, p = {round(p06, 4)} for 49-53")
-    print(f"r =  {round(r07, 2)} between deviation score and align v, p = {round(p07, 4)} for 54-58")
+    print(f"r = {round(r03, 2)} between deviation score and align v, p = {round(p03, 4)} for 21-25")
+    print(f"r = {round(r04, 2)} between deviation score and align v, p = {round(p04, 4)} for 31-35")
+    print(f"r = {round(r05, 2)} between deviation score and align v, p = {round(p05, 4)} for 41-45")
+    print(f"r = {round(r06, 2)} between deviation score and align v, p = {round(p06, 4)} for 49-53")
+    print(f"r = {round(r07, 2)} between deviation score and align v, p = {round(p07, 4)} for 54-58")
 
     print(f"r = {round(r03_1, 2)} between numerosity and align v, p = {round(p03_1, 4)} for 21-25")
     print(f"r = {round(r04_1, 2)} between numerosity and align v, p = {round(p04_1, 4)} for 31-35")
@@ -219,7 +220,7 @@ if __name__ == "__main__":
     labels = ['21-25', '31-35', '41-45', '49-53', '54-58']
     # plot starts her
     fig1, ax1 = plt.subplots()
-    sns.regplot(x = x_all, y = y_all, data = my_data_new, x_jitter = 0.01,
+    sns.regplot(x = x_all, y = y_all, data = my_data_new, x_jitter = 0.001,
                 scatter_kws = {"facecolors": my_data_new["colorcode_ws"]}, color = "gray")
 
     # add legend for each winsize
@@ -301,6 +302,7 @@ if __name__ == "__main__":
     axes[0, 2].set(xlabel = "", ylabel = "")
     axes[1, 0].set(xlabel = "", ylabel = "")
     axes[1, 1].set(xlabel = "alignment value: %s" %(alignment[indx_align_n]), ylabel = "")
+    axes[1, 1].xaxis.label.set_size(20)
 
 
 
@@ -345,7 +347,7 @@ if __name__ == "__main__":
     # some parameters
     x = "N_disk"
     y = alignment[indx_align_n] + "_norm"
-    jitter = 0.05
+    jitter = 0.001
     color = "gray"
     # plot starts here
     fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)

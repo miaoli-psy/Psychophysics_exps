@@ -29,16 +29,12 @@ if __name__ == "__main__":
     pivot_table = False
     # TODO set parameters
     separate_each_n = True # True for 5 reg lines in each plot for 5 numerosities
-    crowdingcons = 2 # 0, 1, 2 for no-crowding, crowding and all data
-    indx_align_n = 1 # 0-7
+    crowdingcons = 1 # 0, 1, 2 for no-crowding, crowding and all data
+    indx_align_n = 0 # 0-3
     alignment = ["align_v_size12",
-                 "align_v_size12_count",
                  "align_v_size6",
-                 "align_v_size6_count",
                  "align_v_size3",
-                 "align_v_size3_count",
-                 "align_v_size1",
-                 "align_v_size1_count"]
+                 "align_v_size1"]
 
     # read stimuli info and data
     PATH_DATA = "../data/exp1_rerun_data/"

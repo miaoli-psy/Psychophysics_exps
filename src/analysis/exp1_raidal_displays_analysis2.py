@@ -6,6 +6,7 @@ Create time: 2021-01-15 17:26
 IDE: PyCharm
 Introduction:
 """
+import statistics
 from collections import Counter
 
 from src.commons.process_number import get_weighted_mean
@@ -73,15 +74,12 @@ def get_angle_range_no_overlap(input_overlap_range_list, start_n):
     # 从最后一个开始扫的情况
     else:
         no_overlap_range = [input_overlap_range_list[start_n]]
-        if input_overlap_range_list[start_n][1] < input_overlap_range_list[start_n][0]:
-            thrshld = input_overlap_range_list[start_n][0]
-            # 直接往回扫
-            for range in input_overlap_range_list[start_n - 1::-1]:
-                if range[1] < thrshld:
-                    no_overlap_range.append(range)
-                    thrshld = range[0]
-        else:
-            raise ValueError
+        thrshld = input_overlap_range_list[start_n][0]
+        # 直接往回扫
+        for range in input_overlap_range_list[start_n - 1::-1]:
+            if range[1] < thrshld:
+                no_overlap_range.append(range)
+                thrshld = range[0]
     return no_overlap_range
 
 
@@ -112,7 +110,14 @@ def counter2list(input_counter):
     return [input_counter[1], input_counter[2], input_counter[3], input_counter[4], input_counter[5], input_counter[6]]
 
 
-def get_beam_n(input_posi_list, angle_size):
+def cal_alignment_value(beam_n, count_edge = 3):
+    if count_edge == 4:
+        return beam_n[3] + beam_n[4] + beam_n[5]
+    elif count_edge == 3:
+        return beam_n[2] + beam_n[3] + beam_n[4] + beam_n[5]
+
+
+def get_beam_n(input_posi_list, angle_size, count_edge = 3):
     """
     :param overlap_range: if False, no overlap beam regions
     :param input_posi_list: col from display dataframe, list like str
@@ -129,23 +134,20 @@ def get_beam_n(input_posi_list, angle_size):
     ini_end_angle = ini_start_angle + angle_size
     # get result ranges
     ranges_overlap = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)
-    ranges = get_angle_range_no_overlap(ranges_overlap, angle_size)
-    # for each region, calculate the number of discs
-    ndisc_list = list()
-    for beam in ranges:
-        ndisc = count_ndisc_in_range(polar_posis, beam[0], beam[1])
-        ndisc_list.append(ndisc)
-    # count the occurrence
-    count_beams = Counter(ndisc_list)
-    count_beams_output = counter2list(count_beams)
-    return count_beams_output
+    align_v_list = list()
+    for i in range(0, len(ranges_overlap)):
+        ranges = get_angle_range_no_overlap(ranges_overlap, start_n = i)
+        # for each region, calculate the number of discs
+        ndisc_list = list()
+        for beam in ranges:
+            ndisc = count_ndisc_in_range(polar_posis, beam[0], beam[1])
+            ndisc_list.append(ndisc)
+        # count the occurrence
+        count_beams = Counter(ndisc_list)
+        count_beams_output = counter2list(count_beams)
+        align_v = cal_alignment_value(count_beams_output, count_edge = count_edge)
+        align_v_list.append(align_v)
+    alignment_v = statistics.mean(align_v_list)
+    return alignment_v
 
 
-def cal_alignment_value(beam_n, weight: list, is_counting = False, count_edge = 3):
-    if is_counting:
-        if count_edge == 4:
-            return beam_n[3] + beam_n[4] + beam_n[5]
-        elif count_edge == 3:
-            return beam_n[2] + beam_n[3] + beam_n[4] + beam_n[5]
-    else:
-        return get_weighted_mean(beam_n, weight)

@@ -25,33 +25,15 @@ write_to_excel = True
 PATH = "../displays/"
 FILENAME = "update_stim_info_full.xlsx"
 stimuli_df = pd.read_excel(PATH + FILENAME)
-# get and insert new col "n_beams" into stimuli dataframe
-# number of beams that contains 1, 2, 3, 4, 5, 6 disc
-stimuli_df["beam_n_size12"] = stimuli_df["positions_list"].apply(get_beam_n, args = (12,))
-stimuli_df["beam_n_size6"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6, ))
-stimuli_df["beam_n_size3"] = stimuli_df["positions_list"].apply(get_beam_n, args = (3, ))
-stimuli_df["beam_n_size1"] = stimuli_df["positions_list"].apply(get_beam_n, args = (1, ))
-# weight for each value
-weight = [0, 0, 0, 1, 1, 1]
 # count 3 or more/ 4 or more
 count_edge = 3
-# cal alignment values
-stimuli_df["align_v_size12"] = stimuli_df["beam_n_size12"].apply(cal_alignment_value,
-                                                                 args = (weight, False, count_edge))
-stimuli_df["align_v_size12_count"] = stimuli_df["beam_n_size12"].apply(cal_alignment_value,
-                                                                       args = (weight, True, count_edge))
-stimuli_df["align_v_size6"] = stimuli_df["beam_n_size6"].apply(cal_alignment_value,
-                                                               args = (weight, False, count_edge))
-stimuli_df["align_v_size6_count"] = stimuli_df["beam_n_size6"].apply(cal_alignment_value,
-                                                                     args = (weight, True, count_edge))
-stimuli_df["align_v_size3"] = stimuli_df["beam_n_size3"].apply(cal_alignment_value,
-                                                               args = (weight, False, count_edge))
-stimuli_df["align_v_size3_count"] = stimuli_df["beam_n_size3"].apply(cal_alignment_value,
-                                                                     args = (weight, True, count_edge))
-stimuli_df["align_v_size1"] = stimuli_df["beam_n_size1"].apply(cal_alignment_value,
-                                                               args = (weight, False, count_edge))
-stimuli_df["align_v_size1_count"] = stimuli_df["beam_n_size1"].apply(cal_alignment_value,
-                                                                     args = (weight, True, count_edge))
+# get and insert new col "n_beams" into stimuli dataframe
+# number of beams that contains 1, 2, 3, 4, 5, 6 disc
+stimuli_df["align_v_size12"] = stimuli_df["positions_list"].apply(get_beam_n, args = (12, count_edge))
+stimuli_df["align_v_size6"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6, count_edge))
+stimuli_df["align_v_size3"] = stimuli_df["positions_list"].apply(get_beam_n, args = (3, count_edge))
+stimuli_df["align_v_size1"] = stimuli_df["positions_list"].apply(get_beam_n, args = (1, count_edge))
+
 # individual display alignment value
 if indi_display:
     display_n = 248 # 0-249
@@ -80,7 +62,7 @@ if indi_display:
         count_beams = Counter(ndisc_list)
         n_beams = counter2list(count_beams)
         n_beamlist.append(n_beams)
-        align_v = cal_alignment_value(n_beams, weight = weight)
+        align_v = cal_alignment_value(n_beams, count_edge = count_edge)
         align_v_list.append(align_v)
         # mean
         alignment_v = statistics.mean(align_v_list)

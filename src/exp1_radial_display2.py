@@ -8,6 +8,7 @@ Introduction:
 """
 import pandas as pd
 from collections import Counter
+import statistics
 
 from src.analysis.exp1_raidal_displays_analysis2 import get_angle_range, count_ndisc_in_range, get_beam_n, counter2list, \
     cal_alignment_value, get_angle_range_no_overlap
@@ -26,12 +27,10 @@ FILENAME = "update_stim_info_full.xlsx"
 stimuli_df = pd.read_excel(PATH + FILENAME)
 # get and insert new col "n_beams" into stimuli dataframe
 # number of beams that contains 1, 2, 3, 4, 5, 6 disc
-# TODO set parameters
-overlap_range = False
-stimuli_df["beam_n_size12"] = stimuli_df["positions_list"].apply(get_beam_n, args = (12, overlap_range))
-stimuli_df["beam_n_size6"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6, overlap_range))
-stimuli_df["beam_n_size3"] = stimuli_df["positions_list"].apply(get_beam_n, args = (3, overlap_range))
-stimuli_df["beam_n_size1"] = stimuli_df["positions_list"].apply(get_beam_n, args = (1, overlap_range))
+stimuli_df["beam_n_size12"] = stimuli_df["positions_list"].apply(get_beam_n, args = (12,))
+stimuli_df["beam_n_size6"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6, ))
+stimuli_df["beam_n_size3"] = stimuli_df["positions_list"].apply(get_beam_n, args = (3, ))
+stimuli_df["beam_n_size1"] = stimuli_df["positions_list"].apply(get_beam_n, args = (1, ))
 # weight for each value
 weight = [0, 0, 0, 1, 1, 1]
 # count 3 or more/ 4 or more
@@ -67,17 +66,24 @@ if indi_display:
     ini_end_angle = ini_start_angle + angle_size
     # get the ranges
     my_range_overlap = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)
-    if not overlap_range:
-        my_range = get_angle_range_no_overlap(my_range_overlap, start_n = 0)
-    # get number of discs in each range
-    ndisc_list = list()
-    for beam in my_range:
-        ndisc = count_ndisc_in_range(polar_posis, beam[0], beam[1])
-        ndisc_list.append(ndisc)
-    # get number of beams that contains 1, 2, 3, 4, 5, 6 discs
-    count_beams = Counter(ndisc_list)
-    n_beams6 = counter2list(count_beams)
-
+    align_v_list = list()
+    n_beamlist = list()
+    for i in range(0, len(my_range_overlap)):
+        # get different ranges starting from each disc
+        my_range = get_angle_range_no_overlap(my_range_overlap, start_n = i)
+        # get number of discs in each range
+        ndisc_list = list()
+        for beam in my_range:
+            ndisc = count_ndisc_in_range(polar_posis, beam[0], beam[1])
+            ndisc_list.append(ndisc)
+        # get number of beams that contains 1, 2, 3, 4, 5, 6 discs
+        count_beams = Counter(ndisc_list)
+        n_beams = counter2list(count_beams)
+        n_beamlist.append(n_beams)
+        align_v = cal_alignment_value(n_beams, weight = weight)
+        align_v_list.append(align_v)
+        # mean
+        alignment_v = statistics.mean(align_v_list)
 if is_debug:
     col_names = get_col_names(stimuli_df)
 

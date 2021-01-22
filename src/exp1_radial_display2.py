@@ -27,7 +27,7 @@ stimuli_df = pd.read_excel(PATH + FILENAME)
 # get and insert new col "n_beams" into stimuli dataframe
 # number of beams that contains 1, 2, 3, 4, 5, 6 disc
 # TODO set parameters
-overlap_range = True
+overlap_range = False
 stimuli_df["beam_n_size12"] = stimuli_df["positions_list"].apply(get_beam_n, args = (12, overlap_range))
 stimuli_df["beam_n_size6"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6, overlap_range))
 stimuli_df["beam_n_size3"] = stimuli_df["positions_list"].apply(get_beam_n, args = (3, overlap_range))
@@ -55,7 +55,7 @@ stimuli_df["align_v_size1_count"] = stimuli_df["beam_n_size1"].apply(cal_alignme
                                                                      args = (weight, True, count_edge))
 # individual display alignment value
 if indi_display:
-    display_n = 224  # 0-249
+    display_n = 248 # 0-249
     posis_str = stimuli_df.positions_list[display_n]
     posis = str_to_list(posis_str)
     # get polar positions for a single display
@@ -66,9 +66,9 @@ if indi_display:
     angle_size = 12
     ini_end_angle = ini_start_angle + angle_size
     # get the ranges
-    my_range = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)
+    my_range_overlap = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)
     if not overlap_range:
-        my_range = get_angle_range_no_overlap(my_range, angle_size = angle_size)
+        my_range = get_angle_range_no_overlap(my_range_overlap, start_n = 0)
     # get number of discs in each range
     ndisc_list = list()
     for beam in my_range:

@@ -36,17 +36,56 @@ def get_angle_range(polar_posi_list, ini_start_angle = 0, ini_end_angle = 12):
     return range_list
 
 
-def get_angle_range_no_overlap(overlap_range_list, angle_size = 12):
-    my_range_no_overlap = [overlap_range_list[0]]
-    threshold = overlap_range_list[0][1]
-    for r in overlap_range_list[1:]:
-        curr_angle = r[0]
-        if curr_angle > threshold:
-            threshold = curr_angle + angle_size
-            if threshold >= 360:
-                threshold = threshold - 360
-            my_range_no_overlap.append((curr_angle, threshold))
-    return my_range_no_overlap
+# def get_angle_range_no_overlap(input_range_list, angle_size = 12):
+#     my_range_no_overlap = [input_range_list[0]]
+#     threshold = input_range_list[0][1]
+#     for r in input_range_list[1:]:
+#         curr_angle = r[0]
+#         if curr_angle > threshold:
+#             threshold = curr_angle + angle_size
+#             if threshold >= 360:
+#                 threshold = threshold - 360
+#             my_range_no_overlap.append((curr_angle, threshold))
+#     return my_range_no_overlap
+
+
+def get_angle_range_no_overlap(input_overlap_range_list, start_n):
+    """
+    :param input_overlap_range_list: range that overlaps
+    :param start_n: where the first range edge is
+    :return: no-overlap range
+    """
+    # 除了从最后一个开始扫的其它情况
+    if not start_n == len(input_overlap_range_list) - 1:
+        print("most cons")
+        no_overlap_range = [input_overlap_range_list[start_n]]
+        thrshld = input_overlap_range_list[start_n][1]
+        # 向后扫
+        for range in input_overlap_range_list[start_n+1:]:
+            if range[0] > thrshld:
+                no_overlap_range.append(range)
+                thrshld = range[1]
+        # 向前扫
+        thrshld = input_overlap_range_list[start_n][0]
+        for range in input_overlap_range_list[start_n-1::-1]:
+            if range[1] < thrshld:
+                no_overlap_range.append(range)
+                thrshld = range[0]
+    # 从最后一个开始扫的情况
+    else:
+        print("edge con")
+        no_overlap_range = [input_overlap_range_list[start_n]]
+        if input_overlap_range_list[start_n][1] < input_overlap_range_list[start_n][0]:
+            thrshld = input_overlap_range_list[start_n][0]
+            # 直接往回扫
+            for range in input_overlap_range_list[start_n-1::-1]:
+                if range[1] < thrshld:
+                    no_overlap_range.append(range)
+                    thrshld = range[0]
+        else:
+            raise ValueError
+    return no_overlap_range
+
 
 
 def count_ndisc_in_range(polar_posi_list, range_start, range_end):

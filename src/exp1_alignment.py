@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import exp1_radial_display2
 from matplotlib.lines import Line2D
+import pingouin as pg
+
 
 from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, \
     add_color_code_by_crowdingcons, \
@@ -27,7 +29,7 @@ if __name__ == "__main__":
     pivot_table = False
     # TODO set parameters
     separate_each_n = True # True for 5 reg lines in each plot for 5 numerosities
-    crowdingcons = 1 # 0, 1, 2 for no-crowding, crowding and all data
+    crowdingcons = 2 # 0, 1, 2 for no-crowding, crowding and all data
     indx_align_n = 1 # 0-7
     alignment = ["align_v_size12",
                  "align_v_size12_count",
@@ -106,6 +108,14 @@ if __name__ == "__main__":
     r05, p05 = stats.pearsonr(w05["deviation_score"], w05[alignment[indx_align_n]])
     r06, p06 = stats.pearsonr(w06["deviation_score"], w06[alignment[indx_align_n]])
     r07, p07 = stats.pearsonr(w07["deviation_score"], w07[alignment[indx_align_n]])
+
+    method = "pearson"
+    partial_corr_03 = pg.partial_corr(w03, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+    partial_corr_04 = pg.partial_corr(w04, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+    partial_corr_05 = pg.partial_corr(w05, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+    partial_corr_06 = pg.partial_corr(w06, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+    partial_corr_07 = pg.partial_corr(w07, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
+    partial_corr = pd.concat([partial_corr_03, partial_corr_04, partial_corr_05, partial_corr_06, partial_corr_07], axis = 0)
 
     r03_1, p03_1 = stats.pearsonr(w03["N_disk"], w03[alignment[indx_align_n]])
     r04_1, p04_1 = stats.pearsonr(w04["N_disk"], w04[alignment[indx_align_n]])

@@ -33,10 +33,11 @@ count_edge = 3
 beam_region_info = True
 # get and insert new col "n_beams" into stimuli dataframe
 # number of beams that contains 1, 2, 3, 4, 5, 6 disc
-stimuli_df["align_v_size12"] = stimuli_df["positions_list"].apply(get_avrg_alignment_v, args = (12, count_edge))
-stimuli_df["align_v_size6"] = stimuli_df["positions_list"].apply(get_avrg_alignment_v, args = (6, count_edge))
-stimuli_df["align_v_size3"] = stimuli_df["positions_list"].apply(get_avrg_alignment_v, args = (3, count_edge))
-stimuli_df["align_v_size1"] = stimuli_df["positions_list"].apply(get_avrg_alignment_v, args = (1, count_edge))
+# stimuli_df["align_v_size12"] = stimuli_df["positions_list"].apply(get_avrg_alignment_v, args = (12, count_edge))
+base_col_name = "align_v_size"
+for i in range(1, 13):
+    stimuli_df[base_col_name + str(i)] = stimuli_df["positions_list"].apply(get_avrg_alignment_v, args = (i, count_edge))
+
 stimuli_df["beam_n"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6,))
 
 if beam_region_info:

@@ -14,7 +14,6 @@ import exp1_radial_display2
 from matplotlib.lines import Line2D
 import pingouin as pg
 
-
 from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, \
     add_color_code_by_crowdingcons, \
     normalize_deviation, normalize_alignment_v, rename_norm_col, add_color_code_by_winsize, add_color_code_5levels
@@ -27,10 +26,11 @@ if __name__ == "__main__":
     write_to_excel = False
     check_r = False
     pivot_table = False
+    cal_pearsonr = False
     # TODO set parameters
-    separate_each_n = False # True for 5 reg lines in each plot for 5 numerosities
+    separate_each_n = False  # True for 5 reg lines in each plot for 5 numerosities
     crowdingcons = 2 # 0, 1, 2 for no-crowding, crowding and all data
-    indx_align_n = 1 # 0-3
+    indx_align_n = 3 # 0-3
     alignment = ["align_v_size12",
                  "align_v_size6",
                  "align_v_size3",
@@ -92,45 +92,67 @@ if __name__ == "__main__":
     # # convert index to column
     # w03_c = w03_c.reset_index(level = ["alig_v_angle12_step1", "list_index", "N_disk"])
 
-    # which alignment value 0-4
-    w03 = get_data_to_analysis(w03, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
-    w04 = get_data_to_analysis(w04, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
-    w05 = get_data_to_analysis(w05, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
-    w06 = get_data_to_analysis(w06, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
-    w07 = get_data_to_analysis(w07, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode", "colorcode5levels")
+    w03 = get_data_to_analysis(w03, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode",
+                               "colorcode5levels")
+    w04 = get_data_to_analysis(w04, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode",
+                               "colorcode5levels")
+    w05 = get_data_to_analysis(w05, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode",
+                               "colorcode5levels")
+    w06 = get_data_to_analysis(w06, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode",
+                               "colorcode5levels")
+    w07 = get_data_to_analysis(w07, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode",
+                               "colorcode5levels")
 
-    r03, p03 = stats.pearsonr(w03["deviation_score"], w03[alignment[indx_align_n]])
-    r04, p04 = stats.pearsonr(w04["deviation_score"], w04[alignment[indx_align_n]])
-    r05, p05 = stats.pearsonr(w05["deviation_score"], w05[alignment[indx_align_n]])
-    r06, p06 = stats.pearsonr(w06["deviation_score"], w06[alignment[indx_align_n]])
-    r07, p07 = stats.pearsonr(w07["deviation_score"], w07[alignment[indx_align_n]])
+    method = "pearson"
+    try:
+        partial_corr_03 = pg.partial_corr(w03, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk",
+                                          method = method)
+    except Exception:
+        partial_corr_03 = pd.DataFrame()
 
-    if not indx_align_n == 3:
-        method = "pearson"
-        partial_corr_03 = pg.partial_corr(w03, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-        partial_corr_04 = pg.partial_corr(w04, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-        partial_corr_05 = pg.partial_corr(w05, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-        partial_corr_06 = pg.partial_corr(w06, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-        partial_corr_07 = pg.partial_corr(w07, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk", method = method)
-        partial_corr = pd.concat([partial_corr_03, partial_corr_04, partial_corr_05, partial_corr_06, partial_corr_07], axis = 0)
+    try:
+        partial_corr_04 = pg.partial_corr(w04, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk",
+                                          method = method)
+    except Exception:
+        partial_corr_04 = pd.DataFrame()
 
-    r03_1, p03_1 = stats.pearsonr(w03["N_disk"], w03[alignment[indx_align_n]])
-    r04_1, p04_1 = stats.pearsonr(w04["N_disk"], w04[alignment[indx_align_n]])
-    r05_1, p05_1 = stats.pearsonr(w05["N_disk"], w05[alignment[indx_align_n]])
-    r06_1, p06_1 = stats.pearsonr(w06["N_disk"], w06[alignment[indx_align_n]])
-    r07_1, p07_1 = stats.pearsonr(w07["N_disk"], w07[alignment[indx_align_n]])
+    try:
+        partial_corr_05 = pg.partial_corr(w05, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk",
+                                          method = method)
+    except Exception:
+        partial_corr_05 = pd.DataFrame()
+    partial_corr_06 = pg.partial_corr(w06, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk",
+                                          method = method)
+    partial_corr_07 = pg.partial_corr(w07, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk",
+                                          method = method)
+    partial_corr = pd.concat([partial_corr_03, partial_corr_04, partial_corr_05, partial_corr_06, partial_corr_07],
+                             axis = 0)
 
-    print(f"r = {round(r03, 2)} between deviation score and align v, p = {round(p03, 4)} for 21-25")
-    print(f"r = {round(r04, 2)} between deviation score and align v, p = {round(p04, 4)} for 31-35")
-    print(f"r = {round(r05, 2)} between deviation score and align v, p = {round(p05, 4)} for 41-45")
-    print(f"r = {round(r06, 2)} between deviation score and align v, p = {round(p06, 4)} for 49-53")
-    print(f"r = {round(r07, 2)} between deviation score and align v, p = {round(p07, 4)} for 54-58")
+    if cal_pearsonr:
+        r03, p03 = stats.pearsonr(w03["deviation_score"], w03[alignment[indx_align_n]])
+        r04, p04 = stats.pearsonr(w04["deviation_score"], w04[alignment[indx_align_n]])
+        r05, p05 = stats.pearsonr(w05["deviation_score"], w05[alignment[indx_align_n]])
+        r06, p06 = stats.pearsonr(w06["deviation_score"], w06[alignment[indx_align_n]])
+        r07, p07 = stats.pearsonr(w07["deviation_score"], w07[alignment[indx_align_n]])
 
-    print(f"r = {round(r03_1, 2)} between numerosity and align v, p = {round(p03_1, 4)} for 21-25")
-    print(f"r = {round(r04_1, 2)} between numerosity and align v, p = {round(p04_1, 4)} for 31-35")
-    print(f"r = {round(r05_1, 2)} between numerosity and align v, p = {round(p05_1, 4)} for 41-45")
-    print(f"r = {round(r06_1, 2)} between numerosity and align v, p = {round(p06_1, 4)} for 49-53")
-    print(f"r = {round(r07_1, 2)} between numerosity and align v, p = {round(p07_1, 4)} for 54-58")
+        r03_1, p03_1 = stats.pearsonr(w03["N_disk"], w03[alignment[indx_align_n]])
+        r04_1, p04_1 = stats.pearsonr(w04["N_disk"], w04[alignment[indx_align_n]])
+        r05_1, p05_1 = stats.pearsonr(w05["N_disk"], w05[alignment[indx_align_n]])
+        r06_1, p06_1 = stats.pearsonr(w06["N_disk"], w06[alignment[indx_align_n]])
+        r07_1, p07_1 = stats.pearsonr(w07["N_disk"], w07[alignment[indx_align_n]])
+
+        print(f"r = {round(r03, 2)} between deviation score and align v, p = {round(p03, 4)} for 21-25")
+        print(f"r = {round(r04, 2)} between deviation score and align v, p = {round(p04, 4)} for 31-35")
+        print(f"r = {round(r05, 2)} between deviation score and align v, p = {round(p05, 4)} for 41-45")
+        print(f"r = {round(r06, 2)} between deviation score and align v, p = {round(p06, 4)} for 49-53")
+        print(f"r = {round(r07, 2)} between deviation score and align v, p = {round(p07, 4)} for 54-58")
+
+        print(f"r = {round(r03_1, 2)} between numerosity and align v, p = {round(p03_1, 4)} for 21-25")
+        print(f"r = {round(r04_1, 2)} between numerosity and align v, p = {round(p04_1, 4)} for 31-35")
+        print(f"r = {round(r05_1, 2)} between numerosity and align v, p = {round(p05_1, 4)} for 41-45")
+        print(f"r = {round(r06_1, 2)} between numerosity and align v, p = {round(p06_1, 4)} for 49-53")
+        print(f"r = {round(r07_1, 2)} between numerosity and align v, p = {round(p07_1, 4)} for 54-58")
+
     # %% normalization
     w03_norm_deviation = normalize_deviation(w03)
     w04_norm_deviation = normalize_deviation(w04)
@@ -159,11 +181,11 @@ if __name__ == "__main__":
     w06_norm_align_v = rename_norm_col(w06_norm_align_v, old_name_alig, new_name_alig)
     w07_norm_align_v = rename_norm_col(w07_norm_align_v, old_name_alig, new_name_alig)
     # contact orig dataframe with new normalized dataframe
-    w03 = pd.concat([w03, w03_norm_deviation, w03_norm_align_v], axis=1)
-    w04 = pd.concat([w04, w04_norm_deviation, w04_norm_align_v], axis=1)
-    w05 = pd.concat([w05, w05_norm_deviation, w05_norm_align_v], axis=1)
-    w06 = pd.concat([w06, w06_norm_deviation, w06_norm_align_v], axis=1)
-    w07 = pd.concat([w07, w07_norm_deviation, w07_norm_align_v], axis=1)
+    w03 = pd.concat([w03, w03_norm_deviation, w03_norm_align_v], axis = 1)
+    w04 = pd.concat([w04, w04_norm_deviation, w04_norm_align_v], axis = 1)
+    w05 = pd.concat([w05, w05_norm_deviation, w05_norm_align_v], axis = 1)
+    w06 = pd.concat([w06, w06_norm_deviation, w06_norm_align_v], axis = 1)
+    w07 = pd.concat([w07, w07_norm_deviation, w07_norm_align_v], axis = 1)
 
     # separate for each numerosity
     N_disk = "N_disk"
@@ -196,9 +218,6 @@ if __name__ == "__main__":
     w07_c = get_sub_df_according2col_value(w07, N_disk, 56)
     w07_d = get_sub_df_according2col_value(w07, N_disk, 57)
     w07_e = get_sub_df_according2col_value(w07, N_disk, 58)
-    # check _rs
-    if check_r:
-        r03_new, p03_new = stats.pearsonr(w03["deviation_score_norm"], w03[alignment[indx_align_n] + "_norm"])
 
     # %%plot
     # combine all normalized data
@@ -208,7 +227,8 @@ if __name__ == "__main__":
     # single correlation combining all numerosity ranges
     r, p = stats.pearsonr(my_data_new["deviation_score_norm"], my_data_new[alignment[indx_align_n] + "_norm"])
     r2, p2 = stats.pearsonr(my_data_new["N_disk"], my_data_new[alignment[indx_align_n] + "_norm"])
-    print(f"r ={round(r, 2)} between deviation score and align v, and p = {round(p, 4)} combining all numerosity ranges")
+    print(
+        f"r ={round(r, 2)} between deviation score and align v, and p = {round(p, 4)} combining all numerosity ranges")
     print(f"r ={round(r2, 2)}, and p = {round(p2, 4)} between numerosity and align v combining all n ranges")
     # some parameters of the plot
     x_all = alignment[indx_align_n] + "_norm"
@@ -224,12 +244,18 @@ if __name__ == "__main__":
                 scatter_kws = {"facecolors": my_data_new["colorcode_ws"]}, color = "gray")
 
     # add legend for each winsize
-    circle_legend = [Line2D([0], [0], marker = marker, color = line_color, label = labels[0], markerfacecolor = colors[0], markersize = markersize),
-                     Line2D([0], [0], marker = marker, color = line_color, label = labels[1], markerfacecolor = colors[1], markersize = markersize),
-                     Line2D([0], [0], marker = marker, color = line_color, label = labels[2], markerfacecolor = colors[2], markersize = markersize),
-                     Line2D([0], [0], marker = marker, color = line_color, label = labels[3], markerfacecolor = colors[3], markersize = markersize),
-                     Line2D([0], [0], marker = marker, color = line_color, label = labels[4], markerfacecolor = colors[4], markersize = markersize)]
-    plt.legend(handles = circle_legend, bbox_to_anchor=(1.12, 1.05))
+    circle_legend = [
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[0], markerfacecolor = colors[0],
+               markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[1], markerfacecolor = colors[1],
+               markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[2], markerfacecolor = colors[2],
+               markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[3], markerfacecolor = colors[3],
+               markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[4], markerfacecolor = colors[4],
+               markersize = markersize)]
+    plt.legend(handles = circle_legend, bbox_to_anchor = (1.12, 1.05))
     # write r and p
     fig1.text(0.85, 0.65, "r = %s" % (round(r, 2)), va = "center", fontsize = 15)
     fig1.text(0.85, 0.60, "p = %s" % (round(p, 4)), va = "center", fontsize = 15)
@@ -301,13 +327,11 @@ if __name__ == "__main__":
     axes[0, 1].set(xlabel = "", ylabel = "")
     axes[0, 2].set(xlabel = "", ylabel = "")
     axes[1, 0].set(xlabel = "", ylabel = "")
-    axes[1, 1].set(xlabel = "alignment value: %s" %(alignment[indx_align_n]), ylabel = "")
+    axes[1, 1].set(xlabel = "alignment value: %s" % (alignment[indx_align_n]), ylabel = "")
     axes[1, 1].xaxis.label.set_size(20)
 
-
-
     if not separate_each_n:
-    # peasorn r
+        # peasorn r
         fig.text(0.28, 0.85, "r = %s" % (round(r03, 2)), va = "center", fontsize = 15)
         fig.text(0.56, 0.85, "r = %s" % (round(r04, 2)), va = "center", fontsize = 15)
         fig.text(0.83, 0.85, "r = %s" % (round(r05, 2)), va = "center", fontsize = 15)
@@ -351,16 +375,11 @@ if __name__ == "__main__":
     color = "gray"
     # plot starts here
     fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)
-    sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0],
-                scatter_kws = {'facecolors': w03['colorcode']}, color = color)
-    sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1],
-                scatter_kws = {'facecolors': w04['colorcode']}, color = color)
-    sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2],
-                scatter_kws = {'facecolors': w05['colorcode']}, color = color)
-    sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0],
-                scatter_kws = {'facecolors': w06['colorcode']}, color = color)
-    sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1],
-                scatter_kws = {'facecolors': w07['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07['colorcode']}, color = color)
 
     # set x, y limits
     axes[0, 0].set_ylim(-0.1, 1.1)
@@ -378,7 +397,8 @@ if __name__ == "__main__":
 
     axes[1, 1].xaxis.label.set_size(20)
 
-    fig.text(0.07, 0.5, "alignment value: %s" % (alignment[indx_align_n]), va = 'center', rotation = 'vertical', fontsize = 20)
+    fig.text(0.07, 0.5, "alignment value: %s" % (alignment[indx_align_n]), va = 'center', rotation = 'vertical',
+             fontsize = 20)
 
     # remoing the borders and ticks of the last subplot
     axes[1, 2].spines["top"].set_visible(False)

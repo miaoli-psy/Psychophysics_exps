@@ -9,10 +9,12 @@ Introduction: cal partial corr for all angle size (1-12deg)
 import exp1_alignment
 import pandas as pd
 import pingouin as pg
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from src.analysis.exp1_alignment_analysis import normalize_deviation, normalize_alignment_v, rename_norm_col, \
     get_data_to_analysis
-from src.commons.process_dataframe import get_sub_df_according2col_value
+from src.commons.process_dataframe import get_sub_df_according2col_value, process_col
 
 # all possible anlge sizes
 alignment = ["align_v_size12",
@@ -121,10 +123,100 @@ def get_partial_corr_df(indx_align_n = 0, w03 = winsize03, w04 = winsize04, w05 
             axis = 0)
     return partial_corr
 
+def convert_indx2_angle_size(index:str) -> str:
+    if index == 0:
+        return 12
+    elif index == 1:
+        return 11
+    elif index == 2:
+        return 10
+    elif index == 3:
+        return 9
+    elif index == 4:
+        return 8
+    elif index == 5:
+        return 7
+    elif index == 6:
+        return 6
+    elif index == 7:
+        return 5
+    elif index == 8:
+        return 4
+    elif index == 9:
+        return 3
+    elif index == 10:
+        return 2
+    elif index == 11:
+        return 1
+    else:
+        raise Exception(f"index == {index} is not recognized, allow 0-11")
+
 
 if __name__ == '__main__':
-    partial_corr_df_list = list()
-    for i in range(0, 11):
-        partial_corr_df_list.append(get_partial_corr_df(indx_align_n = i))
+    has_plot = True
 
-    r1, r2 = partial_corr_df_list[0], partial_corr_df_list[1]
+    partial_corr_df_list = list()
+    winsize = [0.3, 0.4, 0.5, 0.6, 0.7, 1]
+    winsize_short = [0.6, 0.7, 1]
+    for i in range(0, 12):
+        partial_corr_df = get_partial_corr_df(indx_align_n = i)
+        if not i == 11:
+            align_v = [i]*6
+            partial_corr_df['winsize'] = pd.Series(winsize).values
+            partial_corr_df['angle_size'] = pd.Series(align_v).values
+        else:
+            align_v = [i]*3
+            partial_corr_df['winsize'] = pd.Series(winsize_short).values
+            partial_corr_df['angle_size'] = pd.Series(align_v).values
+        partial_corr_df_list.append(partial_corr_df)
+
+    partial_corr = pd.concat(partial_corr_df_list, axis = 0, sort = True)
+    process_col(partial_corr, "angle_size", convert_indx2_angle_size)
+
+
+    if has_plot:
+        x = "angle_size"
+        y = "r"
+        y2 = "p-val"
+        color = "gray"
+
+        partial_corr_03 = get_sub_df_according2col_value(partial_corr, "winsize", 0.3 )
+        partial_corr_04 = get_sub_df_according2col_value(partial_corr, "winsize", 0.4 )
+        partial_corr_05 = get_sub_df_according2col_value(partial_corr, "winsize", 0.5 )
+        partial_corr_06 = get_sub_df_according2col_value(partial_corr, "winsize", 0.6 )
+        partial_corr_07 = get_sub_df_according2col_value(partial_corr, "winsize", 0.7 )
+        partial_corr_all= get_sub_df_according2col_value(partial_corr, "winsize", 1)
+        fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = True, sharey = True)
+        sns.regplot(x = x, y = y, order = 2, data = partial_corr_03, ax = axes[0, 0], color = color)
+        sns.regplot(x = x, y = y, order = 2, data = partial_corr_04, ax = axes[0, 1], color = color)
+        sns.regplot(x = x, y = y, order = 2, data = partial_corr_05, ax = axes[0, 2], color = color)
+        sns.regplot(x = x, y = y, order = 2, data = partial_corr_06, ax = axes[1, 0], color = color)
+        sns.regplot(x = x, y = y, order = 2, data = partial_corr_07, ax = axes[1, 1], color = color)
+        sns.regplot(x = x, y = y, order = 2, data = partial_corr_all, ax = axes[1, 2], color = color)
+        # set x,y label
+        axes[0, 0].set(xlabel = "", ylabel = "")
+        axes[0, 1].set(xlabel = "", ylabel = "")
+        axes[0, 2].set(xlabel = "", ylabel = "")
+        axes[1, 0].set(xlabel = "", ylabel = "")
+        axes[1, 1].set(xlabel = "Angle Size", ylabel = "")
+        axes[1, 1].xaxis.label.set_size(15)
+        axes[1, 2].set(xlabel = "", ylabel = "")
+        # set x tick
+        axes[0, 0].get_xaxis().set_ticks([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+
+        axes[0, 0].set_xlim(0, 13)
+        axes[0, 1].set_xlim(0, 13)
+        axes[0, 2].set_xlim(0, 13)
+        axes[1, 0].set_xlim(0, 13)
+        axes[1, 1].set_xlim(0, 13)
+        axes[1, 2].set_xlim(0, 13)
+        # some text
+        fig.text(0.15, 0.89, "(a) numerosity range: 21-25", fontsize = 15)
+        fig.text(0.43, 0.89, "(b) numerosity range: 31-35", fontsize = 15)
+        fig.text(0.70, 0.89, "(c) numerosity range: 41-45", fontsize = 15)
+        fig.text(0.15, 0.47, "(d) numerosity range: 49-53", fontsize = 15)
+        fig.text(0.43, 0.47, "(e) numerosity range: 54-58", fontsize = 15)
+        fig.text(0.70, 0.47, "(e) all numerosities", fontsize = 15)
+
+        fig.text(0.07, 0.5, 'Partial corr', va = 'center', rotation = 'vertical', fontsize = 15)
+        plt.show()

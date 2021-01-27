@@ -8,6 +8,7 @@ Introduction:
 """
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
+import statsmodels.formula.api as sm
 
 from src.commons.process_dataframe import get_sub_df_according2col_value
 
@@ -113,3 +114,11 @@ def normalize_alignment_v(input_df: pd.DataFrame, alignment_col: str):
 
 def rename_norm_col(input_df: pd.DataFrame, old_name: str, new_name: str):
     return input_df.rename(columns = {old_name: new_name})
+
+
+def calculate_residuals(w_df):
+    lin_fit_results_Y = sm.ols(formula = "deviation_score_norm ~ N_disk", data = w_df).fit()
+    w_df["rY"] = lin_fit_results_Y.resid
+
+    lin_fit_results_X = sm.ols(formula = "align_v_size6_norm ~ N_disk", data = w_df).fit()
+    w_df["rX"] = lin_fit_results_X.resid

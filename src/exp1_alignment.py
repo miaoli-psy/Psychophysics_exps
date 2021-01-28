@@ -14,22 +14,20 @@ import exp1_radial_display2
 from matplotlib.lines import Line2D
 import pingouin as pg
 
-
-
 from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, \
     add_color_code_by_crowdingcons, \
     normalize_deviation, normalize_alignment_v, rename_norm_col, add_color_code_by_winsize, add_color_code_5levels, \
-    calculate_residuals, normalize_N_disk
+    calculate_residuals, add_legend
 from src.commons.process_dataframe import change_col_value_type, keep_valid_columns, get_pivot_table, \
     get_sub_df_according2col_value, insert_new_col, insert_new_col_from_two_cols
 from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF, KEPT_COL_NAMES
 
-
 is_debug = True
-write_to_excel = False
 check_r = False
 pivot_table = False
 cal_pearsonr = True
+save_fig = True
+see_winsize_alignv = False
 # TODO set parameters
 separate_each_n = False  # True for 5 reg lines in each plot for 5 numerosities
 crowdingcons = 2  # 0, 1, 2 for no-crowding, crowding and all data
@@ -108,7 +106,6 @@ w06 = get_data_to_analysis(w06, "deviation_score", alignment[indx_align_n], "N_d
 w07 = get_data_to_analysis(w07, "deviation_score", alignment[indx_align_n], "N_disk", "list_index", "colorcode",
                            "colorcode5levels")
 
-
 method = "pearson"
 try:
     partial_corr_03 = pg.partial_corr(w03, x = "deviation_score", y = alignment[indx_align_n], covar = "N_disk",
@@ -158,7 +155,6 @@ w05_norm_align_v = normalize_alignment_v(w05, alignment_col = alignment[indx_ali
 w06_norm_align_v = normalize_alignment_v(w06, alignment_col = alignment[indx_align_n])
 w07_norm_align_v = normalize_alignment_v(w07, alignment_col = alignment[indx_align_n])
 
-
 # rename normed cols
 old_name_dev = "deviation_score"
 new_name_dev = "deviation_score_norm"
@@ -177,11 +173,11 @@ w06_norm_align_v = rename_norm_col(w06_norm_align_v, old_name_alig, new_name_ali
 w07_norm_align_v = rename_norm_col(w07_norm_align_v, old_name_alig, new_name_alig)
 
 # contact orig dataframe with new normalized dataframe
-w03 = pd.concat([w03, w03_norm_deviation, w03_norm_align_v, w03_norm_ndisk], axis = 1)
-w04 = pd.concat([w04, w04_norm_deviation, w04_norm_align_v, w04_norm_ndisk], axis = 1)
-w05 = pd.concat([w05, w05_norm_deviation, w05_norm_align_v, w05_norm_ndisk], axis = 1)
-w06 = pd.concat([w06, w06_norm_deviation, w06_norm_align_v, w06_norm_ndisk], axis = 1)
-w07 = pd.concat([w07, w07_norm_deviation, w07_norm_align_v, w07_norm_ndisk], axis = 1)
+w03 = pd.concat([w03, w03_norm_deviation, w03_norm_align_v], axis = 1)
+w04 = pd.concat([w04, w04_norm_deviation, w04_norm_align_v], axis = 1)
+w05 = pd.concat([w05, w05_norm_deviation, w05_norm_align_v], axis = 1)
+w06 = pd.concat([w06, w06_norm_deviation, w06_norm_align_v], axis = 1)
+w07 = pd.concat([w07, w07_norm_deviation, w07_norm_align_v], axis = 1)
 
 # separate for each numerosity
 N_disk = "N_disk"
@@ -215,14 +211,12 @@ w07_c = get_sub_df_according2col_value(w07, N_disk, 56)
 w07_d = get_sub_df_according2col_value(w07, N_disk, 57)
 w07_e = get_sub_df_according2col_value(w07, N_disk, 58)
 
-
 # calculate residuals
 calculate_residuals(w03)
 calculate_residuals(w04)
 calculate_residuals(w05)
 calculate_residuals(w06)
 calculate_residuals(w07)
-
 
 # %% combined r
 # combine all normalized data
@@ -237,42 +231,43 @@ partial_corr_all = pg.partial_corr(my_data_new, x = "deviation_score", y = align
                                    covar = "N_disk",
                                    method = method)
 print(
-    f"partial_r = {round(partial_corr_all.at['pearson', 'r'], 4)} between deviation score and align v, p = {round(partial_corr_all.at['pearson', 'p-val'], 4)}")
+        f"partial_r = {round(partial_corr_all.at['pearson', 'r'], 4)} between deviation score and align v, p = {round(partial_corr_all.at['pearson', 'p-val'], 4)}")
 partial_corr = pd.concat(
         [partial_corr_03, partial_corr_04, partial_corr_05, partial_corr_06, partial_corr_07, partial_corr_all],
         axis = 0)
 # partial_corr.to_excel("partial_corr%s"%(indx_align_n))
 # %%plot
-# some parameters of the plot
-x_all = alignment[indx_align_n] + "_norm"
-y_all = "deviation_score_norm"
-markersize = 8
-line_color = "w"
-marker = "o"
-colors = ["cornflowerblue", "orange", "limegreen", "red", "mediumpurple"]
-labels = ['21-25', '31-35', '41-45', '49-53', '54-58']
-# plot starts her
-fig1, ax1 = plt.subplots()
-sns.regplot(x = x_all, y = y_all, data = my_data_new, x_jitter = 0.001,
-            scatter_kws = {"facecolors": my_data_new["colorcode_ws"]}, color = "gray")
+if see_winsize_alignv:
+    # some parameters of the plot
+    x_all = alignment[indx_align_n] + "_norm"
+    y_all = "deviation_score_norm"
+    markersize = 8
+    line_color = "w"
+    marker = "o"
+    colors = ["cornflowerblue", "orange", "limegreen", "red", "mediumpurple"]
+    labels = ['21-25', '31-35', '41-45', '49-53', '54-58']
+    # plot starts her
+    fig1, ax1 = plt.subplots()
+    sns.regplot(x = x_all, y = y_all, data = my_data_new, x_jitter = 0.001,
+                scatter_kws = {"facecolors": my_data_new["colorcode_ws"]}, color = "gray")
 
-# add legend for each winsize
-circle_legend = [
-    Line2D([0], [0], marker = marker, color = line_color, label = labels[0], markerfacecolor = colors[0],
-           markersize = markersize),
-    Line2D([0], [0], marker = marker, color = line_color, label = labels[1], markerfacecolor = colors[1],
-           markersize = markersize),
-    Line2D([0], [0], marker = marker, color = line_color, label = labels[2], markerfacecolor = colors[2],
-           markersize = markersize),
-    Line2D([0], [0], marker = marker, color = line_color, label = labels[3], markerfacecolor = colors[3],
-           markersize = markersize),
-    Line2D([0], [0], marker = marker, color = line_color, label = labels[4], markerfacecolor = colors[4],
-           markersize = markersize)]
-plt.legend(handles = circle_legend, bbox_to_anchor = (1.12, 1.05))
-# write r and p
-fig1.text(0.85, 0.65, "r = %s" % (round(r, 2)), va = "center", fontsize = 15)
-fig1.text(0.85, 0.60, "p = %s" % (round(p, 4)), va = "center", fontsize = 15)
-plt.show()
+    # add legend for each winsize
+    circle_legend = [
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[0], markerfacecolor = colors[0],
+               markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[1], markerfacecolor = colors[1],
+               markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[2], markerfacecolor = colors[2],
+               markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[3], markerfacecolor = colors[3],
+               markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, label = labels[4], markerfacecolor = colors[4],
+               markersize = markersize)]
+    plt.legend(handles = circle_legend, bbox_to_anchor = (1.12, 1.05))
+    # write r and p
+    fig1.text(0.85, 0.65, "r = %s" % (round(r, 2)), va = "center", fontsize = 15)
+    fig1.text(0.85, 0.60, "p = %s" % (round(p, 4)), va = "center", fontsize = 15)
+    plt.show()
 # %%plots-separate winsize correlation between alignment value and deviation score
 # ini plot
 sns.set(style = "white", color_codes = True)
@@ -283,17 +278,27 @@ x = "rX"
 # y = "deviation_score_norm"
 y = "rY"
 jitter = 0.001
+ci = None
 color = "gray"
 color_reg_line = ["#d9d9d9", "#bfbfbf", "#a6a6a6", "#8c8c8c", "#737373"]
+x_label = "Residuals of liner regression predicting normalized deviation score from numerosity"
+y_label = "Residuals of liner regression predicting"
+y_label2 = "normalized alignment value from numerosity"
 # plot starts here
-fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)
+fig, axes = plt.subplots(2, 3, figsize = (16, 8), sharex = True, sharey = True)
 if not separate_each_n:
-    sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03['colorcode5levels']}, color = color)
-    sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04['colorcode5levels']}, color = color)
-    sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05['colorcode5levels']}, color = color)
-    sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06['colorcode5levels']}, color = color)
-    sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07['colorcode5levels']}, color = color)
-    sns.regplot(x = x, y = y, data = my_data_new, x_jitter = jitter, ax = axes[1, 2], scatter_kws = {'facecolors': my_data_new['colorcode']}, color = color)
+    sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0],
+                scatter_kws = {'facecolors': w03['colorcode5levels']}, color = color, ci = ci)
+    sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1],
+                scatter_kws = {'facecolors': w04['colorcode5levels']}, color = color, ci = ci)
+    sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2],
+                scatter_kws = {'facecolors': w05['colorcode5levels']}, color = color, ci = ci)
+    sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0],
+                scatter_kws = {'facecolors': w06['colorcode5levels']}, color = color, ci = ci)
+    sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1],
+                scatter_kws = {'facecolors': w07['colorcode5levels']}, color = color, ci = ci)
+    sns.regplot(x = x, y = y, data = my_data_new, x_jitter = jitter, ax = axes[1, 2],
+                scatter_kws = {'facecolors': my_data_new['colorcode']}, color = color, ci = ci)
 
 else:
     # range 21-25
@@ -359,12 +364,12 @@ else:
 # axes[1, 1].set_ylim(-1.1, 1.1)
 # axes[1, 2].set_ylim(-1.1, 1.1)
 #
-# axes[0, 0].set_xlim(-0.1, 1.1)
-# axes[0, 1].set_xlim(-0.1, 1.1)
-# axes[0, 2].set_xlim(-0.1, 1.1)
-# axes[1, 0].set_xlim(-0.1, 1.1)
-# axes[1, 1].set_xlim(-0.1, 1.1)
-# axes[1, 2].set_xlim(-0.1, 1.1)
+axes[0, 0].set_xlim(-0.5, 1)
+axes[0, 1].set_xlim(-0.5, 1)
+axes[0, 2].set_xlim(-0.5, 1)
+axes[1, 0].set_xlim(-0.5, 1)
+axes[1, 1].set_xlim(-0.5, 1)
+axes[1, 2].set_xlim(-0.5, 1)
 
 # set x,y label
 axes[0, 0].set(xlabel = "", ylabel = "")
@@ -372,35 +377,47 @@ axes[0, 1].set(xlabel = "", ylabel = "")
 axes[0, 2].set(xlabel = "", ylabel = "")
 axes[1, 0].set(xlabel = "", ylabel = "")
 axes[1, 2].set(xlabel = "", ylabel = "")
-axes[1, 1].set(xlabel = "Normalized Alignment Value: %s" % (alignment[indx_align_n]), ylabel = "")
+# axes[1, 1].set(xlabel = "Normalized Alignment Value: %s" % (alignment[indx_align_n]), ylabel = "")
+axes[1, 1].set(xlabel = x_label, ylabel = "")
 axes[1, 1].xaxis.label.set_size(20)
 
 if not separate_each_n:
     # peasorn r
-    fig.text(0.28, 0.85, "partial_r = %s" % (round(partial_corr_03.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.85, "partial_r = %s" % (round(partial_corr_04.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
-    fig.text(0.83, 0.85, "partial_r = %s" % (round(partial_corr_05.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
-    fig.text(0.28, 0.43, "partial_r = %s" % (round(partial_corr_06.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.43, "partial_r = %s" % (round(partial_corr_07.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
-    fig.text(0.83, 0.43, "partial_r = %s" % (round(partial_corr_all.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
+    fig.text(0.28, 0.85, "r = %s" % (round(partial_corr_03.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
+    fig.text(0.56, 0.85, "r = %s" % (round(partial_corr_04.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
+    fig.text(0.83, 0.85, "r = %s" % (round(partial_corr_05.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
+    fig.text(0.28, 0.43, "r = %s" % (round(partial_corr_06.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
+    fig.text(0.56, 0.43, "r = %s" % (round(partial_corr_07.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
+    fig.text(0.83, 0.43, "r = %s" % (round(partial_corr_all.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
 
     # p-val
-    fig.text(0.28, 0.75, "p = %s" % (round(partial_corr_03.at['pearson', 'p-val'], 4)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.75, "p = %s" % (round(partial_corr_04.at['pearson', 'p-val'], 4)), va = "center", fontsize = 15)
-    fig.text(0.83, 0.75, "p = %s" % (round(partial_corr_05.at['pearson', 'p-val'], 4)), va = "center", fontsize = 15)
-    fig.text(0.28, 0.33, "p = %s" % (round(partial_corr_06.at['pearson', 'p-val'], 4)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.33, "p = %s" % (round(partial_corr_07.at['pearson', 'p-val'], 4)), va = "center", fontsize = 15)
-    fig.text(0.83, 0.33, "p = %s" % (round(partial_corr_all.at['pearson', 'p-val'], 4)), va = "center", fontsize = 15)
-    # fig.text(0.83, 0.33, "p < 0.0001", va = "center", fontsize = 15)
+    fig.text(0.28, 0.81, "p = %s" % (round(partial_corr_03.at['pearson', 'p-val'], 2)), va = "center", fontsize = 15)
+    fig.text(0.56, 0.81, "p = %s" % (round(partial_corr_04.at['pearson', 'p-val'], 2)), va = "center", fontsize = 15)
+    fig.text(0.83, 0.81, "p = %s" % (round(partial_corr_05.at['pearson', 'p-val'], 2)), va = "center", fontsize = 15)
+    # fig.text(0.28, 0.33, "p = %s" % (round(partial_corr_06.at['pearson', 'p-val'], 2)), va = "center", fontsize = 15)
+    fig.text(0.28, 0.39, "p < .005", va = "center", fontsize = 15)
+    # fig.text(0.56, 0.33, "p = %s" % (round(partial_corr_07.at['pearson', 'p-val'], 2)), va = "center", fontsize = 15)
+    fig.text(0.56, 0.39, "p < .005", va = "center", fontsize = 15)
+    # fig.text(0.83, 0.33, "p = %s" % (round(partial_corr_all.at['pearson', 'p-val'], 4)), va = "center", fontsize = 15)
+    fig.text(0.83, 0.39, "p < .0001", va = "center", fontsize = 15)
 
-fig.text(0.15, 0.89, "(a) numerosity range: 21-25", fontsize = 12)
-fig.text(0.43, 0.89, "(b) numerosity range: 31-35", fontsize = 12)
-fig.text(0.70, 0.89, "(c) numerosity range: 41-45", fontsize = 12)
-fig.text(0.15, 0.47, "(d) numerosity range: 49-53", fontsize = 12)
-fig.text(0.43, 0.47, "(e) numerosity range: 54-58", fontsize = 12)
-fig.text(0.70, 0.47, "(f) all numerosities)", fontsize = 12)
+fig.text(0.16, 0.89, "(a) numerosity range: 21-25", fontsize = 14)
+fig.text(0.44, 0.89, "(b) numerosity range: 31-35", fontsize = 14)
+fig.text(0.71, 0.89, "(c) numerosity range: 41-45", fontsize = 14)
+fig.text(0.16, 0.47, "(d) numerosity range: 49-53", fontsize = 14)
+fig.text(0.44, 0.47, "(e) numerosity range: 54-58", fontsize = 14)
+fig.text(0.71, 0.47, "(f) all numerosities)", fontsize = 12)
 
-fig.text(0.08, 0.5, 'Normalized Deviation Score', va = 'center', rotation = 'vertical', fontsize = 20)
+# fig.text(0.08, 0.5, 'Normalized Deviation Score', va = 'center', rotation = 'vertical', fontsize = 20)
+fig.text(0.06, 0.5, y_label, va = 'center', rotation = 'vertical', fontsize = 20)
+fig.text(0.08, 0.5, y_label2, va = 'center', rotation = 'vertical', fontsize = 20)
+colors_c = ["#ffd6cc", "#ffad99", "#ff8566", "#ff5c33", "#ff3300"]
+colors_nc = ["#ccccff", "#9999ff", "#6666ff", "#3333ff", "#0000ff"]
+labels03 = ['21', '22', '23', '23', '25']
+circle_legend = add_legend(colors_c, colors_nc)
+axes[0, 0].legend(handles = circle_legend, labelspacing = 0.01,
+            ncol = 2, columnspacing = 0.01, borderpad = None,
+            frameon = False, bbox_to_anchor = (0.6, 0., 0.5, 0.5))
 
 plt.show()
 # %%plots-separate winsize - correlation between alignment value and numerosity
@@ -413,12 +430,17 @@ y = alignment[indx_align_n] + "_norm"
 jitter = 0.001
 color = "gray"
 # plot starts here
-fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)
-sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0], scatter_kws = {'facecolors': w03['colorcode']}, color = color)
-sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1], scatter_kws = {'facecolors': w04['colorcode']}, color = color)
-sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2], scatter_kws = {'facecolors': w05['colorcode']}, color = color)
-sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0], scatter_kws = {'facecolors': w06['colorcode']}, color = color)
-sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1], scatter_kws = {'facecolors': w07['colorcode']}, color = color)
+figa, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)
+sns.regplot(x = x, y = y, data = w03, x_jitter = jitter, ax = axes[0, 0],
+            scatter_kws = {'facecolors': w03['colorcode']}, color = color)
+sns.regplot(x = x, y = y, data = w04, x_jitter = jitter, ax = axes[0, 1],
+            scatter_kws = {'facecolors': w04['colorcode']}, color = color)
+sns.regplot(x = x, y = y, data = w05, x_jitter = jitter, ax = axes[0, 2],
+            scatter_kws = {'facecolors': w05['colorcode']}, color = color)
+sns.regplot(x = x, y = y, data = w06, x_jitter = jitter, ax = axes[1, 0],
+            scatter_kws = {'facecolors': w06['colorcode']}, color = color)
+sns.regplot(x = x, y = y, data = w07, x_jitter = jitter, ax = axes[1, 1],
+            scatter_kws = {'facecolors': w07['colorcode']}, color = color)
 
 # set x, y limits
 axes[0, 0].set_ylim(-0.1, 1.1)
@@ -455,5 +477,5 @@ if is_debug:
     col_names_stimuli = list(stimuli_to_merge_ori.columns)
     col_names_data = list(data_to_merge)
     col_names_my_data = list(my_data)
-if write_to_excel:
-    pt.to_excel("exp1_alig_%s.xlsx" % indx_align_n)
+if save_fig:
+    fig.savefig("try.svg")

@@ -9,6 +9,7 @@ Introduction:
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import statsmodels.formula.api as sm
+from matplotlib.lines import Line2D
 
 from src.commons.process_dataframe import get_sub_df_according2col_value
 
@@ -40,29 +41,29 @@ def add_color_code_by_winsize(N_disk: str):
 def add_color_code_5levels(N_disk: str, crowdingcons: str):
     if N_disk == 21 or N_disk == 31 or N_disk == 41 or N_disk == 49 or N_disk == 54:
         if crowdingcons == 0:
-            return "#b3d9ff"
+            return "#ccccff"
         else:
-            return "#ffb9d3"
+            return "#ffd6cc"
     elif N_disk == 22 or N_disk == 32 or N_disk == 42 or N_disk == 50 or N_disk == 55:
         if crowdingcons == 0:
-            return "#99ccff"
+            return "#9999ff"
         else:
-            return "#ffcc99"
+            return "#ffad99"
     elif N_disk == 23 or N_disk == 33 or N_disk == 43 or N_disk == 51 or N_disk == 56:
         if crowdingcons == 0:
-            return "#88bfff"
+            return "#6666ff"
         else:
-            return "#ffbf80"
+            return "#ff8566"
     elif N_disk == 24 or N_disk == 34 or N_disk == 44 or N_disk == 52 or N_disk == 57:
         if crowdingcons == 0:
-            return "#66b3ff"
+            return "#3333ff"
         else:
-            return "#ffb366"
+            return "#ff5c33"
     elif N_disk == 25 or N_disk == 35 or N_disk == 45 or N_disk == 53 or N_disk == 58:
         if crowdingcons == 0:
-            return "#4da6ff"
+            return "#0000ff"
         else:
-            return "#ffa64d"
+            return "#ff3300"
     else:
         raise Exception(f"N_disk == {N_disk} is not correct")
 
@@ -122,3 +123,20 @@ def calculate_residuals(w_df):
 
     lin_fit_results_X = sm.ols(formula = "align_v_size6_norm ~ N_disk", data = w_df).fit()
     w_df["rX"] = lin_fit_results_X.resid
+
+
+def add_legend(colorc, corlornc, marker = "o", line_color = "w", markersize = 8):
+    circle_legend = [
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = colorc[0], markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = colorc[1], markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = colorc[2], markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = colorc[3], markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = colorc[4], markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = corlornc[0], markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = corlornc[1], markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = corlornc[2], markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = corlornc[3], markersize = markersize),
+        Line2D([0], [0], marker = marker, color = line_color, markerfacecolor = corlornc[4], markersize = markersize)
+    ]
+    return circle_legend
+

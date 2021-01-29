@@ -281,9 +281,9 @@ jitter = 0.001
 ci = None
 color = "gray"
 color_reg_line = ["#d9d9d9", "#bfbfbf", "#a6a6a6", "#8c8c8c", "#737373"]
-x_label = "Residuals of liner regression predicting normalized deviation score from numerosity"
+x_label = "Residuals of liner regression predicting normalized alignment value from numerosity"
 y_label = "Residuals of liner regression predicting"
-y_label2 = "normalized alignment value from numerosity"
+y_label2 = "normalized deviation score from numerosity"
 # plot starts here
 fig, axes = plt.subplots(2, 3, figsize = (16, 8), sharex = True, sharey = True)
 if not separate_each_n:
@@ -406,7 +406,7 @@ fig.text(0.44, 0.89, "(b) numerosity range: 31-35", fontsize = 14)
 fig.text(0.71, 0.89, "(c) numerosity range: 41-45", fontsize = 14)
 fig.text(0.16, 0.47, "(d) numerosity range: 49-53", fontsize = 14)
 fig.text(0.44, 0.47, "(e) numerosity range: 54-58", fontsize = 14)
-fig.text(0.71, 0.47, "(f) all numerosities)", fontsize = 12)
+fig.text(0.71, 0.47, "(f) all numerosities", fontsize = 14)
 
 # fig.text(0.08, 0.5, 'Normalized Deviation Score', va = 'center', rotation = 'vertical', fontsize = 20)
 fig.text(0.06, 0.5, y_label, va = 'center', rotation = 'vertical', fontsize = 20)

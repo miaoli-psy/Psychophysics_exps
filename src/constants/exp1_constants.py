@@ -73,3 +73,15 @@ KEPT_COL_NAMES2 = ["crowdingcons",
                    "positions",
                    "density_itemsperdeg2",
                    "list_index"]
+
+KEPT_COL_NAMES3 = ["crowdingcons",
+                   "Display",
+                   "N_disk",
+                   "participant_N",
+                   "whichBlock",
+                   "deviation_score",
+                   "index_stimuliInfo",
+                   "winsize",
+                   "count_number",
+                   "positions",
+                   "list_index"]

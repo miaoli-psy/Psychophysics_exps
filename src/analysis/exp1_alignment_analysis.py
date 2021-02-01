@@ -103,14 +103,14 @@ def normalize_deviation(input_df: pd.DataFrame):
     return pd.DataFrame(min_max_scaler.fit_transform(input_df[["deviation_score"]]), columns = ["deviation_score"])
 
 
-def normalize_alignment_v(input_df: pd.DataFrame, alignment_col: str):
+def normalize_zerotoone(input_df: pd.DataFrame, to_normalize_col: str):
     """
     :param input_df: dataframe contains col alignment values
-    :param alignment_col: alignment_col name
+    :param to_normalize_col: alignment_col name
     :return: new dataframe contains only normalized alignment_col range within(0, 1)
     """
     min_max_scaler = MinMaxScaler(feature_range = (0, 1))
-    return pd.DataFrame(min_max_scaler.fit_transform(input_df[[alignment_col]]), columns = [alignment_col])
+    return pd.DataFrame(min_max_scaler.fit_transform(input_df[[to_normalize_col]]), columns = [to_normalize_col])
 
 
 def rename_norm_col(input_df: pd.DataFrame, old_name: str, new_name: str):

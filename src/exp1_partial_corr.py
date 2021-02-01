@@ -12,7 +12,7 @@ import pingouin as pg
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from src.analysis.exp1_alignment_analysis import normalize_deviation, normalize_alignment_v, rename_norm_col, \
+from src.analysis.exp1_alignment_analysis import normalize_deviation, normalize_zerotoone, rename_norm_col, \
     get_data_to_analysis
 from src.commons.process_dataframe import get_sub_df_according2col_value, process_col
 
@@ -85,11 +85,11 @@ def get_partial_corr_df(indx_align_n = 0, w03 = winsize03, w04 = winsize04, w05 
     w06_norm_deviation = normalize_deviation(w06)
     w07_norm_deviation = normalize_deviation(w07)
 
-    w03_norm_align_v = normalize_alignment_v(w03, alignment_col = alignment[indx_align_n])
-    w04_norm_align_v = normalize_alignment_v(w04, alignment_col = alignment[indx_align_n])
-    w05_norm_align_v = normalize_alignment_v(w05, alignment_col = alignment[indx_align_n])
-    w06_norm_align_v = normalize_alignment_v(w06, alignment_col = alignment[indx_align_n])
-    w07_norm_align_v = normalize_alignment_v(w07, alignment_col = alignment[indx_align_n])
+    w03_norm_align_v = normalize_zerotoone(w03, to_normalize_col = alignment[indx_align_n])
+    w04_norm_align_v = normalize_zerotoone(w04, to_normalize_col = alignment[indx_align_n])
+    w05_norm_align_v = normalize_zerotoone(w05, to_normalize_col = alignment[indx_align_n])
+    w06_norm_align_v = normalize_zerotoone(w06, to_normalize_col = alignment[indx_align_n])
+    w07_norm_align_v = normalize_zerotoone(w07, to_normalize_col = alignment[indx_align_n])
     # rename normed cols
     old_name_dev = "deviation_score"
     new_name_dev = "deviation_score_norm"

@@ -16,7 +16,7 @@ import pingouin as pg
 
 from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, \
     add_color_code_by_crowdingcons, \
-    normalize_deviation, normalize_alignment_v, rename_norm_col, add_color_code_by_winsize, add_color_code_5levels, \
+    normalize_deviation, normalize_zerotoone, rename_norm_col, add_color_code_by_winsize, add_color_code_5levels, \
     calculate_residuals, add_legend
 from src.commons.process_dataframe import change_col_value_type, keep_valid_columns, get_pivot_table, \
     get_sub_df_according2col_value, insert_new_col, insert_new_col_from_two_cols
@@ -149,11 +149,11 @@ w05_norm_deviation = normalize_deviation(w05)
 w06_norm_deviation = normalize_deviation(w06)
 w07_norm_deviation = normalize_deviation(w07)
 
-w03_norm_align_v = normalize_alignment_v(w03, alignment_col = alignment[indx_align_n])
-w04_norm_align_v = normalize_alignment_v(w04, alignment_col = alignment[indx_align_n])
-w05_norm_align_v = normalize_alignment_v(w05, alignment_col = alignment[indx_align_n])
-w06_norm_align_v = normalize_alignment_v(w06, alignment_col = alignment[indx_align_n])
-w07_norm_align_v = normalize_alignment_v(w07, alignment_col = alignment[indx_align_n])
+w03_norm_align_v = normalize_zerotoone(w03, to_normalize_col = alignment[indx_align_n])
+w04_norm_align_v = normalize_zerotoone(w04, to_normalize_col = alignment[indx_align_n])
+w05_norm_align_v = normalize_zerotoone(w05, to_normalize_col = alignment[indx_align_n])
+w06_norm_align_v = normalize_zerotoone(w06, to_normalize_col = alignment[indx_align_n])
+w07_norm_align_v = normalize_zerotoone(w07, to_normalize_col = alignment[indx_align_n])
 
 # rename normed cols
 old_name_dev = "deviation_score"

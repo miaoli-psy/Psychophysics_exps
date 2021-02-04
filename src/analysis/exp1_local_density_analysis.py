@@ -7,7 +7,7 @@ IDE: PyCharm
 Introduction:
 """
 import numpy as np
-from src.commons.fitfuncs import get_lambda
+from src.commons.fitfuncs import fit_poisson_cdf, fit_polynomial
 from src.commons.process_number import cal_eccentricity
 
 
@@ -95,11 +95,11 @@ def interplote_result_dict_start(result_dict: dict) -> dict:
     return result_dict
 
 
-def __normolizedLD(y_val: list):
+def normolizedLD(y_val: list):
     return [float(i) / max(y_val) for i in y_val]
 
 
-def get_fitted_res(input_dict) -> list:
+def get_fitted_res_cdf_poisson(input_dict) -> list:
     res_list = list()
     for numerosity, loc_density_list in input_dict.items():
         for loc_density in loc_density_list:
@@ -108,14 +108,26 @@ def get_fitted_res(input_dict) -> list:
             for loc_tuple in loc_density:
                 x_value.append(loc_tuple[0])
                 y_value.append(loc_tuple[1])
-            np_array = np.array([x_value, __normolizedLD(y_value)]).transpose()
-            res_list.append(get_lambda(np_array))
+            np_array = np.array([x_value, normolizedLD(y_value)]).transpose()
+            res_list.append(fit_poisson_cdf(np_array))
     return res_list
 
+def get_fitted_res_polynomial(input_dict):
+    res_list = list()
+    for numerosity, loc_density_list in input_dict.items():
+        for loc_density in loc_density_list:
+            x_value = list()
+            y_value = list()
+            for loc_tuple in loc_density:
+                x_value.append(loc_tuple[0])
+                y_value.append(loc_tuple[1])
+            np_array = np.array([x_value, normolizedLD(y_value)]).transpose()
+            res_list.append(fit_polynomial(np_array))
+    return res_list
 
 def get_sample_plot_x_y(input_dict, key, list_index):
     x, y = list(), list()
     for loc_tuple in input_dict[key][list_index]:
         x.append(loc_tuple[0])
         y.append(loc_tuple[1])
-    return np.array([x, __normolizedLD(y)]).transpose()
+    return np.array([x, normolizedLD(y)]).transpose()

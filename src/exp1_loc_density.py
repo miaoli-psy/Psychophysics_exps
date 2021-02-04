@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import poisson
 
 from src.analysis.exp1_local_density_analysis import dict_pix_to_deg, get_result_dict, interplote_result_dict_start, \
-    get_fitted_res, get_sample_plot_x_y
-from src.commons.fitfuncs import get_lambda
+    get_fitted_res_cdf_poisson, get_sample_plot_x_y, normolizedLD
+from src.commons.fitfuncs import fit_poisson_cdf
 from src.commons.process_dataframe import process_col
 from src.commons.process_dict import get_sub_dict
 from src.commons.process_str import str_to_list
@@ -24,6 +24,8 @@ from src.commons.process_str import str_to_list
 
 if __name__ == '__main__':
     save_plot = False
+    fit_poisson = False
+    fit_polynomial = True
     PATH = "../displays/"
     FILE = "update_stim_info_full.xlsx"
     stimuli_df = pd.read_excel(PATH + FILE)
@@ -46,77 +48,84 @@ if __name__ == '__main__':
     result_dict_c = dict_pix_to_deg(result_dict_c, 1)
     result_dict_nc = dict_pix_to_deg(result_dict_nc, 1)
     # possible keys
-    k_c_03 = [21, 22, 23, 24, 25]
-    k_c_04 = [31, 32, 33, 34, 35]
-    k_c_05 = [41, 42, 43, 44, 45]
-    k_c_06 = [49, 50, 51, 52, 53]
-    k_c_07 = [54, 55, 56, 57, 58]
+    k_03 = [21, 22, 23, 24, 25]
+    k_04 = [31, 32, 33, 34, 35]
+    k_05 = [41, 42, 43, 44, 45]
+    k_06 = [49, 50, 51, 52, 53]
+    k_07 = [54, 55, 56, 57, 58]
+    k_list = [k_03, k_04, k_05, k_06, k_07]
     # data to fit
-    res_dict_c_03 = get_sub_dict(result_dict_c, k_c_03)
-    res_dict_c_04 = get_sub_dict(result_dict_c, k_c_04)
-    res_dict_c_05 = get_sub_dict(result_dict_c, k_c_05)
-    res_dict_c_06 = get_sub_dict(result_dict_c, k_c_06)
-    res_dict_c_07 = get_sub_dict(result_dict_c, k_c_07)
+    result_dict_c_list = [get_sub_dict(result_dict_c, k) for k in k_list]
+    result_dict_nc_list = [get_sub_dict(result_dict_nc, k) for k in k_list]
+    # %% fit polynomial
+    if fit_polynomial:
+        # sample crowding and no-crowding display
+        res_c = result_dict_c_list[4][55][0]
+        res_nc = result_dict_nc_list[4][55][0]
+        x_crowding = [t[0] for t in res_c]
+        y_crowding = [t[1] for t in res_c]
+        x_ncrowding = [t[0] for t in res_nc]
+        y_ncrowding = [t[1] for t in res_nc]
+        norm_y_crowding = normolizedLD(y_crowding)
+        norm_y_ncrowding = normolizedLD(y_ncrowding)
 
-    res_dict_nc_03 = get_sub_dict(result_dict_nc, k_c_03)
-    res_dict_nc_04 = get_sub_dict(result_dict_nc, k_c_04)
-    res_dict_nc_05 = get_sub_dict(result_dict_nc, k_c_05)
-    res_dict_nc_06 = get_sub_dict(result_dict_nc, k_c_06)
-    res_dict_nc_07 = get_sub_dict(result_dict_nc, k_c_07)
-    # fit here
-    fitted_c_03 = get_fitted_res(res_dict_c_03)
-    fitted_c_04 = get_fitted_res(res_dict_c_04)
-    fitted_c_05 = get_fitted_res(res_dict_c_05)
-    fitted_c_06 = get_fitted_res(res_dict_c_06)
-    fitted_c_07 = get_fitted_res(res_dict_c_07)
+        np_arr_crowding = np.array([x_crowding, norm_y_crowding]).transpose()
+        np_arr_ncrowding = np.array([x_ncrowding, norm_y_ncrowding]).transpose()
+        # fit here
+        polyfit_crowding = np.poly1d(np.polyfit(x= np_arr_crowding[:, 0], y = norm_y_crowding, deg = 2))
+        polyfit_ncrowding = np.poly1d(np.polyfit(x= np_arr_ncrowding[:, 0], y = norm_y_ncrowding, deg = 2))
 
-    fitted_nc_03 = get_fitted_res(res_dict_nc_03)
-    fitted_nc_04 = get_fitted_res(res_dict_nc_04)
-    fitted_nc_05 = get_fitted_res(res_dict_nc_05)
-    fitted_nc_06 = get_fitted_res(res_dict_nc_06)
-    fitted_nc_07 = get_fitted_res(res_dict_nc_07)
+        fig1, ax1 = plt.subplots()
+        ax1.plot(np_arr_crowding[:, 0], np_arr_crowding[:, 1], 'ro', alpha = 0.5, label = "crowding display")
+        ax1.plot(np_arr_ncrowding[:, 0], np_arr_ncrowding[:, 1], 'bo', alpha = 0.5, label = "no-crowding display")
+        ax1.plot(np_arr_crowding[:, 0], polyfit_crowding(np_arr_crowding[:, 0]), 'r--', label = "polynomial fit crowding")
+        ax1.plot(np_arr_ncrowding[:, 0], polyfit_ncrowding(np_arr_ncrowding[:, 0]), 'b--', label = "polynomial fit no-crowding")
+        plt.legend(loc = 'best')
+        ax1.set_xlabel("Eccentricity", fontsize = 15)
+        ax1.set_ylabel("Local density", fontsize = 15)
+        ax1.set_title("Sample displays(numerosity 55): no crowding vs. crowding", fontsize = 12)
+        plt.show()
 
-    # collect all fitted lambda here
-    fitted_lambda = np.column_stack([fitted_c_03,
-                                     fitted_c_04,
-                                     fitted_c_05,
-                                     fitted_c_06,
-                                     fitted_c_07,
-                                     fitted_nc_03,
-                                     fitted_nc_04,
-                                     fitted_nc_05,
-                                     fitted_nc_06,
-                                     fitted_nc_07])
+    #%% fit possion cdf here
+    if fit_poisson:
+        fitted_c_list = [get_fitted_res_cdf_poisson(sub_dict) for sub_dict in result_dict_c_list]
+        fitted_nc_list = [get_fitted_res_cdf_poisson(sub_dict) for sub_dict in result_dict_nc_list]
+        # collect all fitted lambda here
+        fitted_lambda_c = np.column_stack(fitted_c_list)
+        fitted_lambda_nc = np.column_stack(fitted_nc_list)
+    # %% plot
+    if fit_poisson:
+        # independent t test
+        # index 0, 0 -> crowding vs. no-crowding in winsize 03
+        # index 1, 1 -> winsize 04
+        # index 2, 2 -> winsize 05
+        # index 3, 3 -> winsize 06
+        # index 4, 4 -> winsize 07
+        t, p = stats.ttest_ind(fitted_lambda_c[:, 0], fitted_lambda_nc[:, 0])
 
-    # independent t test
-    # index 0, 5 -> crowding vs. no-crowding in winsize 03
-    # index 1, 6 -> winsize 04
-    # index 2, 7 -> winsize 05
-    # index 3, 8 -> winsize 06
-    # index 4, 9 -> winsize 07
-    t, p = stats.ttest_ind(fitted_lambda[:, 0], fitted_lambda[:, 5])
+        # a sample fit
+        # no-crowding data
+        to_plot_array = get_sample_plot_x_y(result_dict_c_list[4], key = 55, list_index = 0)
+        # crowding data
+        to_plot_array2 = get_sample_plot_x_y(result_dict_nc_list[4], key = 55, list_index = 0)
+        # plot starts here
+        fig, ax = plt.subplots()
+        # plot original data
+        ax.plot(to_plot_array[:, 0], to_plot_array[:, 1], 'bo', label = "no-crowding display", alpha = 0.5)
+        ax.plot(to_plot_array2[:, 0], to_plot_array2[:, 1], 'ro', label = "crowding display", alpha = 0.5)
+        # get fitted y
+        opty = fit_poisson_cdf(to_plot_array)
+        opty2 = fit_poisson_cdf(to_plot_array2)
+        # plot fitted data
+        ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty), 'b--', label = 'CDF Poisson fit no-crowding')
+        ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty2), 'r--', label = 'CDF Poisson fit crowding')
+        # customize the plot
+        plt.legend(loc = 'best')
+        ax.set_xlabel("Eccentricity", fontsize = 15)
+        ax.set_ylabel("Local density", fontsize = 15)
+        ax.set_title("Sample displays(numerosity 55): no crowding vs. crowding", fontsize = 12)
 
-    # a sample fit
-    # no-crowding data
-    to_plot_array = get_sample_plot_x_y(res_dict_nc_07, key = 55, list_index = 0)
-    # crowding data
-    to_plot_array2 = get_sample_plot_x_y(res_dict_c_07, key = 55, list_index = 0)
-    # plot starts here
-    fig, ax = plt.subplots()
-    # plot original data
-    ax.plot(to_plot_array[:, 0], to_plot_array[:, 1], 'bo', label = "no-crowding display", alpha = 0.5)
-    ax.plot(to_plot_array2[:, 0], to_plot_array2[:, 1], 'ro', label = "crowding display", alpha = 0.5)
-    # get fitted y
-    opty = get_lambda(to_plot_array)
-    opty2 = get_lambda(to_plot_array2)
-    # plot fitted data
-    ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty), 'b+', label = 'CDF Poisson fit no-crowding')
-    ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty2), 'r+', label = 'CDF Poisson fit crowding')
-    # customize the plot
-    plt.legend(loc = 'best')
-    ax.set_xlabel("Eccentricity", fontsize = 15)
-    ax.set_ylabel("Local density", fontsize = 15)
-    ax.set_title("Sample displays(numerosity 55): no crowding vs. crowding", fontsize = 12)
-    plt.show()
+        plt.show()
+
     if save_plot:
         fig.savefig("sampleplot.svg")

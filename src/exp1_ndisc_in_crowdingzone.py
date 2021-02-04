@@ -13,6 +13,7 @@ import pingouin as pg
 import statsmodels.formula.api as sm
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 
 from src.analysis.exp1_alignment_analysis import add_color_code_by_crowdingcons, add_color_code_5levels, \
     get_analysis_dataframe, get_data_to_analysis, normalize_deviation, normalize_zerotoone, rename_norm_col, add_legend
@@ -29,9 +30,21 @@ def calculate_residuals(input_df):
     input_df["rX"] = lin_fit_results_X.resid
 
 
+def get_partical_pearson_r(df):
+    return df.at["pearson", "r"]
+
+
+def draw_text(fig):
+    fig.text(0.16, 0.89, "(a) numerosity range: 21-25", fontsize = 14)
+    fig.text(0.44, 0.89, "(b) numerosity range: 31-35", fontsize = 14)
+    fig.text(0.71, 0.89, "(c) numerosity range: 41-45", fontsize = 14)
+    fig.text(0.16, 0.47, "(d) numerosity range: 49-53", fontsize = 14)
+    fig.text(0.44, 0.47, "(e) numerosity range: 54-58", fontsize = 14)
+    fig.text(0.71, 0.47, "(f) all numerosities", fontsize = 14)
+
 if __name__ == '__main__':
     is_debug = True
-    save_fig = True
+    save_fig = False
     winsize_list = [0.3, 0.4, 0.5, 0.6, 0.7]
     # TODO set parameters
     crowdingcons = 2  # 0, 1, 2 for no-crowding, crowding and all
@@ -57,9 +70,9 @@ if __name__ == '__main__':
     # %% correlations
     my_data = get_analysis_dataframe(my_data, crowding = crowdingcons)
     # data for each winsize
-    df_list = [get_sub_df_according2col_value(my_data, "winsize", winsize) for winsize in winsize_list]
+    df_list_beforegb = [get_sub_df_according2col_value(my_data, "winsize", winsize) for winsize in winsize_list]
     df_list = [get_data_to_analysis(df, "deviation_score", "count_number", "N_disk", "list_index", "colorcode",
-                                    "colorcode5levels") for df in df_list]
+                                    "colorcode5levels") for df in df_list_beforegb]
     # partial corr parameters
     method = "pearson"
     x = "count_number"
@@ -119,7 +132,7 @@ if __name__ == '__main__':
         # curr_ax.set_ylim(-1.1, 1.1)
         # set x, y label
         if curr_ax == ax5:
-            curr_ax.set(xlabel = x_label+x_label2, ylabel = "")
+            curr_ax.set(xlabel = x_label + x_label2, ylabel = "")
             curr_ax.xaxis.label.set_size(20)
         else:
             curr_ax.set(xlabel = "", ylabel = "")
@@ -133,25 +146,82 @@ if __name__ == '__main__':
                        frameon = False, bbox_to_anchor = (0.6, 0., 0.5, 0.5))
 
     # some text
-    # labels
+    # numerosity ranges
+    draw_text(fig = fig)
+    # y-label
     fig.text(0.06, 0.5, y_label, va = 'center', rotation = 'vertical', fontsize = 20)
     fig.text(0.08, 0.5, y_label2, va = 'center', rotation = 'vertical', fontsize = 20)
-    fig.text(0.16, 0.89, "(a) numerosity range: 21-25", fontsize = 14)
-    fig.text(0.44, 0.89, "(b) numerosity range: 31-35", fontsize = 14)
-    fig.text(0.71, 0.89, "(c) numerosity range: 41-45", fontsize = 14)
-    fig.text(0.16, 0.47, "(d) numerosity range: 49-53", fontsize = 14)
-    fig.text(0.44, 0.47, "(e) numerosity range: 54-58", fontsize = 14)
-    fig.text(0.71, 0.47, "(f) all numerosities", fontsize = 14)
 
     # peasorn r
-    fig.text(0.28, 0.85, "r = %s" % (round(partial_corr_res_list[0].at['pearson', 'r'], 2)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.85, "r = %s" % (round(partial_corr_res_list[1].at['pearson', 'r'], 2)), va = "center", fontsize = 15)
-    fig.text(0.83, 0.85, "r = %s" % (round(partial_corr_res_list[2].at['pearson', 'r'], 2)), va = "center", fontsize = 15)
-    fig.text(0.28, 0.43, "r = %s" % (round(partial_corr_res_list[3].at['pearson', 'r'], 2)), va = "center", fontsize = 15)
-    fig.text(0.56, 0.43, "r = %s" % (round(partial_corr_res_list[4].at['pearson', 'r'], 2)), va = "center", fontsize = 15)
+    fig.text(0.28, 0.85, "r = %s" % (round(partial_corr_res_list[0].at['pearson', 'r'], 2)), va = "center",
+             fontsize = 15)
+    fig.text(0.56, 0.85, "r = %s" % (round(partial_corr_res_list[1].at['pearson', 'r'], 2)), va = "center",
+             fontsize = 15)
+    fig.text(0.83, 0.85, "r = %s" % (round(partial_corr_res_list[2].at['pearson', 'r'], 2)), va = "center",
+             fontsize = 15)
+    fig.text(0.28, 0.43, "r = %s" % (round(partial_corr_res_list[3].at['pearson', 'r'], 2)), va = "center",
+             fontsize = 15)
+    fig.text(0.56, 0.43, "r = %s" % (round(partial_corr_res_list[4].at['pearson', 'r'], 2)), va = "center",
+             fontsize = 15)
     fig.text(0.83, 0.43, "r = %s" % (round(partial_corr_all.at['pearson', 'r'], 2)), va = "center", fontsize = 15)
     plt.show()
     if save_fig:
         fig.savefig("try.svg")
+    # %% rs for increasing ellipse sizes
+    count_number_dict = {1:  "count_number1",
+                         2:  "count_number2",
+                         3:  "count_number3",
+                         4:  "count_number4",
+                         5:  "count_number5",
+                         6:  "count_number6",
+                         7:  "count_number7",
+                         8:  "count_number8",
+                         9:  "count_number9",
+                         10: "count_number10"}
+    df_list_separate_count_n = list()  # length:10 (e size 1-10); each value is a list of length 5 (5 winsize)
+    for count_numbern in count_number_dict.values():
+        sub_df_list = [get_data_to_analysis(df, "deviation_score", count_numbern, "N_disk", "list_index", "colorcode",
+                                            "colorcode5levels") for df in df_list_beforegb]
+        df_list_separate_count_n.append(sub_df_list)
+
+    partial_corr_res_spe_list = list()
+    for index, esize_list in enumerate(df_list_separate_count_n):
+        partial_corr_result = [
+            pg.partial_corr(indi_df, x = count_number_dict[index + 1], y = "deviation_score", covar = covar,
+                            method = method) for indi_df in esize_list]
+        partial_corr_res_spe_list.append(partial_corr_result)
+    # arrange data
+    rs_all = list()
+    for df_list in partial_corr_res_spe_list:
+        rs = [get_partical_pearson_r(sub_df) for sub_df in df_list]
+        rs_all.append(rs)
+    df_rs = pd.DataFrame(rs_all, columns = ["w03", "w04", "w05", "w06", "w07"])
+    df_rs["esize"] = np.array([1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0])
+
+    # plot starts here
+    figb, ((bx1, bx2, bx3), (bx4, bx5, bx6)) = plt.subplots(2, 3, figsize = (16, 8), sharex = True, sharey = True)
+    bx_dic = {0: bx1, 1: bx2, 2: bx3, 3: bx4, 4: bx5, 5: bx6}
+    bx_dic = {"w03": bx1, "w04": bx2, "w05": bx3, "w06": bx4, "w07": bx5}
+    for wsize, bx in bx_dic.items():
+        sns.regplot(x = "esize", y = wsize, data = df_rs, ax = bx, order = 2, color = color, ci = 95)
+
+    for curr_ax in bx_dic.values():
+        # set x, y lim
+        curr_ax.set_xlim(1, 2)
+        # curr_ax.set_xscale('log')
+        # x-label
+        if curr_ax == bx5:
+            curr_ax.set(xlabel = "ellipse size", ylabel = "")
+            curr_ax.xaxis.label.set_size(20)
+        else:
+            curr_ax.set(xlabel = "", ylabel = "")
+        # some text
+    # numerosity ranges
+    draw_text(fig = figb)
+    figb.text(0.06, 0.5, "partial corr between deviation score and", va = 'center', rotation = 'vertical', fontsize = 20)
+    figb.text(0.08, 0.5, "number of discs falls into ohters' crowding zones", va = 'center', rotation = 'vertical', fontsize = 20)
+
+    plt.show()
+
     if is_debug:
         col_names = list(all_df.columns)

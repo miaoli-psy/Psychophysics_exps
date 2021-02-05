@@ -7,7 +7,8 @@ IDE: PyCharm
 Introduction:
 """
 import numpy as np
-from src.commons.fitfuncs import fit_poisson_cdf, fit_polynomial
+import copy
+from src.commons.fitfuncs import fit_poisson_cdf
 from src.commons.process_number import cal_eccentricity
 
 
@@ -112,18 +113,41 @@ def get_fitted_res_cdf_poisson(input_dict) -> list:
             res_list.append(fit_poisson_cdf(np_array))
     return res_list
 
-def get_fitted_res_polynomial(input_dict):
-    res_list = list()
-    for numerosity, loc_density_list in input_dict.items():
-        for loc_density in loc_density_list:
-            x_value = list()
-            y_value = list()
-            for loc_tuple in loc_density:
-                x_value.append(loc_tuple[0])
-                y_value.append(loc_tuple[1])
-            np_array = np.array([x_value, normolizedLD(y_value)]).transpose()
-            res_list.append(fit_polynomial(np_array))
-    return res_list
+
+def get_data2fit(input_list):
+    x_value = [loc_tuple[0] for loc_tuple in input_list]
+    y_value = [loc_tuple[1] for loc_tuple in input_list]
+    np_array = np.array([x_value, normolizedLD(y_value)]).transpose()
+    return np_array
+
+
+def get_data_to_fit_list(input_list):
+    data_to_fit = copy.deepcopy(input_list)
+    for curr_dict in data_to_fit:
+        for k, v_s in curr_dict.items():
+            new_v = [get_data2fit(v) for v in v_s]
+            curr_dict[k] = new_v
+    return data_to_fit
+
+
+def get_fitted_power_list(inputlist, deg = 2):
+    fitted_power_list = copy.deepcopy(inputlist)
+    for index, curr_dict in enumerate(fitted_power_list):
+        for k, v_s in curr_dict.items():
+            new_v = [np.polyfit(x = v[:, 0], y = v[:, 1], deg = deg)[0] for v in v_s]
+            curr_dict[k] = new_v
+    return fitted_power_list
+
+
+def get_data_to_ttest(inputlist):
+    ttest_data = list()
+    for curr_dict in inputlist:
+        curr_list = list()
+        for v_list in curr_dict.values():
+            curr_list += v_list
+        ttest_data.append(curr_list)
+    return ttest_data
+
 
 def get_sample_plot_x_y(input_dict, key, list_index):
     x, y = list(), list()

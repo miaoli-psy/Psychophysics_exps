@@ -6,6 +6,7 @@ Create time: 2021-01-05 19:14
 IDE: PyCharm
 Introduction:
 """
+import copy
 
 import pandas as pd
 import numpy as np
@@ -15,7 +16,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import poisson
 
 from src.analysis.exp1_local_density_analysis import dict_pix_to_deg, get_result_dict, interplote_result_dict_start, \
-    get_fitted_res_cdf_poisson, get_sample_plot_x_y, normolizedLD
+    get_fitted_res_cdf_poisson, get_sample_plot_x_y, normolizedLD, get_data2fit, get_data_to_fit_list, \
+    get_fitted_power_list, get_data_to_ttest
 from src.commons.fitfuncs import fit_poisson_cdf
 from src.commons.process_dataframe import process_col
 from src.commons.process_dict import get_sub_dict
@@ -58,10 +60,31 @@ if __name__ == '__main__':
     result_dict_c_list = [get_sub_dict(result_dict_c, k) for k in k_list]
     result_dict_nc_list = [get_sub_dict(result_dict_nc, k) for k in k_list]
     # %% fit polynomial
+    datac_to_fit = get_data_to_fit_list(result_dict_c_list)
+    datanc_to_fit = get_data_to_fit_list(result_dict_nc_list)
+
+    # 最高项系数
+    deg = 1
+    fitted_c = get_fitted_power_list(datac_to_fit, deg = deg)
+    fitted_nc = get_fitted_power_list(datanc_to_fit, deg = deg)
+
+    # data for ttest
+    datac_ttest = get_data_to_ttest(fitted_c)
+    datanc_ttest = get_data_to_ttest(fitted_nc)
+
+    # ttest here
+    ts, ps = list(), list()
+    for win_index in range(0, 5):
+        t, p = stats.ttest_ind(datac_ttest[win_index], datanc_ttest[win_index])
+        ts.append(t)
+        ps.append(p)
+    print(f"t = %s" % ts)
+    print(f"p = %s" % ps)
+
     if fit_polynomial:
         # sample crowding and no-crowding display
         res_c = result_dict_c_list[4][55][0]
-        res_nc = result_dict_nc_list[4][55][0]
+        res_nc = result_dict_nc_list[4][55][1]
         x_crowding = [t[0] for t in res_c]
         y_crowding = [t[1] for t in res_c]
         x_ncrowding = [t[0] for t in res_nc]
@@ -93,8 +116,7 @@ if __name__ == '__main__':
         # collect all fitted lambda here
         fitted_lambda_c = np.column_stack(fitted_c_list)
         fitted_lambda_nc = np.column_stack(fitted_nc_list)
-    # %% plot
-    if fit_poisson:
+
         # independent t test
         # index 0, 0 -> crowding vs. no-crowding in winsize 03
         # index 1, 1 -> winsize 04
@@ -103,6 +125,7 @@ if __name__ == '__main__':
         # index 4, 4 -> winsize 07
         t, p = stats.ttest_ind(fitted_lambda_c[:, 0], fitted_lambda_nc[:, 0])
 
+        # %% plot
         # a sample fit
         # no-crowding data
         to_plot_array = get_sample_plot_x_y(result_dict_c_list[4], key = 55, list_index = 0)

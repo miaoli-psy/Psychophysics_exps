@@ -21,13 +21,3 @@ def fit_poisson_cdf(input_np_array) -> float :
     popt, _ = curve_fit(poisson.cdf, x_val, y_val, p0 = 1)
     return round(popt[0], 4)
 
-
-def cdf_exp(x, lamba):
-    return 1 - np.exp(-lamba * x)
-
-
-def fit_polynomial(input_np_array):
-    x_val = input_np_array[:, 0]
-    y_val = input_np_array[:, 1]
-    popt, _ = curve_fit(cdf_exp, x_val, y_val, p0 = 0)
-    return round(popt[0], 4)

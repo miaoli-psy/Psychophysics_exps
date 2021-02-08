@@ -37,6 +37,18 @@ def dict_pix_to_deg(input_dict, changeN):
     return dict_deg
 
 
+def avrg_dict_pix_to_deg(input_dict, changeN):
+    """Convert pix to deg for a given dictionary format,
+    changeN is 1 or 2, to let the function works for the first
+    or both elements of the tuple"""
+    dict_deg = {}
+    for key, display in input_dict.items():
+        new_posi = []
+        for posi in display:
+            new_posi.append(__pix_to_deg_tuple(posi, changeN))
+        dict_deg.update({key: new_posi})
+    return dict_deg
+
 def __max_eccentricities(dis_list):
     """returns the max_x_axis and the corrosponding posi"""
     e = []
@@ -87,12 +99,28 @@ def get_result_dict(posis_dict):
     return result_dict
 
 
+def get_avrg_result_dict(posis_dict):
+    result_dict = dict()
+    for key, posi in posis_dict.items():
+        result_t = __get_x_y(posi)
+        result_dict.update({key: result_t})
+    return result_dict
+
+
 def interplote_result_dict_start(result_dict: dict) -> dict:
     """make sure every display local density starts from (100,...)"""
     for key, values in result_dict.items():
         for value in values:
             if value[0][0] != 100:
                 value.insert(0, (100, 0))
+    return result_dict
+
+
+def interplote_avrg_result_dict_start(result_dict: dict) -> dict:
+    """make sure every display local density starts from (100,...)"""
+    for key, value in result_dict.items():
+        if value[0][0] != 100:
+            value.insert(0, (100, 0))
     return result_dict
 
 
@@ -130,6 +158,14 @@ def get_data_to_fit_list(input_list):
     return data_to_fit
 
 
+def get_avrg_data_to_fit(input_dict):
+    data_to_fit = copy.deepcopy(input_dict)
+    for k, v in data_to_fit.items():
+        new_v = get_data2fit(v)
+        data_to_fit[k] = new_v
+    return data_to_fit
+
+
 def get_fitted_power_list(inputlist, deg = 2):
     fitted_power_list = copy.deepcopy(inputlist)
     for index, curr_dict in enumerate(fitted_power_list):
@@ -155,3 +191,16 @@ def get_sample_plot_x_y(input_dict, key, list_index):
         x.append(loc_tuple[0])
         y.append(loc_tuple[1])
     return np.array([x, normolizedLD(y)]).transpose()
+
+
+def get_avrg_dict(inpudict):
+    """This function returns the accumulation display that contain the same numerosity
+    eg. 5 displays with numerosity 21 --> 1 display contains 105 discs"""
+    avrg_dic = {}
+    for numerosity, lists in inpudict.items():
+        avrg_nmrsty = []
+        for plist in lists:
+            for posi in plist:
+                avrg_nmrsty.append(posi)
+        avrg_dic.update({numerosity: avrg_nmrsty})
+    return avrg_dic

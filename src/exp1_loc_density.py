@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
+import seaborn as sns
 from scipy.optimize import curve_fit
 
 from scipy.stats import poisson
@@ -25,12 +26,71 @@ from src.commons.process_dataframe import process_col
 from src.commons.process_dict import get_sub_dict
 from src.commons.process_str import str_to_list
 
+
+def get_diff_x_y(n: int):
+
+    c_x_list = avrg_dict_c_to_fit[n][:, 0].tolist()
+    c_y_list = avrg_dict_c_to_fit[n][:, 1].tolist()
+    polyfit_crowding_avrg = np.poly1d(np.polyfit(x = c_x_list, y = c_y_list, deg = 2))
+    c_y_list =polyfit_crowding_avrg(c_x_list).tolist()
+    nc_x_list = avrg_dict_nc_to_fit[n][:, 0].tolist()
+    nc_y_list = avrg_dict_nc_to_fit[n][:, 1].tolist()
+    polyfit_no_crowding_avrg = np.poly1d(np.polyfit(x = nc_x_list, y = nc_y_list, deg = 2))
+    nc_y_list = polyfit_no_crowding_avrg(nc_x_list).tolist()
+
+    # x 的第一个值是一样的
+    assert(c_x_list[0] == nc_x_list[0])
+    # pair x, y
+    c_xy_dict = dict(zip(c_x_list, c_y_list))
+    nc_xy_dict = dict(zip(nc_x_list, nc_y_list))
+
+    # new_y=nc_y_list-c_y_list
+    # key: union x, value: new y
+    diff_x_y_dict = dict()
+    x_intersection = list(set(c_x_list) & set(nc_x_list))
+    x_c_unique = set(c_x_list) - set(nc_x_list)
+    x_nc_unique = set(nc_x_list) - set(c_x_list)
+
+    for x in x_intersection:
+        diff_x_y_dict[x] = nc_xy_dict[x] - c_xy_dict[x]
+
+    # for x in x_c_unique:
+    #     # find previous x of nc_x_list
+    #     curr_nc_x = __find_previous_x(x, nc_x_list)
+    #     diff_x_y_dict[x] = nc_xy_dict[curr_nc_x] - c_xy_dict[x]
+    #
+    # for x in x_nc_unique:
+    #     # find previous x of c_x_list
+    #     curr_c_x = __find_previous_x(x, c_x_list)
+    #     diff_x_y_dict[x] = nc_xy_dict[x] - c_xy_dict[curr_c_x]
+
+    res_x = sorted(list(diff_x_y_dict.keys()))
+    res_y = list()
+    for x in res_x:
+        res_y.append(diff_x_y_dict[x])
+
+    assert(res_y[0] == nc_y_list[0] - c_y_list[0])
+
+    return res_x, res_y
+
+
+def __find_previous_x(target_x: float, x_list: list) -> float:
+    # 对从小到大的x_list找到第一个比target_x大的数，再往前找一步
+    for curr_index, curr_x in enumerate(x_list):
+        if curr_x > target_x:
+            return x_list[curr_index - 1]
+    # edge case: target_x > x_list[-1]
+    if target_x > x_list[-1]:
+        return x_list[-1]
+
+assert(__find_previous_x(2.3, [1, 2.1, 3, 5]) == 2.1)
+
 if __name__ == '__main__':
     save_plot = False
     fit_poisson = False
     fit_polynomial = True
-    plot_each_display = True
-    plot_average_display = True
+    plot_each_display = False
+    plot_average_display = False
     PATH = "../displays/"
     FILE = "update_stim_info_full.xlsx"
     stimuli_df = pd.read_excel(PATH + FILE)
@@ -249,8 +309,25 @@ if __name__ == '__main__':
             bx.plot(x_avrg_nc_list[index], y_avrg_nc_list[index], "bo", alpha = 0.1)
             bx.plot(x_avrg_c_list[index], polyfit_crowding_avrg_list[index](x_avrg_c_list[index]), "r-")
             bx.plot(x_avrg_nc_list[index], polyfit_no_crowding_avrg_list[index](x_avrg_nc_list[index]), "b-")
-            bx.title.set_text("numersoity %s" % numerosity_list[index])
+            bx.title.set_text("numerosity %s" % numerosity_list[index])
         plt.show()
+
+    # %% plot local density differences
+    to_plot_diff_array_list = list()
+    for n in numerosity_list:
+        x_list_diff, y_list_diff = get_diff_x_y(n)
+        to_plot_diff_array_list.append(np.array([x_list_diff, y_list_diff]).T)
+
+    figd, dxs = plt.subplots(5, 5, figsize = (40, 30), sharex = True, sharey = True)
+    dxs = dxs.ravel()
+    for i, to_plot_diff_array in enumerate(to_plot_diff_array_list):
+        dxs[i].plot(to_plot_diff_array[:, 0], to_plot_diff_array[:, 1])
+        dxs[i].axhline(y = 0)
+    for dx in dxs:
+        dx.set_ylim(-0.1, 0.1)
+    plt.show()
+
+
     if save_plot:
         fig.savefig("sampleplot.svg")
         figc.savefig("eachdisplay.svg")

@@ -101,10 +101,10 @@ if __name__ == '__main__':
     sns.set(style = "white", color_codes = True)
     sns.set_style("ticks", {"xtick.major.size": 5, "ytick.major.size": 3})
     # some parameters
-    x = "rX"
-    # x = "a_values_norm"
-    y = "rY"
-    # y = "deviation_score"
+    # x = "rX"
+    x = "a_values"
+    # y = "rY"
+    y = "deviation_score_norm"
     jitter = 0.001
     ci = 95
     color = "gray"

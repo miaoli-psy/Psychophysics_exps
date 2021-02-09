@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 
 from scipy.stats import poisson
 
@@ -24,11 +25,12 @@ from src.commons.process_dataframe import process_col
 from src.commons.process_dict import get_sub_dict
 from src.commons.process_str import str_to_list
 
-
 if __name__ == '__main__':
     save_plot = False
     fit_poisson = False
     fit_polynomial = True
+    plot_each_display = True
+    plot_average_display = True
     PATH = "../displays/"
     FILE = "update_stim_info_full.xlsx"
     stimuli_df = pd.read_excel(PATH + FILE)
@@ -64,14 +66,27 @@ if __name__ == '__main__':
     datac_to_fit = get_data_to_fit_list(result_dict_c_list)
     datanc_to_fit = get_data_to_fit_list(result_dict_nc_list)
 
-    # 最高项系数
+    # 最高项系数the highest order
     deg = 2
+
+    if deg == 2:
+        label_c = "polynomial fit crowding"
+        label_nc = "polynomial fit no-crowding"
+    elif deg == 1:
+        label_c = "linear fit crowding"
+        label_nc = "linear fit no-crowding"
+
     fitted_c = get_fitted_power_list(datac_to_fit, deg = deg)
     fitted_nc = get_fitted_power_list(datanc_to_fit, deg = deg)
 
     # data for ttest
     datac_ttest = get_data_to_ttest(fitted_c)
     datanc_ttest = get_data_to_ttest(fitted_nc)
+    # covert to dataframe
+    dfc = pd.DataFrame(datac_ttest).T
+    dfnc= pd.DataFrame(datanc_ttest).T
+    dfc.to_excel("c.xlsx")
+    dfnc.to_excel("nc.xlsx")
 
     # ttest here
     ts, ps = list(), list()
@@ -84,8 +99,9 @@ if __name__ == '__main__':
 
     if fit_polynomial:
         # sample crowding and no-crowding display
-        res_c = result_dict_c_list[4][55][0]
-        res_nc = result_dict_nc_list[4][55][1]
+        N = 55
+        res_c = result_dict_c_list[4][N][0]
+        res_nc = result_dict_nc_list[4][N][1]
         x_crowding = [t[0] for t in res_c]
         y_crowding = [t[1] for t in res_c]
         x_ncrowding = [t[0] for t in res_nc]
@@ -96,16 +112,10 @@ if __name__ == '__main__':
         np_arr_crowding = np.array([x_crowding, norm_y_crowding]).transpose()
         np_arr_ncrowding = np.array([x_ncrowding, norm_y_ncrowding]).transpose()
         # fit here
-        polyfit_crowding = np.poly1d(np.polyfit(x= np_arr_crowding[:, 0], y = norm_y_crowding, deg = deg))
-        polyfit_ncrowding = np.poly1d(np.polyfit(x= np_arr_ncrowding[:, 0], y = norm_y_ncrowding, deg = deg))
+        polyfit_crowding = np.poly1d(np.polyfit(x = np_arr_crowding[:, 0], y = norm_y_crowding, deg = deg))
+        polyfit_ncrowding = np.poly1d(np.polyfit(x = np_arr_ncrowding[:, 0], y = norm_y_ncrowding, deg = deg))
 
         fig1, ax1 = plt.subplots()
-        if deg == 2:
-            label_c = "polynomial fit crowding"
-            label_nc = "polynomial fit no-crowding"
-        elif deg == 1:
-            label_c = "linear fit crowding"
-            label_nc = "linear fit no-crowding"
         ax1.plot(np_arr_crowding[:, 0], np_arr_crowding[:, 1], 'ro', alpha = 0.5, label = "crowding display")
         ax1.plot(np_arr_ncrowding[:, 0], np_arr_ncrowding[:, 1], 'bo', alpha = 0.5, label = "no-crowding display")
         ax1.plot(np_arr_crowding[:, 0], polyfit_crowding(np_arr_crowding[:, 0]), 'r--', label = label_c)
@@ -116,7 +126,7 @@ if __name__ == '__main__':
         ax1.set_title("Sample displays(numerosity 55): no crowding vs. crowding", fontsize = 12)
         plt.show()
 
-    #%% fit possion cdf here
+    # %% fit possion cdf here
     if fit_poisson:
         fitted_c_list = [get_fitted_res_cdf_poisson(sub_dict) for sub_dict in result_dict_c_list]
         fitted_nc_list = [get_fitted_res_cdf_poisson(sub_dict) for sub_dict in result_dict_nc_list]
@@ -141,23 +151,47 @@ if __name__ == '__main__':
         # plot starts here
         fig, ax = plt.subplots()
         # plot original data
-        ax.plot(to_plot_array[:, 0], to_plot_array[:, 1], 'bo', label = "no-crowding display", alpha = 0.5)
-        ax.plot(to_plot_array2[:, 0], to_plot_array2[:, 1], 'ro', label = "crowding display", alpha = 0.5)
+        ax.plot(to_plot_array[:, 0], to_plot_array[:, 1], 'bo', label = "data", alpha = 0.5)
+        # ax.plot(to_plot_array2[:, 0], to_plot_array2[:, 1], 'ro', label = "crowding display", alpha = 0.5)
         # get fitted y
         opty = fit_poisson_cdf(to_plot_array)
         opty2 = fit_poisson_cdf(to_plot_array2)
         # plot fitted data
-        ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty), 'b--', label = 'CDF Poisson fit no-crowding')
-        ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty2), 'r--', label = 'CDF Poisson fit crowding')
+        # ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty), 'b--',
+        #         label = 'CDF Poisson fit')
+        # ax.plot(to_plot_array[:, 0], poisson.cdf(to_plot_array[:, 0], opty2), 'r--', label = 'CDF Poisson fit crowding')
         # customize the plot
         plt.legend(loc = 'best')
-        ax.set_xlabel("Eccentricity", fontsize = 15)
-        ax.set_ylabel("Local density", fontsize = 15)
-        ax.set_title("Sample displays(numerosity 55): no crowding vs. crowding", fontsize = 12)
+        # ax.set_xlabel("Eccentricity", fontsize = 15)
+        # ax.set_ylabel("Local density", fontsize = 15)
+        # ax.set_title("Sample displays(numerosity 55): no crowding vs. crowding", fontsize = 12)
 
         plt.show()
+    # %% plot each display
+    numerosity_list = [21, 22, 23, 24, 25,
+                       31, 32, 33, 34, 35,
+                       41, 42, 43, 44, 45,
+                       49, 50, 51, 52, 53,
+                       54, 55, 56, 57, 58]
+    if plot_each_display:
+        figc, cxs = plt.subplots(5, 5, figsize = (40, 30), sharex = True, sharey = True)
+        cxs = cxs.ravel()
+        datac_to_fit1 = []
+        for i in datac_to_fit:
+            for display in i.values():
+                datac_to_fit1.append(display)
+        datanc_to_fit1 = []
+        for i in datanc_to_fit:
+            for display in i.values():
+                datanc_to_fit1.append(display)
+        for index, cx in enumerate(cxs):
+            for i in range(0, 5):
+                cx.plot(datac_to_fit1[index][i][:, 0], datac_to_fit1[index][i][:, 1], "r--", alpha = 0.5)
+                cx.plot(datanc_to_fit1[index][i][:, 0], datanc_to_fit1[index][i][:, 1], "b--", alpha = 0.5)
+            cx.title.set_text("numerosity %s" % numerosity_list[index])
+        plt.show()
 
-    #%% averaged local density for each numerosity
+    # %% averaged local density for each numerosity
     avrg_crowding_dic = get_avrg_dict(crowding_dic)
     avrg_no_crowding_dic = get_avrg_dict(no_crowding_dic)
     # get local density distribution
@@ -181,7 +215,7 @@ if __name__ == '__main__':
     y_avrg_c = avrg_dict_c_to_fit[numerosity][:, 1]
     y_avrg_nc = avrg_dict_nc_to_fit[numerosity][:, 1]
 
-    #fit here
+    # fit here
     polyfit_crowding_avrg = np.poly1d(np.polyfit(x = x_avrg_c, y = y_avrg_c, deg = deg))
     polyfit_ncrowding_avrg = np.poly1d(np.polyfit(x = x_avrg_nc, y = y_avrg_nc, deg = deg))
 
@@ -193,8 +227,31 @@ if __name__ == '__main__':
     plt.legend(loc = 'best')
     ax2.set_xlabel("Eccentricity", fontsize = 15)
     ax2.set_ylabel("Local density", fontsize = 15)
-    ax2.set_title("Average displays(numerosity %s): no crowding vs. crowding" %numerosity, fontsize = 12)
+    ax2.set_title("Average displays(numerosity %s): no crowding vs. crowding" % numerosity, fontsize = 12)
     plt.show()
 
+    if plot_average_display:
+        # plot all
+        x_avrg_c_list = [avrg_dict_c_to_fit[n][:, 0] for n in numerosity_list]
+        y_avrg_c_list = [avrg_dict_c_to_fit[n][:, 1] for n in numerosity_list]
+        x_avrg_nc_list = [avrg_dict_nc_to_fit[n][:, 0] for n in numerosity_list]
+        y_avrg_nc_list = [avrg_dict_nc_to_fit[n][:, 1] for n in numerosity_list]
+
+        polyfit_crowding_avrg_list = [np.poly1d(np.polyfit(x = x_avrg_c, y = y_avrg_c, deg = deg)) for
+                                      x_avrg_c, y_avrg_c in zip(x_avrg_c_list, y_avrg_c_list)]
+        polyfit_no_crowding_avrg_list = [np.poly1d(np.polyfit(x = x_avrg_nc, y = y_avrg_nc, deg = deg)) for
+                                         x_avrg_nc, y_avrg_nc in zip(x_avrg_nc_list, y_avrg_nc_list)]
+
+        figb, bxs = plt.subplots(5, 5, figsize = (40, 30), sharex = True, sharey = True)
+        bxs = bxs.ravel()
+        for index, bx in enumerate(bxs):
+            bx.plot(x_avrg_c_list[index], y_avrg_c_list[index], "ro", alpha = 0.1)
+            bx.plot(x_avrg_nc_list[index], y_avrg_nc_list[index], "bo", alpha = 0.1)
+            bx.plot(x_avrg_c_list[index], polyfit_crowding_avrg_list[index](x_avrg_c_list[index]), "r-")
+            bx.plot(x_avrg_nc_list[index], polyfit_no_crowding_avrg_list[index](x_avrg_nc_list[index]), "b-")
+            bx.title.set_text("numersoity %s" % numerosity_list[index])
+        plt.show()
     if save_plot:
         fig.savefig("sampleplot.svg")
+        figc.savefig("eachdisplay.svg")
+        figb.savefig("avrgdisplay.svg")

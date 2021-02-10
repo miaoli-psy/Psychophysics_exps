@@ -6,16 +6,12 @@ Create time: 2021-01-05 19:14
 IDE: PyCharm
 Introduction:
 """
-import copy
 
 import pandas as pd
 import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy.optimize import curve_fit
 
-from scipy.stats import poisson
 
 from src.analysis.exp1_local_density_analysis import dict_pix_to_deg, get_result_dict, interplote_result_dict_start, \
     get_fitted_res_cdf_poisson, get_sample_plot_x_y, normolizedLD, get_data2fit, get_data_to_fit_list, \
@@ -27,19 +23,21 @@ from src.commons.process_dict import get_sub_dict
 from src.commons.process_str import str_to_list
 
 
-def get_diff_x_y(n: int):
-
-    c_x_list = avrg_dict_c_to_fit[n][:, 0].tolist()
-    c_y_list = avrg_dict_c_to_fit[n][:, 1].tolist()
-    polyfit_crowding_avrg = np.poly1d(np.polyfit(x = c_x_list, y = c_y_list, deg = 2))
-    c_y_list =polyfit_crowding_avrg(c_x_list).tolist()
-    nc_x_list = avrg_dict_nc_to_fit[n][:, 0].tolist()
-    nc_y_list = avrg_dict_nc_to_fit[n][:, 1].tolist()
-    polyfit_no_crowding_avrg = np.poly1d(np.polyfit(x = nc_x_list, y = nc_y_list, deg = 2))
-    nc_y_list = polyfit_no_crowding_avrg(nc_x_list).tolist()
+def get_diff_x_y(n: int, to_fit_dict_c: dict, to_fit_dict_nc: dict, fit_poly = True):
+    # ori x values
+    c_x_list = to_fit_dict_c[n][:, 0].tolist()
+    nc_x_list = to_fit_dict_nc[n][:, 0].tolist()
+    # ori y values
+    c_y_list = to_fit_dict_c[n][:, 1].tolist()
+    nc_y_list = to_fit_dict_nc[n][:, 1].tolist()
+    if fit_poly:
+        polyfit_crowding_avrg = np.poly1d(np.polyfit(x = c_x_list, y = c_y_list, deg = 2))
+        c_y_list = polyfit_crowding_avrg(c_x_list).tolist()
+        polyfit_no_crowding_avrg = np.poly1d(np.polyfit(x = nc_x_list, y = nc_y_list, deg = 2))
+        nc_y_list = polyfit_no_crowding_avrg(nc_x_list).tolist()
 
     # x 的第一个值是一样的
-    assert(c_x_list[0] == nc_x_list[0])
+    assert (c_x_list[0] == nc_x_list[0])
     # pair x, y
     c_xy_dict = dict(zip(c_x_list, c_y_list))
     nc_xy_dict = dict(zip(nc_x_list, nc_y_list))
@@ -69,7 +67,7 @@ def get_diff_x_y(n: int):
     for x in res_x:
         res_y.append(diff_x_y_dict[x])
 
-    assert(res_y[0] == nc_y_list[0] - c_y_list[0])
+    assert (res_y[0] == nc_y_list[0] - c_y_list[0])
 
     return res_x, res_y
 
@@ -83,14 +81,15 @@ def __find_previous_x(target_x: float, x_list: list) -> float:
     if target_x > x_list[-1]:
         return x_list[-1]
 
-assert(__find_previous_x(2.3, [1, 2.1, 3, 5]) == 2.1)
+
+assert (__find_previous_x(2.3, [1, 2.1, 3, 5]) == 2.1)
 
 if __name__ == '__main__':
     save_plot = False
     fit_poisson = False
     fit_polynomial = True
-    plot_each_display = False
-    plot_average_display = False
+    plot_each_display = True
+    plot_average_display = True
     PATH = "../displays/"
     FILE = "update_stim_info_full.xlsx"
     stimuli_df = pd.read_excel(PATH + FILE)
@@ -144,7 +143,7 @@ if __name__ == '__main__':
     datanc_ttest = get_data_to_ttest(fitted_nc)
     # covert to dataframe
     dfc = pd.DataFrame(datac_ttest).T
-    dfnc= pd.DataFrame(datanc_ttest).T
+    dfnc = pd.DataFrame(datanc_ttest).T
     dfc.to_excel("c.xlsx")
     dfnc.to_excel("nc.xlsx")
 
@@ -269,7 +268,7 @@ if __name__ == '__main__':
     avrg_dict_nc_to_fit = get_avrg_data_to_fit(avrg_result_dict_nc)
 
     # fit one average data to polynomial
-    numerosity = 32
+    numerosity = 21
     x_avrg_c = avrg_dict_c_to_fit[numerosity][:, 0]
     x_avrg_nc = avrg_dict_nc_to_fit[numerosity][:, 0]
     y_avrg_c = avrg_dict_c_to_fit[numerosity][:, 1]
@@ -315,7 +314,9 @@ if __name__ == '__main__':
     # %% plot local density differences
     to_plot_diff_array_list = list()
     for n in numerosity_list:
-        x_list_diff, y_list_diff = get_diff_x_y(n)
+        x_list_diff, y_list_diff = get_diff_x_y(n, to_fit_dict_c = avrg_dict_c_to_fit,
+                                                to_fit_dict_nc = avrg_dict_nc_to_fit,
+                                                fit_poly = True)
         to_plot_diff_array_list.append(np.array([x_list_diff, y_list_diff]).T)
 
     figd, dxs = plt.subplots(5, 5, figsize = (40, 30), sharex = True, sharey = True)
@@ -326,7 +327,25 @@ if __name__ == '__main__':
     for dx in dxs:
         dx.set_ylim(-0.1, 0.1)
     plt.show()
+    # %% plot different curves: 5 in a subplot
+    plot_dict = {0: [0, 1, 2, 3, 4],
+                 1: [5, 6, 7, 8, 9],
+                 2: [10, 11, 12, 13, 14],
+                 3: [15, 16, 17, 18, 19],
+                 4: [20, 21, 22, 23, 24]}
 
+    fige, exs = plt.subplots(2, 3, figsize = (16, 8), sharex = True, sharey = True)
+    exs = exs.ravel()
+    for index, ex in enumerate(exs):
+        if index < 5:
+            for i in range(0, 5):
+                ex.plot(to_plot_diff_array_list[plot_dict[index][i]][:, 0],
+                        to_plot_diff_array_list[plot_dict[index][i]][:, 1],
+                        label = "%s" %i)
+                ex.legend()
+        ex.set_ylim(-0.1, 0.1)
+    plt.show()
+    fige.savefig("try.svg")
 
     if save_plot:
         fig.savefig("sampleplot.svg")

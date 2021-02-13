@@ -310,13 +310,13 @@ if __name__ == '__main__':
             bx.plot(x_avrg_nc_list[index], polyfit_no_crowding_avrg_list[index](x_avrg_nc_list[index]), "b-")
             bx.title.set_text("numerosity %s" % numerosity_list[index])
         plt.show()
-
     # %% plot local density differences
     to_plot_diff_array_list = list()
     for n in numerosity_list:
         x_list_diff, y_list_diff = get_diff_x_y(n, to_fit_dict_c = avrg_dict_c_to_fit,
                                                 to_fit_dict_nc = avrg_dict_nc_to_fit,
-                                                fit_poly = True)
+                                                fit_poly = False)
+
         to_plot_diff_array_list.append(np.array([x_list_diff, y_list_diff]).T)
 
     figd, dxs = plt.subplots(5, 5, figsize = (40, 30), sharex = True, sharey = True)
@@ -325,8 +325,10 @@ if __name__ == '__main__':
         dxs[i].plot(to_plot_diff_array[:, 0], to_plot_diff_array[:, 1])
         dxs[i].axhline(y = 0)
     for dx in dxs:
-        dx.set_ylim(-0.1, 0.1)
+        dx.set_ylim(-0.5, 0.5)
     plt.show()
+    figd.savefig("diff_nofitting.svg")
+
     # %% plot different curves: 5 in a subplot
     plot_dict = {0: [0, 1, 2, 3, 4],
                  1: [5, 6, 7, 8, 9],

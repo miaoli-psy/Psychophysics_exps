@@ -184,6 +184,7 @@ if __name__ == '__main__':
         ax1.set_ylabel("Local density", fontsize = 15)
         ax1.set_title("Sample displays(numerosity 55): no crowding vs. crowding", fontsize = 12)
         plt.show()
+        fig1.savefig("try.svg")
 
     # %% fit possion cdf here
     if fit_poisson:
@@ -233,7 +234,7 @@ if __name__ == '__main__':
                        49, 50, 51, 52, 53,
                        54, 55, 56, 57, 58]
     if plot_each_display:
-        figc, cxs = plt.subplots(5, 5, figsize = (40, 30), sharex = True, sharey = True)
+        figc, cxs = plt.subplots(5, 5, figsize = (30, 20), sharex = True, sharey = True)
         cxs = cxs.ravel()
         datac_to_fit1 = []
         for i in datac_to_fit:
@@ -301,7 +302,7 @@ if __name__ == '__main__':
         polyfit_no_crowding_avrg_list = [np.poly1d(np.polyfit(x = x_avrg_nc, y = y_avrg_nc, deg = deg)) for
                                          x_avrg_nc, y_avrg_nc in zip(x_avrg_nc_list, y_avrg_nc_list)]
 
-        figb, bxs = plt.subplots(5, 5, figsize = (40, 30), sharex = True, sharey = True)
+        figb, bxs = plt.subplots(5, 5, figsize = (25, 15), sharex = True, sharey = True)
         bxs = bxs.ravel()
         for index, bx in enumerate(bxs):
             bx.plot(x_avrg_c_list[index], y_avrg_c_list[index], "ro", alpha = 0.1)
@@ -338,14 +339,16 @@ if __name__ == '__main__':
 
     fige, exs = plt.subplots(2, 3, figsize = (16, 8), sharex = True, sharey = True)
     exs = exs.ravel()
+
     for index, ex in enumerate(exs):
         if index < 5:
             for i in range(0, 5):
                 ex.plot(to_plot_diff_array_list[plot_dict[index][i]][:, 0],
                         to_plot_diff_array_list[plot_dict[index][i]][:, 1],
-                        label = "%s" %i)
+                        label = "%s" %i, alpha = 0.5)
                 ex.legend()
-        ex.set_ylim(-0.1, 0.1)
+        ex.set_ylim(-0.5, 0.5)
+        ex.axhline(y = 0, color = "gray", linestyle = "--")
     plt.show()
     fige.savefig("try.svg")
 

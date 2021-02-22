@@ -30,7 +30,7 @@ stimuli_df = pd.read_excel(PATH + FILENAME)
 # TODO count 3 or more/ 4 or more
 count_edge = 3
 # TODO see number of beam regions
-beam_region_info = False
+beam_region_info = True
 # get and insert new col "n_beams" into stimuli dataframe
 # number of beams that contains 1, 2, 3, 4, 5, 6 disc
 # stimuli_df["align_v_size12"] = stimuli_df["positions_list"].apply(get_avrg_alignment_v, args = (12, count_edge))
@@ -40,6 +40,7 @@ for i in range(1, 13):
 
 stimuli_df["beam_n"] = stimuli_df["positions_list"].apply(get_beam_n, args = (6,))
 
+# %% beam region info
 if beam_region_info:
     # put those 6 values in separate columns
     for i in range(0, 6):
@@ -77,53 +78,51 @@ if beam_region_info:
              n_beams_to_plot6],
             axis = 0, sort = True)
     # separate for each numerosity range
-    n_beams_to_plot_w03 = get_sub_df_according2col_value(n_beams_to_plot, "winsize", 0.3)
-    n_beams_to_plot_w04 = get_sub_df_according2col_value(n_beams_to_plot, "winsize", 0.4)
-    n_beams_to_plot_w05 = get_sub_df_according2col_value(n_beams_to_plot, "winsize", 0.5)
-    n_beams_to_plot_w06 = get_sub_df_according2col_value(n_beams_to_plot, "winsize", 0.6)
-    n_beams_to_plot_w07 = get_sub_df_according2col_value(n_beams_to_plot, "winsize", 0.7)
+    winsize_list = [0.3, 0.4, 0.5, 0.6, 0.7]
+    n_beams_to_plot_list = [get_sub_df_according2col_value(n_beams_to_plot, "winsize", winsize) for winsize in
+                            winsize_list]
+
     # plots starts here
     fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = True, sharey = True)
-    sns.boxplot(x = "N_disc_in_beam", y = "n_beam", data = n_beams_to_plot_w03, ax = axes[0, 0], hue = "crowdingcons",
-                palette = ["royalblue", "orangered"])
-    sns.boxplot(x = "N_disc_in_beam", y = "n_beam", data = n_beams_to_plot_w04, ax = axes[0, 1], hue = "crowdingcons",
-                palette = ["royalblue", "orangered"])
-    sns.boxplot(x = "N_disc_in_beam", y = "n_beam", data = n_beams_to_plot_w05, ax = axes[0, 2], hue = "crowdingcons",
-                palette = ["royalblue", "orangered"])
-    sns.boxplot(x = "N_disc_in_beam", y = "n_beam", data = n_beams_to_plot_w06, ax = axes[1, 0], hue = "crowdingcons",
-                palette = ["royalblue", "orangered"])
-    sns.boxplot(x = "N_disc_in_beam", y = "n_beam", data = n_beams_to_plot_w07, ax = axes[1, 1], hue = "crowdingcons",
-                palette = ["royalblue", "orangered"])
-    sns.boxplot(x = "N_disc_in_beam", y = "n_beam", data = n_beams_to_plot, ax = axes[1, 2], hue = "crowdingcons",
-                palette = ["royalblue", "orangered"])
+    axes = axes.ravel()
+    for i, ax in enumerate(axes):
+        if i < 5:
+            sns.boxplot(x = "N_disc_in_beam", y = "n_beam", data = n_beams_to_plot_list[i], ax = ax,
+                        hue = "crowdingcons", palette = ["royalblue", "orangered"])
+        else:
+            sns.boxplot(x = "N_disc_in_beam", y = "n_beam", data = n_beams_to_plot, ax = ax, hue = "crowdingcons",
+                        palette = ["royalblue", "orangered"])
     # set x,y label
-    axes[0, 0].set(xlabel = "", ylabel = "")
-    axes[0, 1].set(xlabel = "", ylabel = "")
-    axes[0, 2].set(xlabel = "", ylabel = "")
-    axes[1, 0].set(xlabel = "", ylabel = "")
-    axes[1, 1].set(xlabel = "Number of discs in one beam region", ylabel = "")
-    axes[1, 1].xaxis.label.set_size(15)
-    axes[1, 2].set(xlabel = "", ylabel = "")
-    # some text
-    fig.text(0.15, 0.89, "(a) numerosity range: 21-25", fontsize = 15)
-    fig.text(0.43, 0.89, "(b) numerosity range: 31-35", fontsize = 15)
-    fig.text(0.70, 0.89, "(c) numerosity range: 41-45", fontsize = 15)
-    fig.text(0.15, 0.47, "(d) numerosity range: 49-53", fontsize = 15)
-    fig.text(0.43, 0.47, "(e) numerosity range: 54-58", fontsize = 15)
-    fig.text(0.70, 0.47, "(e) all numerosities", fontsize = 15)
-    fig.text(0.08, 0.5, 'Number of beam regions', va = 'center', rotation = 'vertical', fontsize = 15)
-    # keep only one legend
-    handles, labels = axes[0, 1].get_legend_handles_labels()
-    labels = ["no-crowding", "crowding"]
-    axes[0, 1].legend(handles[:], labels, loc = "best")
-    axes[0, 0].get_legend().remove()
-    axes[0, 2].get_legend().remove()
-    axes[1, 0].get_legend().remove()
-    axes[1, 1].get_legend().remove()
-    axes[1, 2].get_legend().remove()
-    plt.show()
+    for i, ax in enumerate(axes):
+        if i == 4:
+            ax.set(xlabel = "Number of discs per beam", ylabel = "")
+            ax.xaxis.label.set_size(15)
+        else:
+            ax.set(xlabel = "", ylabel = "")
 
-# individual display alignment value
+    for ax in axes:
+        for patch in ax.artists:
+            r, g, b, a = patch.get_facecolor()
+            patch.set_facecolor((r, g, b, .6))
+    # some text
+    fig.text(0.15, 0.89, "(a) numerosity range: 21-25", fontsize = 13)
+    fig.text(0.43, 0.89, "(b) numerosity range: 31-35", fontsize = 13)
+    fig.text(0.70, 0.89, "(c) numerosity range: 41-45", fontsize = 13)
+    fig.text(0.15, 0.47, "(d) numerosity range: 49-53", fontsize = 13)
+    fig.text(0.43, 0.47, "(e) numerosity range: 54-58", fontsize = 13)
+    fig.text(0.70, 0.47, "(e) all numerosities", fontsize = 13)
+    fig.text(0.08, 0.5, 'Number of beams', va = 'center', rotation = 'vertical', fontsize = 15)
+    # keep only one legend
+    # handles, labels = axes[1].get_legend_handles_labels()
+    # labels = ["no-crowding", "crowding"]
+    for i, ax in enumerate(axes):
+        # if i == 1:
+        #     ax.legend(handles[:], labels, loc = "best")
+        ax.get_legend().remove()
+    plt.show()
+    # fig.savefig("try.svg")
+
+# %% individual display alignment value
 if indi_display:
     display_n = 248  # 0-249
     posis_str = stimuli_df.positions_list[display_n]

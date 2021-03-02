@@ -8,7 +8,9 @@ Introduction:
 """
 from src.constants.exp3a_pilot_constants import KEPT_COL_NAMES, SUB_DF_COLS2CHECK
 from src.plots.exp3a_pilot_plot import drawplot
-from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func, drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, get_col_boundary
+from src.preprocess.preprocess_exp3a_pilot import preprocess_exp3a_func
+from src.preprocess.sub.get_data2analysis import drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, \
+    get_col_boundary
 from src.commons.process_dataframe import insert_new_col_from_two_cols, insert_new_col_from_three_cols, \
     get_sub_df_according2col_value, process_cols, process_col, insert_new_col, get_processed_cols_df, keep_valid_columns
 from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN, \

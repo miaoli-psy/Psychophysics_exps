@@ -117,3 +117,11 @@ KEPT_COL_NAMES5 = ["crowdingcons",
                    "density_itemsperdeg2",
                    "list_index",
                    "a_values"]
+
+KEPT_COL_NAMES_exp1 = ["Crowding",
+                       "Display",
+                       "Numerosity",
+                       "whichBlock",
+                       "response",
+                       "participant_N",
+                       "blockOrder"]

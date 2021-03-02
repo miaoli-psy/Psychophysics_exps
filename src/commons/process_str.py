@@ -30,3 +30,20 @@ def raw_resp_to_int(raw_resp):
             return None
         else:
             return int(res_s)
+
+
+def imageFile_to_number(filename):
+    """
+    # ws0.7_crowding1_n448_Ndisk57.png --> 448
+    """
+    numberEndIndex = filename.find('_Ndisk')
+    filename = filename[18:numberEndIndex]
+    return filename
+
+
+def imageFile_to_number2(filename):
+    """
+    # ws0.7_crowding1_n448_Ndisk57.png --> 0.7
+    """
+    filename = filename[3:6]
+    return filename

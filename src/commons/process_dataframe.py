@@ -88,6 +88,10 @@ def get_col_names(simuli_df):
     return c_names
 
 
+def rename_df_col(df: pd.DataFrame, old_col_name: str, new_col_name: str):
+    df.rename(columns = {old_col_name: new_col_name}, inplace = True)
+
+
 def get_pivot_table(input_df: pd.DataFrame, index, columns, values) -> pd.DataFrame:
     """
     :param input_df:

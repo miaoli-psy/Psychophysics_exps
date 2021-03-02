@@ -7,9 +7,11 @@ IDE: PyCharm
 Introduction: Results exp1: deviation scores as a function of numerosity
 """
 import exp1_radial_display2
+import sys
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+
 
 from src.analysis.exp1_alignment_analysis import add_color_code_5levels, get_analysis_dataframe
 from src.analysis.exp1_analysis import get_data_to_analysis
@@ -22,9 +24,10 @@ if __name__ == '__main__':
     # TODO set parameters
     # read stimuli and data
     PATH_DATA = "../data/exp1_rerun_data/"
-    FILENAME_DATA = "cleanedTotalData_fullinfo_v2.xlsx"
+    FILENAME_DATA = "cleanedTotalData_fullinfo_v3.xlsx"
     stimuli_to_merge = exp1_radial_display2.stimuli_df
     data_to_merge = pd.read_excel(PATH_DATA + FILENAME_DATA)
+
     # remove duplicated cols
     stimuli_to_merge = keep_valid_columns(stimuli_to_merge, KEPT_COL_NAMES_STIMU_DF2)
     # merge stimuli file with data

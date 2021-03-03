@@ -46,7 +46,7 @@ box_pairs = [((0.4, 0), (0.4, 1)),
              ((0.7, 0), (0.7, 1)),
              ((0.3, 0), (0.6, 1)),
              ((0.3, 0), (0.7, 1))]
-text_annot_custom = ["*", "p = .067", "*", "*", "*", "*"]
+text_annot_custom = ["*", "*", "*", "*", "*", "*"]
 
 # add asterisk and pairs
 add_stat_annotation(ax, data = data, x = x, y = y, hue = hue, box_pairs = box_pairs,

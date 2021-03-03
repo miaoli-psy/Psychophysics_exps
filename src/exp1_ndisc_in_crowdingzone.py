@@ -51,11 +51,11 @@ if __name__ == '__main__':
     # read stimuli info and data
     PATH_DATA = "../data/exp1_rerun_data/"
     STIM_PATH = "../displays/"
-    FILENAME_DATA = "cleanedTotalData_fullinfo_v2.xlsx"
+    FILENAME_DATA = "cleanedTotalData_fullinfo_v3.xlsx"
     FILENAME_STIM = "update_stim_info_full.xlsx"
     data_to_merge = pd.read_excel(PATH_DATA + FILENAME_DATA)
     stim_to_merge = pd.read_excel(STIM_PATH + FILENAME_STIM)
-    stimuli_to_merge = keep_valid_columns(stim_to_merge, KEPT_COL_NAMES_STIMU_DF2)
+    stimuli_to_merge = keep_valid_columns(stim_to_merge, KEPT_COL_NAMES3)
     # merge data with stimuli info
     all_df = pd.merge(data_to_merge,
                       stimuli_to_merge,

@@ -47,7 +47,7 @@ alignment = ["align_v_size12",
 
 # read stimuli info and data
 PATH_DATA = "../data/exp1_rerun_data/"
-FILENAME_DATA = "cleanedTotalData_fullinfo_v2.xlsx"
+FILENAME_DATA = "cleanedTotalData_fullinfo_v3.xlsx"
 # stimuli dataframe read from exp1_raidal_display2.py
 stimuli_to_merge_ori = exp1_radial_display2.stimuli_df
 data_to_merge = pd.read_excel(PATH_DATA + FILENAME_DATA)

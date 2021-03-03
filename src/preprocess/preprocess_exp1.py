@@ -33,8 +33,8 @@ def get_deviation(resp: int, numerosity: int) -> int:
     return resp - numerosity
 
 
-if __name__ == '__main__':
-    write_to_excel = True
+if __name__ == "__main__":
+    write_to_excel = False
     DATA_PATH = "../../data/exp1_rerun_data/rawdata/"
     FILENAME_PREFIX = "a"
     FILETYPE = ".csv"
@@ -60,6 +60,7 @@ if __name__ == '__main__':
 
     df_list = [get_sub_df_according2col_value(all_df, "Numerosity", n) for n in n_discs]
 
+    # keep data witnin 3 standard deviations
     col_to_process = "response"
     prepro_df_list = list()
     for sub_df in df_list:
@@ -74,14 +75,31 @@ if __name__ == '__main__':
     insert_new_col(mydata, "Display", "index_stimuliInfo", imageFile_to_number)
     rename_df_col(mydata, "Numerosity", "N_disk")
     rename_df_col(mydata, "Crowding", "crowdingcons")
-    # deviation
+
+    # DV: deviation
     insert_new_col_from_two_cols(mydata, "response", "N_disk", "deviation_score", get_deviation)
+
     # make sure col val type
     change_col_value_type(mydata, "crowdingcons", int)
     change_col_value_type(mydata, "winsize", float)
     change_col_value_type(mydata, "index_stimuliInfo", str)
     change_col_value_type(mydata, "N_disk", int)
 
+    # groupby data to make bar plot
+    crwdng = "crowdingcons"
+    ws = "winsize"
+    pp = "participant_N"
+    groupby_data = mydata["deviation_score"].groupby([mydata[crwdng], mydata[ws], mydata[pp]]).mean()
+    groupby_data = groupby_data.reset_index(level = [crwdng, ws, pp])
+    
+    # pivot table
+    pivotT = pd.pivot_table(mydata,
+                            index = ["crowdingcons", "participant_N"],
+                            columns = ["winsize", "N_disk"],
+                            values = ["deviation_score"])
+
     # write to excel
     if write_to_excel:
         mydata.to_excel("try.xlsx")
+        groupby_data.to_excel("try1.xlsx")
+        pivotT.to_excel("try2.xlsx")

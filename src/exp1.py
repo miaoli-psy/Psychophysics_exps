@@ -60,43 +60,25 @@ if __name__ == '__main__':
     ci = 68
     # plot starts here
     fig, axes = plt.subplots(2, 3, figsize = (13, 6), sharex = False, sharey = True)
-    sns.barplot(x = x, y = y, data = data_sep_ws_to_plot[0], ax = axes[0, 0], hue = hue, capsize = capsize, errwidth = errwidth, palette = palette, alpha = alpha, ci = ci)
-    sns.barplot(x = x, y = y, data = data_sep_ws_to_plot[1], ax = axes[0, 1], hue = hue, capsize = capsize, errwidth = errwidth, palette = palette, alpha = alpha, ci = ci)
-    sns.barplot(x = x, y = y, data = data_sep_ws_to_plot[2], ax = axes[0, 2], hue = hue, capsize = capsize, errwidth = errwidth, palette = palette, alpha = alpha, ci = ci)
-    sns.barplot(x = x, y = y, data = data_sep_ws_to_plot[3], ax = axes[1, 0], hue = hue, capsize = capsize, errwidth = errwidth, palette = palette, alpha = alpha, ci = ci)
-    sns.barplot(x = x, y = y, data = data_sep_ws_to_plot[4], ax = axes[1, 1], hue = hue, capsize = capsize, errwidth = errwidth, palette = palette, alpha = alpha, ci = ci)
+    axes = axes.ravel()
+    for i, ax in enumerate(axes):
+        if i < 5:
+            sns.barplot(x = x, y = y, data = data_sep_ws_to_plot[i], ax = ax, hue = hue, capsize = capsize, errwidth = errwidth, palette = palette, alpha = alpha, ci = ci)
+        # remove defalt legend
+        # ax.get_legend().set_visible(False)
+        if i == 1:
+            handles, labels = ax.get_legend_handles_labels()
+            labels = ["no-crowding", "crowding"]
+            ax.legend(handles, labels, loc = "best", fontsize = 12)
 
-    # remove defalt legend
-    axes[0, 0].get_legend().set_visible(False)
-    axes[0, 1].get_legend().set_visible(False)
-    axes[0, 2].get_legend().set_visible(False)
-    axes[1, 0].get_legend().set_visible(False)
-    axes[1, 1].get_legend().set_visible(False)
-    # customize legend
-    handles, labels = axes[0, 1].get_legend_handles_labels()
-    labels = ["no-crowding", "crowding"]
-    axes[0, 1].legend(handles, labels, loc = "best", fontsize = 12)
-
-    # set x,y label
-    axes[0, 0].set(xlabel = "", ylabel = "")
-    axes[0, 1].set(xlabel = "", ylabel = "")
-    axes[0, 2].set(xlabel = "", ylabel = "")
-    axes[1, 0].set(xlabel = "", ylabel = "")
-    axes[1, 1].set(xlabel = "Numerosity", ylabel = "")
-    axes[1, 1].xaxis.label.set_size(20)
+        # set x,y label
+        if i < 4:
+            ax.set(xlabel = "", ylabel = "")
+        elif i == 4:
+            ax.set(xlabel = "Numerosity", ylabel = "")
+            ax.xaxis.label.set_size(20)
 
     fig.text(0.08, 0.5, 'Deviation Score', va = 'center', rotation = 'vertical', fontsize = 20)
-
-    # remoing the borders and ticks of the last subplot
-    axes[1, 2].spines["top"].set_visible(False)
-    axes[1, 2].spines["left"].set_visible(False)
-    axes[1, 2].spines["right"].set_visible(False)
-    axes[1, 2].spines["bottom"].set_visible(False)
-    # removing the tick marks
-    axes[1, 2].tick_params(bottom = False, left = False)
-
-    # removing the x label
-    axes[1, 2].xaxis.set_visible(False)
 
     plt.show()
 

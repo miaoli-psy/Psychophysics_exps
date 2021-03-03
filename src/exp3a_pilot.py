@@ -38,7 +38,7 @@ if __name__ == "__main__":
     max_rt = 3
     all_df = drop_df_rows_according2_one_col(all_df, col_to_drop_rows, min_rt, max_rt)
 
-    # drop response that are outside 2 standard deviation
+    # drop response that are outside 3 standard deviation
     col_rt = "key_resp.rt"
     boundary = get_col_boundary(all_df, col_rt)
     resp_min = boundary[0]

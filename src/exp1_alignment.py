@@ -4,14 +4,15 @@ Project: Psychophysics_exps
 Creator: Miao
 Create time: 2020-12-29 20:02
 IDE: PyCharm
-Introduction:
+Introduction: exp1 ms alignment value analysis plot: partial corr between deviation socre and alignment values
+controlling the effect of numerosity (the number of disc on the display.
+ms: cal partial corr
 """
 import pandas as pd
 from scipy.stats import stats
 import matplotlib.pyplot as plt
 import seaborn as sns
 import exp1_radial_display2
-from matplotlib.lines import Line2D
 import pingouin as pg
 
 from src.analysis.exp1_alignment_analysis import get_data_to_analysis, get_analysis_dataframe, \

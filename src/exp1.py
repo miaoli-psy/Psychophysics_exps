@@ -4,7 +4,7 @@ Project: Psychophysics_exps
 Creator: Miao
 Create time: 2021-01-21 10:49
 IDE: PyCharm
-Introduction: Results exp1: deviation scores as a function of numerosity
+Introduction: Results exp1: deviation scores as a function of numerosity, separate for each numerosity
 """
 import exp1_radial_display2
 import sys

@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*- 
-"""
-Project: Psychophysics_exps
-Creator: Miao
-Create time: 2021-01-11 21:41
-IDE: PyCharm
-Introduction:
-"""
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import statsmodels.formula.api as sm

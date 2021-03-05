@@ -4,8 +4,9 @@ Project: Psychophysics_exps
 Creator: Miao
 Create time: 2021-02-01 15:03
 IDE: PyCharm
-Introduction: Calculate partial corr between deviation score and number of discs' into others crowding zones.
-Polt the parr corr results
+Introduction: exp1 ms Calculate partial corr between deviation score and number of discs' into others crowding zones.
+Plot the parr corr results
+Plot partical corrs against increasing ellipse sizes - invert u shape
 
 """
 import pandas as pd
@@ -20,7 +21,6 @@ from src.analysis.exp1_alignment_analysis import add_color_code_by_crowdingcons,
 from src.commons.process_dataframe import keep_valid_columns, insert_new_col, insert_new_col_from_two_cols, \
     get_sub_df_according2col_value
 from src.constants.exp1_constants import KEPT_COL_NAMES_STIMU_DF2, KEPT_COL_NAMES3
-
 
 def calculate_residuals(input_df):
     lin_fit_results_Y = sm.ols(formula = "deviation_score_norm ~ N_disk", data = input_df).fit()

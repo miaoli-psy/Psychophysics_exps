@@ -4,7 +4,7 @@ Project: Psychophysics_exps
 Creator: Miao
 Create time: 2021-01-14 20:21
 IDE: PyCharm
-Introduction:
+Introduction: cal alignmnet value scores for each display. plot number of beams - discs per beam
 """
 import pandas as pd
 from collections import Counter
@@ -20,8 +20,8 @@ from src.commons.process_str import str_to_list
 from src.point.polar_point import get_polar_coordinates
 
 is_debug = True
-indi_display = True
-write_to_excel = True
+indi_display = False
+write_to_excel = False
 
 # read stimuli display
 PATH = "../displays/"
@@ -30,7 +30,7 @@ stimuli_df = pd.read_excel(PATH + FILENAME)
 # TODO count 3 or more/ 4 or more
 count_edge = 3
 # TODO see number of beam regions
-beam_region_info = True
+beam_region_info = False
 # get and insert new col "n_beams" into stimuli dataframe
 # number of beams that contains 1, 2, 3, 4, 5, 6 disc
 # stimuli_df["align_v_size12"] = stimuli_df["positions_list"].apply(get_avrg_alignment_v, args = (12, count_edge))

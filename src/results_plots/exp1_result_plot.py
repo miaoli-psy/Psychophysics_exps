@@ -4,7 +4,7 @@ Project: Psychophysics_exps
 Creator: Miao
 Create time: 2021-01-05 14:29
 IDE: PyCharm
-Introduction:
+Introduction: exp1 ms bar plot: Deviation score as a function of numerosity
 """
 
 import seaborn as sns

@@ -80,7 +80,7 @@ def drawEllipse_crowding(e_posi, black_disc_posi, red_disc_posi, crowding_posi, 
     ax.patch.set_facecolor('lightgray')
     plt.show()
     if savefig:
-        fig.savefig('try.png', bbox_inches = 'tight', pad_inches = 0)
+        fig.savefig('try.svg', bbox_inches = 'tight', pad_inches = 0)
 
 
 if __name__ == '__main__':

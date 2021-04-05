@@ -101,6 +101,8 @@ if __name__ == '__main__':
                                        y = y,
                                        covar = "N_disk",
                                        method = method)
+    partial_corr_res_list.append(partial_corr_all)
+    partial_corr = pd.concat(partial_corr_res_list, axis = 0)
     # %% plot partial corr deviation score and count number
     # ini plot
     sns.set(style = "white", color_codes = True)

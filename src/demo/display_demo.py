@@ -4,10 +4,6 @@ Created on Tue Apr 14 22:54:41 2020
 
 @author: Miao
 """
-
-# =============================================================================
-# import modules
-# =============================================================================
 from math import atan2, pi
 from scipy.spatial import distance
 # https://www.liaoxuefeng.com/wiki/1016959663602400/1017454145014176
@@ -16,9 +12,6 @@ from matplotlib.patches import Ellipse
 from src.constants.sample_display_posi import SamplePosiExp1
 
 
-# =============================================================================
-# draw ellipse
-# =============================================================================
 def drawEllipse_full(e_posi, extra_posi, ka, kb, ellipseColor_r = 'orangered', ellipseColor_t = 'royalblue'):
     """
     This function allows to draw more than one ellipse. The parameter is

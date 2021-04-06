@@ -48,7 +48,7 @@ def __get_angle(posi:Tuple[float]) -> float:
     return angle
 
 
-def get_polar_coordinates(inputposilist:List[Tuple[float]], int = False) -> List[Tuple[int]]:
+def get_polar_coordinates(inputposilist:List[Tuple[float]], int = False, sort = True) -> List[Tuple[int]]:
     """
     get polar coordinates for all disc positions
     """
@@ -64,7 +64,8 @@ def get_polar_coordinates(inputposilist:List[Tuple[float]], int = False) -> List
         polar_coordinates.append((x, y))
     
     # sort by tuple's first value (angle)
-    polar_coordinates.sort()
+    if sort:
+        polar_coordinates.sort()
     return polar_coordinates
 
 

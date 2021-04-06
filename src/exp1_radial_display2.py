@@ -20,7 +20,7 @@ from src.commons.process_str import str_to_list
 from src.point.polar_point import get_polar_coordinates
 
 is_debug = True
-indi_display = False
+indi_display = True
 write_to_excel = False
 
 # read stimuli display
@@ -124,7 +124,7 @@ if beam_region_info:
 
 # %% individual display alignment value
 if indi_display:
-    display_n = 248  # 0-249
+    display_n = 99  # 0-249
     posis_str = stimuli_df.positions_list[display_n]
     posis = str_to_list(posis_str)
     # get polar positions for a single display
@@ -132,7 +132,7 @@ if indi_display:
 
     # some parameters, started and ended where
     ini_start_angle = polar_posis[0][0]
-    angle_size = 12
+    angle_size = 6
     ini_end_angle = ini_start_angle + angle_size
     # get the ranges
     my_range_overlap = get_angle_range(polar_posis, ini_start_angle = ini_start_angle, ini_end_angle = ini_end_angle)

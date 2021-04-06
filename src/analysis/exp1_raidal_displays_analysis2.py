@@ -14,7 +14,7 @@ from src.commons.process_str import str_to_list
 from src.point.polar_point import get_polar_coordinates
 
 
-def get_angle_range(polar_posi_list, ini_start_angle = 0, ini_end_angle = 12):
+def get_angle_range(polar_posi_list, ini_start_angle = 0, ini_end_angle = 6):
     """
     :param polar_posi_list: a list of polar positions
     :param ini_start_angle: the first beam start edge, where to start
@@ -42,17 +42,23 @@ def get_angle_range_no_overlap(input_overlap_range_list, start_n):
     :param input_overlap_range_list: range that overlaps
     :param start_n: where the first range edge is
     :return: no-overlap range
+    给定一个起始点start_n，逆时针扫。保证从逆时针方向离起始点最近
+    的点优先扫到。
     """
     # 除了从最后一个开始扫的其它情况
     if not start_n == len(input_overlap_range_list) - 1:
         no_overlap_range = [input_overlap_range_list[start_n]]
-        thrshld = input_overlap_range_list[start_n][1]
-        # 向后扫
+        thrshld = input_overlap_range_list[start_n][1] # angle of start_n
+        # 向后扫, 逆时针
         for range in input_overlap_range_list[start_n + 1:]:
             if range[0] > thrshld:
                 no_overlap_range.append(range)
                 thrshld = range[1]
-        # 向前扫
+
+        # 向前扫， 顺时针
+        # Edge case: if it is start_n == 0, then we don't need to go 顺时针, because start_n_0 前面没有点了
+        if start_n == 0:
+            return no_overlap_range
         thrshld = input_overlap_range_list[start_n][0]
         for range in input_overlap_range_list[start_n - 1::-1]:
             if range[1] < thrshld:
@@ -62,7 +68,7 @@ def get_angle_range_no_overlap(input_overlap_range_list, start_n):
     else:
         no_overlap_range = [input_overlap_range_list[start_n]]
         thrshld = input_overlap_range_list[start_n][0]
-        # 直接往回扫
+        # 直接往回扫, 逆时针
         for range in input_overlap_range_list[start_n - 1::-1]:
             if range[1] < thrshld:
                 no_overlap_range.append(range)

@@ -13,7 +13,7 @@ from matplotlib.patches import Ellipse
 from scipy.spatial import distance
 
 
-def drawEllipse_full(e_posi, extra_posi, ka, kb, ellipseColor_r = 'orangered', ellipseColor_t = 'royalblue'):
+def drawEllipse_full(e_posi, extra_posi, ka, kb, ellipseColor_r = 'orangered', ellipseColor_t = 'royalblue', extra_disc_color = 'orangered', ellipsetransp = 0.5):
     """
     This function allows to draw more than one ellipse. The parameter is
     a list of coordinate (must contain at least two coordinates)
@@ -43,16 +43,16 @@ def drawEllipse_full(e_posi, extra_posi, ka, kb, ellipseColor_r = 'orangered', e
                      angle = angle_deg[j] + 90)
              for j in range(len(e_posi))]
 
-    fig, ax = plt.subplots(subplot_kw = {'aspect': 'equal'})
+    fig, ax = plt.subplots(subplot_kw = {'aspect': 'equal'}, figsize = (4, 3))
     for e in my_e:
         ax.add_artist(e)
         e.set_clip_box(ax.bbox)
-        e.set_alpha(0.5)
+        e.set_alpha(ellipsetransp)
         e.set_facecolor(ellipseColor_r)
     for e2 in my_e2:
         ax.add_artist(e2)
         e2.set_clip_box(ax.bbox)
-        e2.set_alpha(0.5)
+        e2.set_alpha(ellipsetransp)
         e2.set_facecolor(ellipseColor_t)
 
     # show the discs on the ellipses-flower
@@ -60,7 +60,7 @@ def drawEllipse_full(e_posi, extra_posi, ka, kb, ellipseColor_r = 'orangered', e
         plt.plot(dot[0], dot[1], color = 'k', marker = 'o', markersize = 2)
     # plt.show()
     for dot1 in extra_posi:
-        plt.plot(dot1[0], dot1[1], color = 'r', marker = 'o', markersize = 2)
+        plt.plot(dot1[0], dot1[1], color = extra_disc_color, marker = 'o', markersize = 2)
     plt.plot(0, 0, color = 'k', marker = '+', markersize = 4)
     # plt.show()
     # ax.set_xlim([-800, 800])
@@ -83,7 +83,7 @@ def drawEllipse_full(e_posi, extra_posi, ka, kb, ellipseColor_r = 'orangered', e
     fig.savefig('efull%s.svg' % (str(e_posi)[0:15]), bbox_inches = 'tight', pad_inches = 0)
 
 
-def drawEllipses(posi, ka, kb, ellipseColor, ellipsetransp = 0.5):
+def drawEllipses(posi, ka, kb, ellipseColor, ellipsetransp = 0.5, extra_posi = [], extra_disc_color = 'orangered'):
     eccentricities2 = []
     for i in range(len(posi)):
         eccentricities0 = distance.euclidean(posi[i], (0, 0))
@@ -118,6 +118,10 @@ def drawEllipses(posi, ka, kb, ellipseColor, ellipsetransp = 0.5):
     # plot central discs
     for dot in posi:
         plt.plot(dot[0], dot[1], color = 'k', marker = 'o', markersize = 2)
+
+    if len(extra_posi) != 0:
+        for dot in extra_posi:
+            plt.plot(dot[0], dot[1], color = extra_disc_color, marker = 'o', markersize = 2)
 
     plt.plot(0, 0, color = 'k', marker = '+', markersize = 4)
 

@@ -34,7 +34,8 @@ def raw_resp_to_int(raw_resp):
 
 def imageFile_to_number(filename):
     """
-    # ws0.7_crowding1_n448_Ndisk57.png --> 448
+    find()方法：查找子字符串，若找到返回从0开始的下标值，若找不到返回-1
+    ws0.7_crowding1_n448_Ndisk57.png --> 448
     """
     numberEndIndex = filename.find('_Ndisk')
     filename = filename[18:numberEndIndex]
@@ -46,4 +47,13 @@ def imageFile_to_number2(filename):
     # ws0.7_crowding1_n448_Ndisk57.png --> 0.7
     """
     filename = filename[3:6]
+    return filename
+
+def imageFile_to_number3(filename):
+    '''
+    find()方法：查找子字符串，若找到返回从0开始的下标值，若找不到返回-1
+    stims/blackd68.png --> 68
+    '''
+    numberEndIndex = filename.find('.png')
+    filename = filename[12:numberEndIndex]
     return filename

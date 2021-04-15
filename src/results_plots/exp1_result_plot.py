@@ -22,7 +22,7 @@ y = "deviation_score"
 data = df_toplot
 hue = "crowdingcons"
 
-fig, ax = plt.subplots(figsize = (9, 7))
+fig, ax = plt.subplots(figsize = (6, 4.5))
 ax = sns.barplot(x = x,
                  y = y,
                  data = df_toplot,
@@ -66,7 +66,7 @@ plt.xticks(fontsize = 12)
 plt.yticks(fontsize = 12)
 # customize legend
 handles, labels = ax.get_legend_handles_labels()
-labels = ["no-crowding", "crowding"]
+labels = ["tangential", "radial"]
 ax.legend(handles[2:], labels, loc = "lower center", ncol = 2, fontsize = 12)
 # hide borders
 ax.spines['right'].set_visible(False)
@@ -77,4 +77,4 @@ ax.yaxis.set_ticks_position('left')
 ax.axhline(y = 0, color = "k", linewidth = 0.5)
 plt.show()
 if save_plot:
-    fig.savefig("exp1_results_plot.svg")
+    fig.savefig("exp1_results_plot.svg", bbox_inches='tight')

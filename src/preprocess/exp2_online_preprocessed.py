@@ -6,66 +6,50 @@ Created on Tue Jun  9 16:15:04 2020
 """
 import os, math
 import pandas as pd
-# current path
-cur_path = os.getcwd()
 
-# change to data folder
-dataptah = os.chdir("../../numerosity_exps/data/data")
-
-# read the totalData file
-totalData = pd.read_excel('clean_totalData.xlsx', index_col = 0)
-
-# =============================================================================
-# remove outliers
-# =============================================================================
-
-#remove obvious outliers - typos
-totalData = totalData[(totalData['responseN'] < 100) & (totalData['responseN'] > 5)]
-
-# per winsize - obvious outliers
-lim04_x, lim04_y = round(math.sqrt(34)), 44*2
-lim06_x, lim06_y = round(math.sqrt(58)), 68*2
-
-# sperate data for each winsize
-w04_data = totalData[totalData.winsize == 0.4]
-w06_data = totalData[totalData.winsize == 0.6]
-
-# keep response within lim
-w04_data = w04_data[(w04_data['responseN'] < lim04_y) & (w04_data['responseN'] > lim04_x)]
-w06_data = w06_data[(w06_data['responseN'] < lim06_y) & (w06_data['responseN'] > lim06_x)]
-
-# keep data within 2 std
-w04_resp_std  = w04_data['responseN'].std()
-w06_resp_std  = w06_data['responseN'].std()
-
-w04_resp_mean = w04_data['responseN'].mean()
-w06_resp_mean = w06_data['responseN'].mean()
-
-w04_resp_min, w04_resp_max  = w04_resp_mean - 2*w04_resp_std, w04_resp_mean + 2*w04_resp_std
-w06_resp_min, w06_resp_max  = w06_resp_mean - 2*w06_resp_std, w06_resp_mean + 2*w06_resp_std
-
-# data keeped within 2 std
-w04_data2std = w04_data[(w04_data['responseN'] < w04_resp_max) & (w04_data['responseN'] > w04_resp_min)] #94.2%trails are kept
-w06_data2std = w06_data[(w06_data['responseN'] < w06_resp_max) & (w06_data['responseN'] > w06_resp_min)] #94.0%trails are kept; altohether, 94.1% trails are kept
-
-# =============================================================================
-# conbined data
-# =============================================================================
-totalData = pd.concat([w04_data2std,w06_data2std], ignore_index = True) # response within 2std
-#totalData = pd.concat([w04_data,w06_data], ignore_index = True) # response removed obvious outliers only
-
-#to excel if needed
-totalData.to_excel('../try.xlsx')
-# =============================================================================
-# pivot table
-# =============================================================================
-pT  = pd.pivot_table(totalData, index = ['crowding', 'participantID'], columns = ['winsize', 'Numerosity'], values = ['deviation'])
-pT2 = pd.pivot_table(totalData, index = ['crowding', 'participantID'], columns = ['winsize', 'clustering'], values = ['deviation'])
-pT3 = pd.pivot_table(totalData, index = ['crowding', 'participantID'], columns = ['winsize', 'Numerosity','clustering'], values = ['deviation'])
-
-# write to excel
-#pT3.to_excel('../try3.xlsx')
+from src.commons.process_dataframe import get_col_names, get_sub_df_according2col_value
+from src.preprocess.sub.get_data2analysis import drop_df_rows_according2_one_col
 
 
+def get_std(df: pd.DataFrame, col_name: str):
+    return df[col_name].std()
 
 
+def get_mean(df: pd.DataFrame, col_name: str):
+    return df[col_name].mean()
+
+
+if __name__ == '__main__':
+    debug = False
+    write_to_excel = False
+
+    # read the totalData file
+    all_df = pd.read_excel('../../data/exp2_data_online/clean_totalData.xlsx', index_col = 0)
+
+    # drop obvious wrong response
+    col_to_drop_rows = "responseN"
+    min_res = 10
+    max_res = 100
+    all_df = drop_df_rows_according2_one_col(all_df, col_to_drop_rows, min_res, max_res)
+
+    # drop outside 3 strd
+    n_discs = [34, 36, 38, 40, 42, 44,
+               58, 60, 62, 64, 66, 68]
+
+    df_list = [get_sub_df_according2col_value(all_df, "Numerosity", n) for n in n_discs]
+
+    col_to_process = "responseN"
+    prepro_df_list = list()
+    for numerosity, sub_df in zip(n_discs, df_list):
+        lower_bondary = get_mean(sub_df, col_to_process) - 3 * get_std(sub_df, col_to_process)
+        upper_bondary = get_mean(sub_df, col_to_process) + 3 * get_std(sub_df, col_to_process)
+        new_sub_df = drop_df_rows_according2_one_col(sub_df, col_to_process, lower_bondary, upper_bondary)
+        prepro_df_list.append(new_sub_df)
+
+    mydata = pd.concat(prepro_df_list, ignore_index = True)
+
+    if write_to_excel:
+        mydata.to_excel('try.xlsx')
+
+    if debug:
+        col_names = get_col_names(all_df)

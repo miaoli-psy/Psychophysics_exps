@@ -4,7 +4,8 @@ Project: Psychophysics_exps
 Creator: Miao
 Create time: 2021-04-19 10:54
 IDE: PyCharm
-Introduction:
+Introduction: exp2(online) results plot: 1. deviation socre as a funtion of clustering, seprate winsize.
+2. deviation score as a fucntion of winsize, across all clustering levels.
 """
 import pandas as pd
 import seaborn as sns

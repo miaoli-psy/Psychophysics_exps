@@ -30,7 +30,7 @@ if __name__ == '__main__':
                  kb = 0.1, extra_disc_color = "orangered")
     drawEllipses(SamplePosiExp2.centerposi, extra_posi = SamplePosiExp2.extra_nc, ellipseColor = 'white', ka = 0.25,
                  kb = 0.1, extra_disc_color = "royalblue")
-
+    drawEllipses(SamplePosiExp2.baseline, ellipseColor="white", ka = 0.14, kb = 0.14)
     # drawEllipse_full(centerposi, extra_nc, 0.25, 0.1)
     # drawEllipse_full(centerposi, extra_c_50p, 0.25, 0.1)
     # drawEllipse_full(centerposi, extra_nc_50p, 0.25, 0.1)

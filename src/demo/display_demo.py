@@ -20,17 +20,21 @@ if __name__ == '__main__':
         # exp1 display with ellipses crowding
         drawEllipses(posi = SamplePosiExp1.exp1_c, ka = 0.1, kb = 0.25, ellipseColor = 'white', ellipsetransp = 0.5)
 
-    drawEllipse_full(SamplePosiExp2.centerposi, [], ka = 0.25, kb = 0.1, ellipseColor_r = 'white',
-                     ellipseColor_t = 'white')
-    drawEllipse_full(SamplePosiExp2.centerposi, SamplePosiExp2.extra_c, ka = 0.25, kb = 0.1, ellipseColor_r = 'white',
-                     ellipseColor_t = 'white')
-    drawEllipse_full(SamplePosiExp2.centerposi, SamplePosiExp2.extra_nc, ka = 0.25, kb = 0.1, ellipseColor_r = 'white',
-                     ellipseColor_t = 'white', extra_disc_color = 'royalblue')
-    drawEllipses(SamplePosiExp2.centerposi, extra_posi = SamplePosiExp2.extra_c, ellipseColor = 'white', ka = 0.25,
-                 kb = 0.1, extra_disc_color = "orangered")
-    drawEllipses(SamplePosiExp2.centerposi, extra_posi = SamplePosiExp2.extra_nc, ellipseColor = 'white', ka = 0.25,
-                 kb = 0.1, extra_disc_color = "royalblue")
-    drawEllipses(SamplePosiExp2.baseline, ellipseColor="white", ka = 0.14, kb = 0.14)
+    if exp2_demo:
+        drawEllipse_full(SamplePosiExp2.centerposi, [], ka = 0.25, kb = 0.1, ellipseColor_r = 'white',
+                         ellipseColor_t = 'white')
+        drawEllipse_full(SamplePosiExp2.centerposi, SamplePosiExp2.extra_c, ka = 0.25, kb = 0.1, ellipseColor_r = 'white',
+                         ellipseColor_t = 'white')
+        draw_disc_only(SamplePosiExp2.centerposi + SamplePosiExp2.extra_c)
+        drawEllipse_full(SamplePosiExp2.centerposi, SamplePosiExp2.extra_nc, ka = 0.25, kb = 0.1, ellipseColor_r = 'white',
+                         ellipseColor_t = 'white', extra_disc_color = 'royalblue')
+        draw_disc_only(SamplePosiExp2.centerposi + SamplePosiExp2.extra_nc)
+        drawEllipses(SamplePosiExp2.centerposi, extra_posi = SamplePosiExp2.extra_c, ellipseColor = 'white', ka = 0.25,
+                     kb = 0.1, extra_disc_color = "orangered")
+        drawEllipses(SamplePosiExp2.centerposi, extra_posi = SamplePosiExp2.extra_nc, ellipseColor = 'white', ka = 0.25,
+                     kb = 0.1, extra_disc_color = "royalblue")
+        drawEllipses(SamplePosiExp2.baseline, ellipseColor="white", ka = 0.14, kb = 0.14)
+
     # drawEllipse_full(centerposi, extra_nc, 0.25, 0.1)
     # drawEllipse_full(centerposi, extra_c_50p, 0.25, 0.1)
     # drawEllipse_full(centerposi, extra_nc_50p, 0.25, 0.1)

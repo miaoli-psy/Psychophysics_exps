@@ -55,7 +55,7 @@ def drawplot(result_df: pd.DataFrame, x_val: list, condi_list: list, row_number:
     ax.legend()
     ax.set_xlabel("probe numerosity")
     ax.set_ylim([0, 1.1])
-    ax.set_ylabel("proportion response reference display more numerous")
+    ax.set_ylabel("proportion response probe display more numerous")
     ax.set_title(__get_title4plot(row_number))
     if savefig:
         plt.savefig("f%s.png" % row_number)

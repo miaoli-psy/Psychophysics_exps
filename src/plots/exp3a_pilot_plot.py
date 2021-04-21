@@ -38,7 +38,7 @@ def __get_title4plot(row_number: int) -> str:
         raise Exception(f"the select y values {row_number} was incorrect.")
 
 
-def drawplot(result_df: pd.DataFrame, x_val: list, condi_list: list, row_number: int, alpha = 0.5, marker = "o"):
+def drawplot(result_df: pd.DataFrame, x_val: list, condi_list: list, row_number: int, alpha = 0.5, marker = "o", savefig = True):
     """
     :param result_df: result df generated from groupby() with multi-level index
     :param x_val: list of x values
@@ -57,5 +57,6 @@ def drawplot(result_df: pd.DataFrame, x_val: list, condi_list: list, row_number:
     ax.set_ylim([0, 1.1])
     ax.set_ylabel("proportion response reference display more numerous")
     ax.set_title(__get_title4plot(row_number))
-    plt.savefig("f%s.png" % (row_number))
+    if savefig:
+        plt.savefig("f%s.png" % row_number)
     plt.show()

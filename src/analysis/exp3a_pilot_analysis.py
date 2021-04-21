@@ -25,6 +25,15 @@ def insert_is_resp_ref_more(ref_first_val: float, key_resp_keys_val: str):
                         f"or Invalid key_resp_keys_val value: {key_resp_keys_val}")
 
 
+def insert_is_resp_probe_more(resp_ref_more: float):
+    if resp_ref_more == 1.0:
+        return 0
+    elif resp_ref_more == 0:
+        return 1
+    else:
+        raise Exception(f"Invalid resp_ref_more: {resp_ref_more} should be 0 or 1")
+
+
 def insert_probeN(D1numerosity: float, D2numerosity: float, ref_first_val: float):
     if ref_first_val == 0.0:
         return D1numerosity
@@ -80,7 +89,7 @@ def cal_one_minus_value(input_value: float) -> float:
 
 def get_output_results(input_df: pd.DataFrame) -> pd.DataFrame:
     output_results = input_df['is_resp_ref_more'].groupby(
-            [input_df["ref_first"], input_df["participantN"],input_df["probeN"],input_df["ref_probe_condi"]]).mean()
+            [input_df["ref_first"], input_df["participantN"], input_df["probeN"], input_df["ref_probe_condi"]]).mean()
     output_results = output_results.unstack().unstack()
     return output_results
 
@@ -91,7 +100,3 @@ def get_piovt_table(input_df: pd.DataFrame) -> pd.DataFrame:
                                  columns = ["ref_probe_condi", "probeN"],
                                  values = ["is_resp_ref_more"])
     return pivot_table
-
-
-
-

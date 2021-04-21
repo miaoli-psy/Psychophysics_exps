@@ -7,7 +7,7 @@ IDE: PyCharm
 Introduction: preprocessed data of crowding and numerosity exp3a (online pilot)
 """
 from src.analysis.exp3a_pilot_analysis import insert_is_resp_ref_more, insert_probeN, insert_refN, insert_probeCrowding, \
-    insert_refCrowing, insert_exp_condition
+    insert_refCrowing, insert_exp_condition, insert_is_resp_probe_more
 from src.preprocess.sub import merge_all_data
 import pandas as pd
 
@@ -15,7 +15,7 @@ from src.constants.exp3a_pilot_constants import KEPT_COL_NAMES
 from src.preprocess.sub.get_data2analysis import drop_df_nan_rows_according2cols, drop_df_rows_according2_one_col, \
     get_col_boundary
 from src.commons.process_dataframe import keep_valid_columns, insert_new_col_from_two_cols, \
-    insert_new_col_from_three_cols
+    insert_new_col_from_three_cols, insert_new_col
 
 
 def preprocess_exp3a_func(data_path: str, filetype: str, filename_prefix: str) -> pd.DataFrame:
@@ -28,11 +28,10 @@ if __name__ == '__main__':
     FILENAME_PREFIX = "P"
     FILETYPE = ".csv"
     drop_fastandslow_resp = False
-    save_preprocessed = False
+    save_preprocessed = True
 
     # load raw data
     mydata = preprocess_exp3a_func(DATA_PATH, FILETYPE, FILENAME_PREFIX)
-
     # preprocess starts here
     mydata = keep_valid_columns(mydata, KEPT_COL_NAMES)
 
@@ -51,6 +50,7 @@ if __name__ == '__main__':
     mydata["dff_D1D2"] = mydata["D1numerosity"] - mydata["D2numerosity"]
     # add correct answer
     insert_new_col_from_two_cols(mydata, "ref_first", "key_resp.keys", "is_resp_ref_more", insert_is_resp_ref_more)
+    insert_new_col(mydata, "is_resp_ref_more", "is_resp_probe_more", insert_is_resp_probe_more)
     # add probe numerosity
     insert_new_col_from_three_cols(mydata, "D1numerosity", "D2numerosity", "ref_first", "probeN", insert_probeN)
     # add ref numerosity

@@ -79,7 +79,7 @@ def plot_seprate_condi(data, x, y, hue, style, ci = 68, err_style = "bars", dash
                       markers = markers,
                       ci = ci)
     ax.set_ylim(0, 1)
-    ax.axhline(0.5, ls = '--', color = "k")
+    ax.axhline(0.5, ls = '--', color = "k", linewidth = 0.5)
     plt.ylabel("proportion response probe more")
     plt.xlabel("probe numerosity")
     if savefig:

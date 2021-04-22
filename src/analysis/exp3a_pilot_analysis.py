@@ -87,11 +87,11 @@ def cal_one_minus_value(input_value: float) -> float:
     return 1 - input_value
 
 
-def get_output_results(input_df: pd.DataFrame) -> pd.DataFrame:
-    output_results = input_df['is_resp_probe_more'].groupby(
-            [input_df["ref_first"], input_df["participantN"], input_df["probeN"], input_df["ref_probe_condi"]]).mean()
-    output_results = output_results.unstack().unstack()
-    return output_results
+def get_output_results(input_df):
+    output_df = input_df["is_resp_probe_more"].groupby(
+            [input_df["probeN"], input_df["ref_probe_condi"], input_df["participantN"]]).mean()
+    output_df = output_df.reset_index(level = ["probeN", "ref_probe_condi", "participantN"])
+    return output_df
 
 
 def get_output_results_sep_condi(input_df, seprate_probe = True):
@@ -104,10 +104,3 @@ def get_output_results_sep_condi(input_df, seprate_probe = True):
     output_df = output_df.reset_index(level = ["probeN", "participantN", sep_condi])
     return output_df
 
-
-def get_piovt_table(input_df: pd.DataFrame) -> pd.DataFrame:
-    pivot_table = pd.pivot_table(input_df,
-                                 index = ["ref_first", "participantN"],
-                                 columns = ["ref_probe_condi", "probeN"],
-                                 values = ["is_resp_ref_more"])
-    return pivot_table

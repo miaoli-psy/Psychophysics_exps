@@ -7,18 +7,15 @@ IDE: PyCharm
 Introduction:
 """
 from src.constants.exp3a_pilot_constants import SUB_DF_COLS2CHECK
-from src.plots.exp3a_pilot_plot import drawplot, plot_seprate_condi
+from src.plots.exp3a_pilot_plot import plot_seprate_condi, plot_allcondi_inone
 
 from src.commons.process_dataframe import get_sub_df_according2col_value
-from src.analysis.exp3a_pilot_analysis import get_output_results, get_piovt_table, get_output_results_sep_condi
+from src.analysis.exp3a_pilot_analysis import get_output_results, get_output_results_sep_condi
 
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 if __name__ == "__main__":
     is_debug = True
-    write_to_excel = False
     see_4condi_in_all = False
     save_plots = True
 
@@ -26,7 +23,9 @@ if __name__ == "__main__":
     DATAFILE = "exp3a_preprocessed.xlsx"
     mydata = pd.read_excel(PATH + DATAFILE)
 
-    # exclude subject
+    # exclude subject TODO
+    exclude = False
+    exclude_n = 8
 
     # exp conditions in separate df for plots
     refc = get_sub_df_according2col_value(mydata, "refCrowding", 1)
@@ -39,39 +38,40 @@ if __name__ == "__main__":
     refncprobec = get_sub_df_according2col_value(refnc, "probeCrowding", 1)
     refncprobenc = get_sub_df_according2col_value(refnc, "probeCrowding", 0)
 
-    # %% output dataframe
-    # pivot table
-    pt = get_piovt_table(mydata)
-    # groupby()
-    results_df = get_output_results(mydata)
-    # add means of result_df
-    results_df.loc["mean_across_all_participants"] = results_df.mean()
-    # add means across participants by different group (ref first or not)
-    results_df.loc["mean_of_probe_first_participants"] = results_df.iloc[0:5].mean()
-    results_df.loc["mean_of_ref_first_participants"] = results_df.iloc[6:11].mean()
-
     # %% plots - see all together
-    x_values = [34, 36, 38, 40, 42, 44, 46]
-    condi_list = ["rc_pc", "rc_pnc", "rnc_pc", "rnc_pnc"]
-    # row number: possible 0-14; 0-11 (12 participants) 12 all participants, 13 probe first group, 14 ref first
-    # group
-    if see_4condi_in_all:
-        for row in range(15):
-            drawplot(results_df, x_values, condi_list, row_number = row, savefig = save_plots)
-    # %% plot separate condition
+    # all data
     x = "probeN"
     y = "is_resp_probe_more"
+    hue = "ref_probe_condi"
+    if see_4condi_in_all:
+        alldata = get_output_results(mydata)
+        plot_allcondi_inone(alldata, x = x, y = y, hue = hue, style = hue)
+        # ref first group
+        ref_first = get_sub_df_according2col_value(mydata, "ref_first", 1)
+        plot_allcondi_inone(ref_first, x = x, y = y, hue = hue, style = hue, title = "ref first group")
+
+        # probe first group
+        probe_first = get_sub_df_according2col_value(mydata, "ref_first", 0)
+        plot_allcondi_inone(ref_first, x = x, y = y, hue = hue, style = hue, title = "probe first group")
+
+        # see each pp
+        pp = list(range(1, 13))
+        results_all_pp = [get_sub_df_according2col_value(mydata, "participantN", p) for p in pp]
+
+        for i, pp_result in enumerate(results_all_pp):
+            plot_allcondi_inone(pp_result, x = "probeN", y = "is_resp_probe_more", hue = "ref_probe_condi",
+                                style = "ref_probe_condi", title = "participant%s" % (i+1))
+
+    # %% plot separate condition
     hue = "refCrowding"
     # plot 2 probe conditions
     probec = get_output_results_sep_condi(probec)
     probenc = get_output_results_sep_condi(probenc)
-    plot_seprate_condi(probec, x = x, y = y, hue = hue, style = hue, savefig = save_plots)
-    plot_seprate_condi(probenc, x = x, y = y, hue = hue, style = hue, savefig = save_plots)
+    if exclude:
+        probec = probec[probec["participantN"] != exclude_n]
+        probenc = probenc[probenc["participantN"] != exclude_n]
+    plot_seprate_condi(probec, x = x, y = y, hue = hue, style = hue, savefig = save_plots, title = "probec")
+    plot_seprate_condi(probenc, x = x, y = y, hue = hue, style = hue, savefig = save_plots, title = "probenc")
 
     if is_debug:
         col_names = list(mydata.columns)
-        df2check = mydata[SUB_DF_COLS2CHECK]
-
-    if write_to_excel:
-        mydata.to_excel("preprocess_exp3a_pilot.xlsx")
-        pt.to_excel("pivot_table_exp3a_pilot.xlsx")

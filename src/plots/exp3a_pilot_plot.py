@@ -39,33 +39,8 @@ def __get_title4plot(row_number: int) -> str:
         raise Exception(f"the select y values {row_number} was incorrect.")
 
 
-def drawplot(result_df: pd.DataFrame, x_val: list, condi_list: list, row_number: int, alpha = 0.5, marker = "o",
-             savefig = True):
-    """
-    :param result_df: result df generated from groupby() with multi-level index
-    :param x_val: list of x values
-    :param alpha: 0 to 1.0
-    :param marker: possible marker supported by plt
-    :param rowofmean: index of the row of df use as y-values
-    :param condi_list: experiment conditions: usually from one level of multi-level index
-    :return: None
-    """
-    fig, ax = plt.subplots()
-    for condi in condi_list:
-        ax.plot(x_val, result_df[condi].values[row_number], alpha = alpha, marker = marker,
-                label = __get_label4plot(condi))
-    ax.legend()
-    ax.set_xlabel("probe numerosity")
-    ax.set_ylim([0, 1.1])
-    ax.set_ylabel("proportion response probe display more numerous")
-    ax.set_title(__get_title4plot(row_number))
-    if savefig:
-        plt.savefig("f%s.png" % row_number)
-    plt.show()
-
-
 def plot_seprate_condi(data, x, y, hue, style, ci = 68, err_style = "bars", dashes = False, alpha = 0.5,
-                       palette = ["royalblue", "orangered"], markers = ["o", "o"], savefig = False):
+                       palette = ["royalblue", "orangered"], markers = ["o", "o"], title = "", savefig = False):
     fig, ax = plt.subplots(figsize = (6, 4.5))
     ax = sns.lineplot(x = x,
                       y = y,
@@ -79,6 +54,29 @@ def plot_seprate_condi(data, x, y, hue, style, ci = 68, err_style = "bars", dash
                       markers = markers,
                       ci = ci)
     ax.set_ylim(0, 1)
+    ax.axhline(0.5, ls = '--', color = "k", linewidth = 0.5)
+    ax.set_title(title)
+    plt.ylabel("proportion response probe more")
+    plt.xlabel("probe numerosity")
+    if savefig:
+        plt.savefig("try.svg")
+    plt.show()
+
+
+def plot_allcondi_inone(data, x, y, hue, style, ci = 68, err_style = "bars", dashes = False, alpha = 0.5, markers = ["o", "o", 'o', 'o'], title = "", savefig = False):
+    fig, ax = plt.subplots(figsize = (6, 4.5))
+    ax = sns.lineplot(x = x,
+                      y = y,
+                      data = data,
+                      hue = hue,
+                      err_style = err_style,
+                      alpha = alpha,
+                      style = style,
+                      dashes = dashes,
+                      markers = markers,
+                      ci = ci)
+    ax.set_ylim(0, 1)
+    ax.set_title(title)
     ax.axhline(0.5, ls = '--', color = "k", linewidth = 0.5)
     plt.ylabel("proportion response probe more")
     plt.xlabel("probe numerosity")

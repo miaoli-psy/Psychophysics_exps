@@ -8,6 +8,7 @@ Introduction:
 """
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 
 def __get_label4plot(condi: str) -> str:
@@ -38,7 +39,8 @@ def __get_title4plot(row_number: int) -> str:
         raise Exception(f"the select y values {row_number} was incorrect.")
 
 
-def drawplot(result_df: pd.DataFrame, x_val: list, condi_list: list, row_number: int, alpha = 0.5, marker = "o", savefig = True):
+def drawplot(result_df: pd.DataFrame, x_val: list, condi_list: list, row_number: int, alpha = 0.5, marker = "o",
+             savefig = True):
     """
     :param result_df: result df generated from groupby() with multi-level index
     :param x_val: list of x values
@@ -59,4 +61,27 @@ def drawplot(result_df: pd.DataFrame, x_val: list, condi_list: list, row_number:
     ax.set_title(__get_title4plot(row_number))
     if savefig:
         plt.savefig("f%s.png" % row_number)
+    plt.show()
+
+
+def plot_seprate_condi(data, x, y, hue, style, ci = 68, err_style = "bars", dashes = False, alpha = 0.5,
+                       palette = ["royalblue", "orangered"], markers = ["o", "o"], savefig = False):
+    fig, ax = plt.subplots(figsize = (6, 4.5))
+    ax = sns.lineplot(x = x,
+                      y = y,
+                      data = data,
+                      hue = hue,
+                      err_style = err_style,
+                      palette = palette,
+                      alpha = alpha,
+                      style = style,
+                      dashes = dashes,
+                      markers = markers,
+                      ci = ci)
+    ax.set_ylim(0, 1)
+    ax.axhline(0.5, ls = '--', color = "k")
+    plt.ylabel("proportion response probe more")
+    plt.xlabel("probe numerosity")
+    if savefig:
+        plt.savefig("try.svg")
     plt.show()

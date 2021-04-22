@@ -94,6 +94,17 @@ def get_output_results(input_df: pd.DataFrame) -> pd.DataFrame:
     return output_results
 
 
+def get_output_results_sep_condi(input_df, seprate_probe = True):
+    if seprate_probe:
+        sep_condi = "refCrowding"
+    else:
+        sep_condi = "probeCrowding"
+    output_df = input_df["is_resp_probe_more"].groupby(
+            [input_df["participantN"], input_df["probeN"], input_df[sep_condi]]).mean()
+    output_df = output_df.reset_index(level = ["probeN", "participantN", sep_condi])
+    return output_df
+
+
 def get_piovt_table(input_df: pd.DataFrame) -> pd.DataFrame:
     pivot_table = pd.pivot_table(input_df,
                                  index = ["ref_first", "participantN"],

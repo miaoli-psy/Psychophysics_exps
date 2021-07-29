@@ -21,7 +21,7 @@ from src.point.polar_point import get_polar_coordinates
 
 is_debug = True
 indi_display = True
-write_to_excel = False
+write_to_excel = True
 
 # read stimuli display
 PATH = "../displays/"

@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.transforms as mtransforms
-from src.analysis.exp1_radial_displays_analysis import get_step_ranges_map, get_col_names, get_draw_ndisc_formate, \
+from src.analysis.exp1_radial_displays_analysis import get_step_ranges_map, get_draw_ndisc_formate, \
     get_current_rangelist_to_draw, get_alignment_disc_num, get_alignment_value, get_algnment_rangelist
 from src.commons.process_number import get_weighted_mean
 from src.plots.exp1_radial_displays_plot import draw_ndisc_at_ray
@@ -115,8 +115,3 @@ if __name__ == '__main__':
             #          verticalalignment = 'bottom')
 
         plt.show()
-
-    # Optional: only for debug
-    if is_debug:
-        c_names = get_col_names(simuli_df)
-        # draw_temp(polar) # polar in sub_function cannot run here

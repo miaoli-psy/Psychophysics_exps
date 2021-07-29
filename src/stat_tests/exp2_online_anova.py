@@ -19,7 +19,7 @@ if __name__ == '__main__':
     cal_mean_std = False
     pivot_t = False
     see_clustering_level = False
-    include_baseline = False
+    include_baseline = True
 
     # convet data to anvoa formate
     if see_clustering_level:

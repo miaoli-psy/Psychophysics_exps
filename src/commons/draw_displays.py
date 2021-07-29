@@ -142,6 +142,64 @@ def drawEllipses(posi, ka, kb, ellipseColor, ellipsetransp = 0.5, extra_posi = [
     fig.savefig('e%s.svg' % (str(posi)[0:15]), bbox_inches = 'tight', pad_inches = 0)
 
 
+def drawEllipses_homo(posi, ka, kb, ellipseColor, ellipsetransp = 0.5, extra_posi = [], extra_disc_color = 'orangered'):
+    eccentricities2 = []
+    for i in range(len(posi)):
+        eccentricities0 = distance.euclidean(posi[i], (0, 0))
+        eccentricities2.append(eccentricities0)
+    # radial
+    angle_deg3 = []
+    for ang in range(len(posi)):
+        angle_rad0s = atan2(posi[ang][1], posi[ang][0])
+        angle_deg0s = angle_rad0s * 180 / pi
+        angle_deg3.append(angle_deg0s)
+
+    my_e = [Ellipse(xy = posi[j], width = ka * 2, height = kb * 2,
+                    angle = angle_deg3[j])
+            for j in range(len(posi))]
+
+    fig, ax = plt.subplots(subplot_kw = {'aspect': 'equal'}, figsize = (4, 3))
+
+    for e in my_e:
+        ax.add_artist(e)
+        # random color?
+        e.set_clip_box(ax.bbox)
+        # e.set_alpha(np.random.rand())
+        e.set_alpha(ellipsetransp)
+        # e.set_facecolor(np.random.rand(3))
+        # change face color here
+        if ellipseColor == 'orangered':
+            e.set_facecolor('orangered')  # 'royalblue'
+        else:
+            e.set_facecolor(ellipseColor)
+        # e.set_facecolor('royalblue')
+
+    # plot central discs
+    for dot in posi:
+        plt.plot(dot[0], dot[1], color = 'k', marker = 'o', markersize = 2)
+
+    if len(extra_posi) != 0:
+        for dot in extra_posi:
+            plt.plot(dot[0], dot[1], color = extra_disc_color, marker = 'o', markersize = 2)
+
+    plt.plot(0, 0, color = 'k', marker = '+', markersize = 4)
+
+    # set x,y lim
+    ax.set_xlim([-400, 400])
+    ax.set_ylim([-260, 260])
+    # 边框不可见
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    # 坐标不可见
+    ax.axes.get_yaxis().set_visible(False)
+    ax.axes.get_xaxis().set_visible(False)
+    # set background color
+    ax.patch.set_facecolor('lightgray')
+    plt.show()
+    fig.savefig('e%s.svg' % (str(posi)[0:15]), bbox_inches = 'tight', pad_inches = 0)
+
 def draw_disc_only(e_posi):
     fig, ax = plt.subplots(subplot_kw = {'aspect': 'equal'}, figsize = (4, 3))
     for dot in e_posi:

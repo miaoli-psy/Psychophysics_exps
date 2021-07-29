@@ -5,12 +5,13 @@ Created on Tue Apr 14 22:54:41 2020
 @author: Miao
 """
 # https://www.liaoxuefeng.com/wiki/1016959663602400/1017454145014176
-from src.commons.draw_displays import drawEllipses, draw_disc_only, drawEllipse_full, drawEllipse_crowding
-from src.constants.sample_display_posi import SamplePosiExp1, SamplePosiExp2
+from src.commons.draw_displays import drawEllipses, draw_disc_only, drawEllipse_full, drawEllipse_crowding, drawEllipses_homo
+from src.constants.sample_display_posi import SamplePosiExp1, SamplePosiExp2, SampleDensity
 
 if __name__ == '__main__':
     exp1_demo = False
-    exp2_demo = True
+    exp2_demo = False
+    density_demo = True
     if exp1_demo:
         # exp 1 display sample
         draw_disc_only(SamplePosiExp1.exp1_c)
@@ -34,6 +35,12 @@ if __name__ == '__main__':
         drawEllipses(SamplePosiExp2.centerposi, extra_posi = SamplePosiExp2.extra_nc, ellipseColor = 'white', ka = 0.25,
                      kb = 0.1, extra_disc_color = "royalblue")
         drawEllipses(SamplePosiExp2.baseline, ellipseColor="white", ka = 0.14, kb = 0.14)
+        draw_disc_only(SamplePosiExp2.baseline)
+
+    if density_demo:
+        drawEllipses(posi = SampleDensity.increase, ka = 0.155, kb = 0.155, ellipseColor = 'white', ellipsetransp = 0.5)
+        drawEllipses_homo(posi = SampleDensity.homo, ka = 31, kb = 31, ellipseColor = 'white', ellipsetransp = 0.5)
+
 
     # drawEllipse_full(centerposi, extra_nc, 0.25, 0.1)
     # drawEllipse_full(centerposi, extra_c_50p, 0.25, 0.1)

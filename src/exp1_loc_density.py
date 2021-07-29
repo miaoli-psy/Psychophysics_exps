@@ -129,11 +129,11 @@ if __name__ == '__main__':
     deg = 2
 
     if deg == 2:
-        label_c = "polynomial fit crowding"
-        label_nc = "polynomial fit no-crowding"
+        label_c = "polynomial fit radial"
+        label_nc = "polynomial fit tangential"
     elif deg == 1:
-        label_c = "linear fit crowding"
-        label_nc = "linear fit no-crowding"
+        label_c = "linear fit radial"
+        label_nc = "linear fit tangential"
 
     fitted_c = get_fitted_power_list(datac_to_fit, deg = deg)
     fitted_nc = get_fitted_power_list(datanc_to_fit, deg = deg)
@@ -175,16 +175,16 @@ if __name__ == '__main__':
         polyfit_ncrowding = np.poly1d(np.polyfit(x = np_arr_ncrowding[:, 0], y = norm_y_ncrowding, deg = deg))
 
         fig1, ax1 = plt.subplots()
-        ax1.plot(np_arr_crowding[:, 0], np_arr_crowding[:, 1], 'ro', alpha = 0.5, label = "crowding display")
-        ax1.plot(np_arr_ncrowding[:, 0], np_arr_ncrowding[:, 1], 'bo', alpha = 0.5, label = "no-crowding display")
+        ax1.plot(np_arr_crowding[:, 0], np_arr_crowding[:, 1], 'ro', alpha = 0.5, label = "radial display")
+        ax1.plot(np_arr_ncrowding[:, 0], np_arr_ncrowding[:, 1], 'bo', alpha = 0.5, label = "tangential display")
         ax1.plot(np_arr_crowding[:, 0], polyfit_crowding(np_arr_crowding[:, 0]), 'r--', label = label_c)
         ax1.plot(np_arr_ncrowding[:, 0], polyfit_ncrowding(np_arr_ncrowding[:, 0]), 'b--', label = label_nc)
         plt.legend(loc = 'best')
         ax1.set_xlabel("Eccentricity", fontsize = 15)
-        ax1.set_ylabel("Local density", fontsize = 15)
-        ax1.set_title("Sample displays(numerosity 55): no crowding vs. crowding", fontsize = 12)
+        ax1.set_ylabel("Normalized Local Density", fontsize = 15)
+        ax1.set_title("Sample displays(numerosity 55): tangential vs. radial", fontsize = 12)
         plt.show()
-        fig1.savefig("try.svg")
+        fig1.savefig("try1.svg")
 
     # %% fit possion cdf here
     if fit_poisson:
@@ -250,6 +250,7 @@ if __name__ == '__main__':
                 cx.plot(datanc_to_fit1[index][i][:, 0], datanc_to_fit1[index][i][:, 1], "b--", alpha = 0.5)
             cx.title.set_text("numerosity %s" % numerosity_list[index])
         plt.show()
+        figc.savefig("try.svg")
 
     # %% averaged local density for each numerosity
     avrg_crowding_dic = get_avrg_dict(crowding_dic)
@@ -280,14 +281,14 @@ if __name__ == '__main__':
     polyfit_ncrowding_avrg = np.poly1d(np.polyfit(x = x_avrg_nc, y = y_avrg_nc, deg = deg))
 
     fig2, ax2 = plt.subplots()
-    ax2.plot(x_avrg_c, y_avrg_c, 'ro', alpha = 0.1, label = "crowding displays")
-    ax2.plot(x_avrg_nc, y_avrg_nc, 'bo', alpha = 0.1, label = "no-crowding displays")
+    ax2.plot(x_avrg_c, y_avrg_c, 'ro', alpha = 0.1, label = "radial displays")
+    ax2.plot(x_avrg_nc, y_avrg_nc, 'bo', alpha = 0.1, label = "tangential displays")
     ax2.plot(x_avrg_c, polyfit_crowding_avrg(x_avrg_c), 'r--', label = label_c)
     ax2.plot(x_avrg_nc, polyfit_ncrowding_avrg(x_avrg_nc), 'b--', label = label_nc)
     plt.legend(loc = 'best')
     ax2.set_xlabel("Eccentricity", fontsize = 15)
     ax2.set_ylabel("Local density", fontsize = 15)
-    ax2.set_title("Average displays(numerosity %s): no crowding vs. crowding" % numerosity, fontsize = 12)
+    ax2.set_title("Average displays(numerosity %s): tangential vs. radial" % numerosity, fontsize = 12)
     plt.show()
 
     if plot_average_display:

@@ -1,15 +1,19 @@
 import os
 import pandas as pd
 
-from src.commons.process_dataframe import keep_valid_columns, change_col_value_type
+from src.commons.process_dataframe import keep_valid_columns, change_col_value_type, insert_new_col_from_two_cols
 from src.constants.constants_direct_est_prolific import KEEP_COLS
+
+
+def get_deviation(resp: int, numerosity: int) -> int:
+    return resp - numerosity
+
 
 if __name__ == '__main__':
     # read data
     PATH_DATA = "../../data/prolific_direct_estimate/raw/"
     dir_list = os.listdir(PATH_DATA)
     df_list = [pd.read_csv(PATH_DATA + file) for file in dir_list]
-    subitizing = [2, 3, 4]
 
     # preprocess
     df_list_prepro = list()
@@ -37,6 +41,13 @@ if __name__ == '__main__':
     # remove pp 12 data: only 311 valid trials out of 330 trials
     df_list_prepro.pop(2)
 
+    # add deviation score col
+    for df in df_list_prepro:
+        insert_new_col_from_two_cols(df, "responseN", "numerosity", "deviation_score", get_deviation)
+
+    # concat all participant
     df_data = pd.concat(df_list_prepro)
+    df_data = df_data.drop(["is_num"], axis = 1)
+
 
 

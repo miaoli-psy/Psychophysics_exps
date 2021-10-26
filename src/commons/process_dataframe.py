@@ -103,3 +103,15 @@ def get_pivot_table(input_df: pd.DataFrame, index, columns, values) -> pd.DataFr
                                  columns = columns,
                                  values = values)
     return pivot_table
+
+
+def get_std(df: pd.DataFrame, col_name: str):
+    return df[col_name].std()
+
+
+def get_mean(df: pd.DataFrame, col_name: str):
+    return df[col_name].mean()
+
+
+def get_deviation(resp: int, numerosity: int) -> int:
+    return resp - numerosity

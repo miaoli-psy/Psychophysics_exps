@@ -7,7 +7,7 @@ IDE: PyCharm
 Introduction:
 """
 from src.commons.process_dataframe import keep_valid_columns, get_sub_df_according2col_value, insert_new_col, \
-    rename_df_col, change_col_value_type, insert_new_col_from_two_cols
+    rename_df_col, change_col_value_type, insert_new_col_from_two_cols, get_std, get_mean, get_deviation
 from src.commons.process_str import imageFile_to_number2, imageFile_to_number
 from src.constants.exp1_constants import KEPT_COL_NAMES_exp1
 from src.preprocess.sub import merge_all_data
@@ -19,18 +19,6 @@ from src.preprocess.sub.get_data2analysis import drop_df_rows_according2_one_col
 def preprocess_exp1rerun_func(data_path: str, filetype: str, filename_prefix: str) -> pd.DataFrame:
     all_df = merge_all_data.merge_all_file2dataframe(data_path, filetype, filename_prefix)
     return all_df
-
-
-def get_std(df: pd.DataFrame, col_name: str):
-    return df[col_name].std()
-
-
-def get_mean(df: pd.DataFrame, col_name: str):
-    return df[col_name].mean()
-
-
-def get_deviation(resp: int, numerosity: int) -> int:
-    return resp - numerosity
 
 
 if __name__ == "__main__":

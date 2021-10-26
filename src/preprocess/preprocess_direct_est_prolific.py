@@ -1,3 +1,4 @@
+import copy
 import os
 import pandas as pd
 
@@ -44,6 +45,29 @@ if __name__ == '__main__':
     # add deviation score col
     for df in df_list_prepro:
         insert_new_col_from_two_cols(df, "responseN", "numerosity", "deviation_score", get_deviation)
+
+    # check subitizing results
+    # take subitizing trials out
+    subitizing_df_list = list()
+    for df in df_list_prepro:
+        sub_df = df.loc[df["numerosity"] <= 4]
+        subitizing_df_list.append(sub_df)
+
+    # 30 subitizing trials (only keep participant has 28, 29 and 30 correct)
+    correct_trial_list = list()
+    for sub_df in subitizing_df_list:
+        correct_trial_list.append((sub_df["deviation_score"] == 0).sum())
+
+    # removed index
+    index_list = list()
+    for i, n_correct in enumerate(correct_trial_list):
+        if n_correct < 28:
+            index_list.append(i)
+
+    # removed participant performance not more than 90%
+    df_list_prepro = [df for i, df in enumerate(df_list_prepro) if i not in index_list]
+
+
 
     # concat all participant
     df_data = pd.concat(df_list_prepro)

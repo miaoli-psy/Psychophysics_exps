@@ -17,9 +17,14 @@ def get_weighted_mean(distribution: list, weights: list) -> float:
     """
     numerator = sum([distribution[i] * weights[i] for i in range(len(distribution))])
     denominator = sum(weights)
-    return round(numerator/denominator, 4)
+    return round(numerator / denominator, 4)
 
 
-def cal_eccentricity(posi: tuple) -> int:
+def cal_eccentricity(posi: tuple) -> float:
     """This function returns the distance between the input position and (0,0)"""
-    return math.sqrt(posi[0]**2+posi[1]**2)
+    return math.sqrt(posi[0] ** 2 + posi[1] ** 2)
+
+
+def cal_SEM(input_std: float, sample_number) -> float:
+    """This function returns the SEM given the std and the sample size"""
+    return round(input_std / math.sqrt(sample_number - 1), 4)

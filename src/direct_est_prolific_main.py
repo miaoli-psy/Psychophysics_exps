@@ -71,5 +71,24 @@ if __name__ == '__main__':
                    get_samplesize)  # 66 participants, 34 for winsize0.4, 32 for winsize0.6
     insert_new_col_from_two_cols(data_4, "mean_deviation_score", "samplesize", "SEM", cal_SEM)
 
+    # averaged data: combined clustering level per participant
+    data_5 = data.groupby(["numerosity", "protectzonetype", "participant", "winsize"])[
+        "deviation_score"] \
+        .agg(['mean', 'std']) \
+        .reset_index(level = ["numerosity", "protectzonetype", "participant", "winsize"])
+
+    rename_df_col(df = data_5, old_col_name = "mean", new_col_name = "mean_deviation_score")
+    data_5["samplesize"] = [30] * data_5.shape[0]  # each participant repeat 6 numerosity * 5 displays = 30 times
+    insert_new_col_from_two_cols(data_5, "mean_deviation_score", "samplesize", "SEM", cal_SEM)
+
+    # averaged data: combined clustering level, across participant
+    data_6 = data.groupby(["numerosity", "protectzonetype","winsize"])["deviation_score"].agg(['mean', 'std']) \
+        .reset_index(level = ["numerosity", "protectzonetype", "winsize"])
+
+    rename_df_col(df = data_6, old_col_name = "mean", new_col_name = "mean_deviation_score")
+    insert_new_col(data_6, "winsize", "samplesize",
+                   get_samplesize)  # 66 participants, 34 for winsize0.4, 32 for winsize0.6
+    insert_new_col_from_two_cols(data_6, "mean_deviation_score", "samplesize", "SEM", cal_SEM)
+
     if write_to_excel:
-        data_2.to_excel("prolifc_data.xlsx", index = False)
+        data_6.to_excel("prolifc_data.xlsx", index = False)

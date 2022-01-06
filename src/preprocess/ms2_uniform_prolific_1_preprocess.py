@@ -15,7 +15,7 @@ def get_deviation(resp: int, numerosity: int) -> int:
 if __name__ == '__main__':
     write_to_excel = False
     # read data
-    PATH_DATA = "../../data/prolific_direct_estimate/raw/"
+    PATH_DATA = "../../data/ms2_uniform_prolific_1_data/raw/"
     dir_list = os.listdir(PATH_DATA)
     df_list_all = [pd.read_csv(PATH_DATA + file) for file in dir_list]
 

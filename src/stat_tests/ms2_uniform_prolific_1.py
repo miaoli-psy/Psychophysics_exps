@@ -4,7 +4,7 @@ import pingouin as pg
 
 
 if __name__ == '__main__':
-    PATH = "../../data/prolific_direct_estimate/"
+    PATH = "../../data/ms2_uniform_prolific_1_data/"
     DATA = "prolifc_data_combine_num_each_pp.xlsx"
     DATA2 = "prolifc_data_each_pp.xlsx"
     winsize = 0.6

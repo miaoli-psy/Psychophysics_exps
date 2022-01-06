@@ -29,7 +29,7 @@ def get_samplesize(winsize):
 if __name__ == '__main__':
     write_to_excel = False
     # read data
-    PATH = "../data/prolific_direct_estimate/"
+    PATH = "../data/ms2_uniform_prolific_1_data/"
     DATA = "preprocessed_prolific.xlsx"
     data = pd.read_excel(PATH + DATA)
     # process the cols

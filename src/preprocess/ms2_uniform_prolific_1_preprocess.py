@@ -1,16 +1,11 @@
-import copy
 import os
 import pandas as pd
 
 from src.commons.process_dataframe import keep_valid_columns, change_col_value_type, insert_new_col_from_two_cols, \
     get_sub_df_according2col_value, get_mean, get_std
-from src.constants.constants_direct_est_prolific import KEEP_COLS
+from src.commons.process_number import get_deviation
+from src.constants.ms2_uniform_prolific_1_constants import KEEP_COLS
 from src.preprocess.sub.get_data2analysis import drop_df_rows_according2_one_col
-
-
-def get_deviation(resp: int, numerosity: int) -> int:
-    return resp - numerosity
-
 
 if __name__ == '__main__':
     write_to_excel = False

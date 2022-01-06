@@ -28,3 +28,11 @@ def cal_eccentricity(posi: tuple) -> float:
 def cal_SEM(input_std: float, sample_number) -> float:
     """This function returns the SEM given the std and the sample size"""
     return round(input_std / math.sqrt(sample_number - 1), 4)
+
+
+def get_deviation(resp: int, numerosity: int) -> int:
+    return resp - numerosity
+
+
+def get_percent_change(deviation, numerosity):
+    return round(deviation/numerosity, 4)

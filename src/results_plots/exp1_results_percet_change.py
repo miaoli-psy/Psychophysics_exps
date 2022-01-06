@@ -60,7 +60,7 @@ if __name__ == '__main__':
     ylabel = "Percent Changes"
     ax.set_xlabel(xlabel, fontsize = 15, labelpad = 12)
     ax.set_ylabel(ylabel, fontsize = 15)
-    ax.set_ylim([0, 0.5])
+    ax.set_ylim([-0.5, 0.5])
     ax.set_xticklabels(["21-25", "31-35", "41-45", "49-53", "54-58"])
     plt.xticks(fontsize = 12)
     plt.yticks(fontsize = 12)

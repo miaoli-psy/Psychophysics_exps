@@ -5,15 +5,15 @@ library(ggthemes)
 library(svglite)
 
 # set working path
-setwd("D:/SCALab/projects/numerosity_exps/src/")
+setwd("D:/SCALab/projects/numerosity_exps/src/results_plots/")
 
 # read data
-all_data <- read_excel("../data/prolific_direct_estimate/prolifc_data_r.xlsx")
-all_data_each_pp <- read_excel("../data/prolific_direct_estimate/prolifc_data_each_pp.xlsx")
-all_data_combine_num <- read_excel("../data/prolific_direct_estimate/prolifc_data_r_combine_num.xlsx")
-all_data_combine_num_each_pp <- read_excel("../data/prolific_direct_estimate/prolifc_data_combine_num_each_pp.xlsx")
-all_data_combine_cluster <- read_excel("../data/prolific_direct_estimate/prolifc_data_r_combine_cluster.xlsx")
-all_data_combine_cluster_each_pp <- read_excel("../data/prolific_direct_estimate/prolifc_data_combine_cluster_each_pp.xlsx")
+all_data <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_r.xlsx")
+all_data_each_pp <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_each_pp.xlsx")
+all_data_combine_num <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_r_combine_num.xlsx")
+all_data_combine_num_each_pp <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_combine_num_each_pp.xlsx")
+all_data_combine_cluster <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_r_combine_cluster.xlsx")
+all_data_combine_cluster_each_pp <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_combine_cluster_each_pp.xlsx")
 
 
 # plot sep numerosity

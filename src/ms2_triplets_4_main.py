@@ -39,7 +39,7 @@ if __name__ == '__main__':
     # transfer column name
     data_2.columns = [''.join(x) for x in data_2.columns]
 
-    data_2["samplesize"] = [16*5] * data_2.shape[0]  # each participant repeat each condition 5 times (5 displays)
+    data_2["samplesize"] = [16*5] * data_2.shape[0]  # 5 displays * 16 participants
     insert_new_col_from_two_cols(data_2, "deviation_scorestd", "samplesize", "SEM_deviation_score", cal_SEM)
     insert_new_col_from_two_cols(data_2, "percent_changestd", "samplesize", "SEM_percent_change", cal_SEM)
 

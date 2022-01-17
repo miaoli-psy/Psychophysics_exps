@@ -21,15 +21,15 @@ my_plot <-  ggplot() +
   
   scale_x_continuous(breaks = c(51, 54, 57, 60, 63, 66, 69, 72, 78, 81, 84, 87, 90, 93, 96, 99 )) +
   
-  scale_y_continuous(limits = c(-20, 20)) +
+  scale_y_continuous(limits = c(-10, 10)) +
   
   # each data point represents the average deviation of 1 participant
-   geom_point(data = all_data_each_pp, aes(x = numerosity,
-                                           y = deviation_scoremean,
-                                          group = protectzonetype,
-                                           colour = protectzonetype),
-              alpha = 0.2,
-              position = position_dodge(2))+
+   # geom_point(data = all_data_each_pp, aes(x = numerosity,
+   #                                         y = deviation_scoremean,
+   #                                        group = protectzonetype,
+   #                                         colour = protectzonetype),
+   #            alpha = 0.2,
+   #            position = position_dodge(2))+
 
    geom_errorbar(data = all_data, aes(x = numerosity,
                                       y = deviation_scoremean,

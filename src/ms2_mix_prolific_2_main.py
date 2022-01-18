@@ -45,9 +45,9 @@ if __name__ == '__main__':
     insert_new_col_from_two_cols(data_1, "percent_changestd", "samplesize", "SEM_percent_change", cal_SEM)
 
     # averaged across participant
-    data_2 = data.groupby([indv, indv2, indv3, indv4, indv5])[[dv, dv2]] \
+    data_2 = data.groupby([indv, indv2, indv3, indv4])[[dv, dv2]] \
         .agg({dv: ['mean', 'std'], dv2: ['mean', 'std']}) \
-        .reset_index(level = [indv, indv2, indv3, indv4, indv5])
+        .reset_index(level = [indv, indv2, indv3, indv4])
 
     # transfer column name
     data_2.columns = [''.join(x) for x in data_2.columns]

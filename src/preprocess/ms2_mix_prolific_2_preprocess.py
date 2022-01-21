@@ -56,7 +56,8 @@ if __name__ == '__main__':
     for sub_df in subitizing_df_list:
         correct_trial_list.append((sub_df["deviation_score"] == 0).sum())
 
-    remove_indices = [1, 8, 24, 28, 37, 52, 55, 56, 57, 58, 59]
+    remove_indices = [idx for idx, element in enumerate(correct_trial_list) if element < 27]
+    print("%s  out of %s participants were removed, failing the subitizing check" % (len(remove_indices), len(correct_trial_list)))
 
     for ele in sorted(remove_indices, reverse = True):
         del df_list[ele]
@@ -87,10 +88,8 @@ if __name__ == '__main__':
         new_sub_df = drop_df_rows_according2_one_col(sub_df, "responseN", lower_bondary, upper_bondary)
         prepro_df_list.append(new_sub_df)
 
-    # 1.25% trials were removed
+    # 1.13% trials were removed
     df_data_prepro = pd.concat(prepro_df_list, ignore_index = True)
 
     if write_to_excel:
         df_data_prepro.to_excel("ms2_mix_2_preprocessed.xlsx")
-
-

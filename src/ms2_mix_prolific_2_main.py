@@ -9,7 +9,7 @@ def get_samplesize(winsize):
     if winsize == 0.4:
         return 29
     else:
-        return 21
+        return 27
 
 
 if __name__ == '__main__':
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     # transfer column name
     data_4.columns = [''.join(x) for x in data_4.columns]
 
-    insert_new_col(data_4, indv3, "samplesize", get_samplesize)  # 50 participants, 29 for winsize0.4, 21 for winsize0.6
+    insert_new_col(data_4, indv3, "samplesize", get_samplesize)  # 56 participants, 29 for winsize0.4, 27 for winsize0.6
 
     insert_new_col_from_two_cols(data_4, "deviation_scorestd", "samplesize", "SEM_deviation_score", cal_SEM)
     insert_new_col_from_two_cols(data_4, "percent_changestd", "samplesize", "SEM_percent_change", cal_SEM)

@@ -24,10 +24,12 @@ all_data_small_num <- subset(all_data_each_pp, winsize == 0.4)
 all_data_large_num <- subset(all_data_each_pp, winsize == 0.6)
 
 # TODO
-data <- all_data_small_num
+data <- all_data_large_num
+
+summary(data)
 
 
-# random factors ----------------------------------------------------------
+# Visualization------------------------------------------------------
 
 # subject
 bxp <- ggboxplot(data = all_data_each_pp, 
@@ -65,6 +67,8 @@ str(data)
 
 data$percent_triplets <-as.factor(data$percent_triplets)
 data$protectzonetype <-as.factor(data$protectzonetype)
+data$numerosity <-as.factor(data$numerosity)
+
 
 alignment_con.model1 <- lmer(mean_deviation_score ~ protectzonetype + 
                                percent_triplets + 
@@ -136,74 +140,56 @@ alignment_con.null2
 anova(alignment_con.model2, alignment_con.null2)
 
 
+
+alignment_con.model4 <- lmer(mean_deviation_score ~ protectzonetype + 
+                               numerosity + 
+                               percent_triplets + 
+                               (1 + protectzonetype|participant),
+                             data = data, REML = FALSE)
+alignment_con.model4
+
+
+alignment_con.null4 <- lmer(mean_deviation_score ~ percent_triplets + 
+                              numerosity +
+                              (1 +protectzonetype|participant),
+                            data = data, REML = FALSE)
+alignment_con.null4
+
+anova(alignment_con.model4, alignment_con.null4)
+
+
 # fix effect r2
 
-r.squaredGLMM(alignment_con.model2)
+r.squaredGLMM(alignment_con.model4)
 # https://www.rdocumentation.org/packages/r2glmm/versions/0.1.2/topics/r2beta
 # https://stats.stackexchange.com/questions/453758/differences-in-proportion-of-variance-explained-by-mumin-and-r2glmm-packages-usi
 # r2beta may have error
-r2beta(alignment_con.model, method = 'kr', partial = TRUE)
+
+# model R2
+r2beta(alignment_con.model4, method = 'kr', partial = TRUE)
 
 # posc-hoc on models not on data set (maybe: https://cran.r-project.org/web/packages/emmeans/vignettes/interactions.html)
-emmeans(alignment_con.model, list(pairwise ~ protectzonetype * percent_triplets), adjust = "tukey")
+emmeans(alignment_con.model_random_slope, list(pairwise ~ protectzonetype * percent_triplets), adjust = "tukey")
 
 
-
-# Troditional ANOVA -------------------------------------------------------
-
-# mix anova winsize(2 between) * clustering(5 within) * type(2 within)
-res.aov <- anova_test(
-  data = all_data_combine_num_each_pp, dv = mean_deviation_score, wid = participant,
-  between = winsize, within = c(percent_triplets, protectzonetype)
-)
-get_anova_table(res.aov)
+# troditional ANOVA
 
 
-# check if all fixed factors have been correctly identified as factor
-str(data)
-data$percent_triplets <-as.factor(data$percent_triplets)
-data$protectzonetype <-as.factor(data$protectzonetype)
+# read data
 
-bxp2 <- ggboxplot(
-  data, x = "percent_triplets", y = "mean_deviation_score", 
-  color = "protectzonetype",
-  palette = "joc",
-  facet.by = "winsize",
-  short.panel.labs = FALSE)
+# ANOVA
+data_anova <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_combine_cluster_each_pp.xlsx")
+data_anova <- subset(data_anova, winsize == 0.6)
 
-print(bxp2)
+res.anova <- aov(mean_deviation_score ~ numerosity + protectzonetype + numerosity:protectzonetype, data = data_anova)
+Anova(res.anova, type = "III")
 
 
-res.aov2 <- anova_test(
-  data = data, dv = mean_deviation_score, wid = participant,
-  within = c(percent_triplets, protectzonetype)
-)
-get_anova_table(res.aov2)
+res.mol1 <- lmer(mean_deviation_score ~ percent_triplets + protectzonetype + (1|participant), data = data_anova)
+res.null <- lmer(mean_deviation_score ~ percent_triplets + (1|participant), data = data_anova)
+anova(res.null,res.mol1)
 
-model1 <- lm(mean_deviation_score ~ percent_triplets + protectzonetype, data = data)
-Anova(model1, type = "III")
-
-
-# check model assumptions: failed, cannot do ANOVA
-
-plot(model1, 2)
-aov_residuals <- residuals(object = model1)
-shapiro.test(aov_residuals)
-
-# Start LMM
-
-summary(data)
-
-effect <- lmer(mean_deviation_score ~ as.factor(percent_triplets) * as.factor(protectzonetype) + (1|participant), data = data)
-anova(effect)
-eta_sq(effect, partial = TRUE)
-r.squaredGLMM(effect) #adjust r2 for the model as an alternative
-
-# post hocs for main effect
-lsmeans(effect, pairwise~protectzonetype|percent_triplets, adjust="tukey")
-
-
-
-
+r.squaredGLMM(res.mol1)
+r2beta(res.mol1, method = 'kr', partial = TRUE)
 
 

@@ -17,7 +17,8 @@ if __name__ == '__main__':
     indv2 = "crowdingcons"
     indv3 = "winsize"
 
-    data_1 = data.groupby([indv, indv2, indv3])[dv]\
+
+    data_1 = data.groupby([indv, indv2, indv3, "displayN"])[dv]\
         .agg(['mean', 'std']) \
         .reset_index(level = [indv, indv2, indv3])
 

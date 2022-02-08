@@ -12,6 +12,9 @@ library(multcomp)
 library(nlme)
 library(r2glmm)
 library(dplyr)
+library(TOSTER)
+library(BayesFactor)
+library(pwr)
 # prepare -----------------------------------------------------------------
 
 # set working path
@@ -25,27 +28,85 @@ all_data_by_num <- read_excel("../../data/ms1_encircle/ms1_encircle_by_num.xlsx"
 colnames(all_data_by_num)[which(names(all_data_by_num) == "mean")] <- "average_group"
 # visualization -----------------------------------------------------------
 
-plot <- ggboxplot(all_data,
+# number of groups - numerosity
+plot1 <- ggboxplot(all_data,
                   x = "numerosity",
                   y = "average_group",
                   color = "crowdingcons") +
   facet_wrap( ~ winsize, scale = "free_x")
 
-print(plot)
+plot1
+
+# number of inner groups (next to fixation) - numerosity
+
+plot2 <- ggboxplot(all_data,
+                    x = "numerosity",
+                    y = "average_inner_group",
+                    color = "crowdingcons") +
+  facet_wrap( ~ winsize, scale = "free_x")
+
+plot2
+
+# discriptive -------------------------------------------------------------
+
+summary <- all_data %>%
+  group_by(winsize, crowdingcons) %>%
+  summarize(
+    mean = mean(average_inner_group, na.rm = TRUE),
+    std_dev = sd(average_inner_group, na.rm = TRUE)
+  )
+summary
+
 
 # as factor
 
 all_data$crowdingcons <- as.factor(all_data$crowdingcons)
 all_data$numerosity <- as.factor(all_data$numerosity)
 all_data$winsize <- as.factor(all_data$winsize)
-
-# anova the effect of winsize/numerosity and alignment condition on averge_group
-
-eff <- lmer(average_group ~ winsize * crowdingcons + (1|list_index), data = all_data)
-anova(eff)
-
-qqnorm(resid(eff))
+all_data$displayN <- as.factor(all_data$displayN)
 
 
+# zero effect -------------------------------------------------------------
 
+# each winsize
+data <- subset(all_data, winsize == 0.4)
+
+BF <-
+  ttestBF(formula = average_group ~ crowdingcons,
+          data = data,
+          rscale = 1) #rscale = 1, 1.5
+BF
+
+plot(BF)
+
+# cal SESOI
+SESOI <- pwr.t.test(n = 3, power = 1 / 3, type = "two.sample")
+SESOI
+
+
+# TOST
+TOST <-
+  dataTOSTtwo(
+    data = data,
+    deps = "average_group",
+    group = "crowdingcons",
+    var_equal = TRUE,
+    low_eqbound = -1.62,
+    high_eqbound = 1.62,
+    desc = TRUE,
+    plots = TRUE
+  )
+TOST
+
+# test BF anova on average group
+bf = anovaBF(average_group ~ crowdingcons*winsize, data = all_data, whichRandom = "displayN")
+
+bf
+
+
+# test BF anova on average inner group
+
+bf = anovaBF(average_inner_group ~ crowdingcons*winsize, data = all_data, whichRandom = "displayN")
+
+bf
 

@@ -52,8 +52,8 @@ plot2
 summary <- all_data %>%
   group_by(winsize, crowdingcons) %>%
   summarize(
-    mean = mean(average_inner_group, na.rm = TRUE),
-    std_dev = sd(average_inner_group, na.rm = TRUE)
+    mean = mean(average_group, na.rm = TRUE),
+    std_dev = sd(average_group, na.rm = TRUE)
   )
 summary
 
@@ -69,7 +69,7 @@ all_data$displayN <- as.factor(all_data$displayN)
 # zero effect -------------------------------------------------------------
 
 # each winsize
-data <- subset(all_data, winsize == 0.4)
+data <- subset(all_data, winsize == 0.6)
 
 BF <-
   ttestBF(formula = average_group ~ crowdingcons,
@@ -99,7 +99,9 @@ TOST <-
 TOST
 
 # test BF anova on average group
-bf = anovaBF(average_group ~ crowdingcons*winsize, data = all_data, whichRandom = "displayN")
+bf = anovaBF(average_group ~ crowdingcons*winsize, 
+             data = all_data,
+             whichRandom = "displayN")
 
 bf
 

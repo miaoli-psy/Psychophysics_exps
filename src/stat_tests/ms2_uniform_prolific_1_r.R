@@ -11,73 +11,175 @@ library(MuMIn)
 library(multcomp)
 library(nlme)
 library(r2glmm)
+library(ggplot2)
+library(ggthemes)
+library(svglite)
+library(sjPlot)
+
+
 # prepare -----------------------------------------------------------------
 
 # set working path
 setwd("D:/SCALab/projects/numerosity_exps/src/stat_tests/")
 
 # read data
-all_data_each_pp <-
-  read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_each_pp.xlsx")
+data_preprocessed <- read_excel("../../data/ms2_uniform_prolific_1_data/preprocessed_prolific.xlsx")
+
+# data by subject
+data_by_subject <- data_preprocessed %>%
+  group_by(numerosity, participant, protectzonetype, perceptpairs, winsize) %>%
+  summarise(deviation_score_mean = mean(deviation_score),
+            deviation_score_std = sd(deviation_score),
+            percent_change_mean = mean(percent_change),
+            percent_change_std = sd(percent_change))
+
+# samplesize = 5 (each condition 5 displays)
+data_by_subject <- data_by_subject %>%
+  mutate(devoatopm_socre_SEM = deviation_score_std / sqrt(5),
+         percent_change_SEM = percent_change_std / sqrt(5))
+
+# data across subject
+data <- data_preprocessed %>% 
+  group_by(numerosity, protectzonetype, perceptpairs, winsize) %>% 
+  summarise(deviation_score_mean = mean(deviation_score),
+            deviation_score_std = sd(deviation_score),
+            percent_change_mean = mean(percent_change),
+            percent_change_std = sd(percent_change))
+
+# samplesize = 34 * 5 for winsize0.4; 32 * 5 for winsize 0.6
+data <- data %>%
+  mutate(
+    deviation_score_SEM =
+      case_when(
+        winsize == 0.4 ~ deviation_score_std / sqrt(34 * 5),
+        winsize == 0.6 ~ deviation_score_std / sqrt(32 * 5)
+      ), 
+    percent_change_SEM =
+      case_when(
+        winsize == 0.4 ~ percent_change_std / sqrt(34 * 5),
+        winsize == 0.6 ~ percent_change_std / sqrt(32 * 5)
+      )
+  )
+
 
 # separate groups
-all_data_small_num <- subset(all_data_each_pp, winsize == 0.4)
-all_data_large_num <- subset(all_data_each_pp, winsize == 0.6)
+data_by_subject_ws04 <- subset(data_by_subject, winsize == 0.4)
+data_by_subject_ws06 <- subset(data_by_subject, winsize == 0.6)
 
 # TODO
-data <- all_data_large_num
+my_data <- data_by_subject_ws04
 
-summary(data)
+summary(my_data)
 
 
 # Visualization------------------------------------------------------
 
+# TODO
+# dv <- "deviation_score_mean"
+dv <- "percent_change_mean"
+
 # subject
-bxp <- ggboxplot(data = all_data_each_pp,
+bxp <- ggboxplot(data = data_by_subject,
                  x = "participant",
-                 y = "mean_deviation_score",
+                 y = dv,
                  color = "protectzonetype") +
-  facet_wrap( ~ winsize, nrow = 2)
+  facet_wrap( ~ winsize, nrow = 2, scale = "free_x")
 
 print(bxp)
 
 # clustering level
-bxp2 <- ggboxplot(data = all_data_each_pp,
-                  x = "percent_triplets",
-                  y = "mean_deviation_score",
+bxp2 <- ggboxplot(data = data_by_subject,
+                  x = "perceptpairs",
+                  y = dv,
                   color = "protectzonetype") +
-  facet_wrap( ~ winsize, ncol = 2)
+  facet_wrap( ~ winsize, ncol = 2, scale = "free_x")
 
 print(bxp2)
 
 # numerosity
 
-bxp3 <- ggboxplot(data = all_data_each_pp,
+bxp3 <- ggboxplot(data = data_by_subject,
                   x = "numerosity",
-                  y = "mean_deviation_score",
+                  y = dv,
                   color = "protectzonetype") +
-  facet_wrap( ~ winsize, nrow = 2, scales = "free")
+  facet_wrap( ~ winsize, ncol = 2, scale = "free_x")
 
 print(bxp3)
+
+
+# result plots ------------------------------------------------------------
+my_plot <-  ggplot() +
+  
+  geom_bar(data = data, aes(x = perceptpairs,
+                                y = deviation_score_mean,
+                                fill = protectzonetype),
+           position = "dodge", stat = "identity", alpha = 0.5, width = 0.2) +
+  
+  scale_x_continuous(breaks = c(0, 0.25,0.5, 0.75, 1)) +
+  
+  # scale_y_continuous(limits = c(-5, 5)) +
+  
+  # each data point represents the average deviation of 1 participant
+  # geom_point(data = data_by_subject, aes(x = perceptpairs,
+  #                                         y = deviation_score_mean,
+  #                                         group = protectzonetype,
+  #                                         colour = protectzonetype),
+  #            alpha = 0.2,
+  #            position = position_dodge(0.2))+
+  
+  geom_errorbar(data = data, aes(x = perceptpairs,
+                                     y = deviation_score_mean,
+                                     ymin = deviation_score_mean - deviation_score_SEM,
+                                     ymax = deviation_score_mean + deviation_score_SEM,
+                                     group = protectzonetype),
+                color = "black",
+                size  = 1.2,
+                width = .00,
+                position = position_dodge(0.2)) +
+  
+  scale_fill_manual(values = c("radial" = "#ff4500",
+                               "tangential" = "#4169e1")) +
+  
+  scale_colour_manual(values = c("radial" = "#ff4500",
+                                 "tangential" = "#4169e1")) +
+  
+  labs(y = "Deviation score", x = "percentage of disc pairs") +
+  
+  theme_few() +
+  
+  facet_wrap(~ numerosity, nrow = 2)
+
+
+print(my_plot)
+
+ggsave(
+  file = "test.svg",
+  plot = my_plot,
+  width = 12,
+  height = 5,
+  dpi = 300
+)
+
 
 
 # LMM ---------------------------------------------------------------------
 
 # ID as factor
-str(data)
+str(my_data)
 
-data$percent_triplets <- as.factor(data$percent_triplets)
-data$protectzonetype <- as.factor(data$protectzonetype)
-data$numerosity <- as.factor(data$numerosity)
+my_data$perceptpairs <- as.factor(my_data$perceptpairs)
+my_data$protectzonetype <- as.factor(my_data$protectzonetype)
+my_data$numerosity <- as.factor(my_data$numerosity)
+my_data$participant <- as.factor(my_data$participant)
 
 
 alignment_con.model1 <-
   lmer(
-    mean_deviation_score ~ protectzonetype +
-      percent_triplets +
+    deviation_score_mean ~ protectzonetype +
+      perceptpairs +
       (1 | participant) +
       (1 | numerosity),
-    data = data,
+    data = my_data,
     REML = FALSE
   )
 alignment_con.model1
@@ -85,10 +187,10 @@ alignment_con.model1
 
 alignment_con.null1 <-
   lmer(
-    mean_deviation_score ~ percent_triplets +
+    deviation_score_mean ~ perceptpairs +
       (1 | participant) +
       (1 | numerosity),
-    data = data,
+    data = my_data,
     REML = FALSE
   )
 alignment_con.null1
@@ -99,10 +201,10 @@ anova(alignment_con.model1, alignment_con.null1)
 # check interaction: no interaction
 alignment_con.interaction <-
   lmer(
-    mean_deviation_score ~ protectzonetype * percent_triplets +
+    deviation_score_mean ~ protectzonetype * perceptpairs +
       (1 | participant) +
       (1 | numerosity),
-    data = data,
+    data = my_data,
     REML = FALSE
   )
 
@@ -110,50 +212,45 @@ anova(alignment_con.interaction, alignment_con.model1)
 
 # random slope vs. random intercepts
 
-coef(alignment_con.model)
+coef(alignment_con.model1)
 
 alignment_con.model_random_slope <-
   lmer(
-    mean_deviation_score ~ protectzonetype + percent_triplets +
-      (1 + protectzonetype |
-         participant) +
-      (1 + protectzonetype |
-         numerosity),
-    data = data,
+    deviation_score_mean ~ protectzonetype + perceptpairs + numerosity +
+      (1 + protectzonetype|participant),
+    data = my_data,
     REML = FALSE
   )
 alignment_con.model_random_slope
 
 
-coef(alignment_con.model)
+coef(alignment_con.model_random_slope)
 
 alignment_con.null_random_slope <-
   lmer(
-    mean_deviation_score ~ percent_triplets +
+    deviation_score_mean ~ perceptpairs + numerosity +
       (1 + protectzonetype |
-         participant) +
-      (1 + protectzonetype |
-         numerosity),
-    data = data,
+         participant),
+    data = my_data,
     REML = FALSE
   )
 alignment_con.null_random_slope
 
 
-anova(alignment_con.model_random_slope,
+anova(alignment_con.model_random_slope, 
       alignment_con.null_random_slope)
 
 
 
-# numerosity not as random effect
+# try: numerosity not as random effect
 
 alignment_con.model2 <-
   lmer(
-    mean_deviation_score ~ protectzonetype +
-      percent_triplets +
+    deviation_score_mean ~ protectzonetype +
+      perceptpairs +
       numerosity +
       (1 + protectzonetype | participant),
-    data = data,
+    data = my_data,
     REML = FALSE
   )
 alignment_con.model2
@@ -163,10 +260,10 @@ coef(alignment_con.model)
 
 alignment_con.null2 <-
   lmer(
-    mean_deviation_score ~ percent_triplets +
+    deviation_score_mean ~ perceptpairs +
       numerosity +
       (1 + protectzonetype | participant),
-    data = data,
+    data = my_data,
     REML = FALSE
   )
 alignment_con.null2
@@ -175,45 +272,24 @@ anova(alignment_con.model2, alignment_con.null2)
 
 
 
-alignment_con.model4 <-
-  lmer(
-    mean_deviation_score ~ protectzonetype +
-      numerosity +
-      percent_triplets +
-      (1 + protectzonetype | participant),
-    data = data,
-    REML = FALSE
-  )
-alignment_con.model4
-
-
-alignment_con.null4 <-
-  lmer(
-    mean_deviation_score ~ percent_triplets +
-      numerosity +
-      (1 + protectzonetype | participant),
-    data = data,
-    REML = FALSE
-  )
-alignment_con.null4
-
-anova(alignment_con.model4, alignment_con.null4)
-
 
 # fix effect r2
 
-r.squaredGLMM(alignment_con.model4)
+r.squaredGLMM(alignment_con.model_random_slope)
 # https://www.rdocumentation.org/packages/r2glmm/versions/0.1.2/topics/r2beta
 # https://stats.stackexchange.com/questions/453758/differences-in-proportion-of-variance-explained-by-mumin-and-r2glmm-packages-usi
 # r2beta may have error
 
 # model R2
-r2beta(alignment_con.model4, method = 'kr', partial = TRUE)
+r2beta(alignment_con.model_random_slope, method = 'kr', partial = TRUE)
+
+# an APA style table: https://cran.r-project.org/web/packages/sjPlot/vignettes/tab_mixed.html
+tab_model(alignment_con.model_random_slope, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
 
 # posc-hoc on models not on data set (maybe: https://cran.r-project.org/web/packages/emmeans/vignettes/interactions.html)
-emmeans(
+emmeans_res <- emmeans(
   alignment_con.model_random_slope,
-  list(pairwise ~ protectzonetype * percent_triplets),
+  list(pairwise ~ protectzonetype * numerosity * perceptpairs),
   adjust = "tukey"
 )
 

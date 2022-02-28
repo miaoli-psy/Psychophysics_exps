@@ -3,7 +3,7 @@ import pandas as pd
 
 from src.commons.process_dataframe import keep_valid_columns, change_col_value_type, insert_new_col_from_two_cols, \
     get_sub_df_according2col_value, get_mean, get_std
-from src.commons.process_number import get_deviation
+from src.commons.process_number import get_deviation, get_percent_change
 from src.constants.ms2_uniform_prolific_1_constants import KEEP_COLS
 from src.preprocess.sub.get_data2analysis import drop_df_rows_according2_one_col
 
@@ -43,6 +43,7 @@ if __name__ == '__main__':
     # add deviation score col
     for df in df_list:
         insert_new_col_from_two_cols(df, "responseN", "numerosity", "deviation_score", get_deviation)
+        insert_new_col_from_two_cols(df, "deviation_score", "numerosity", "percent_change", get_percent_change)
 
     # check subitizing results
     # take subitizing trials out

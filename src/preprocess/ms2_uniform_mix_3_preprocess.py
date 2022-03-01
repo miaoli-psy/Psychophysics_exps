@@ -3,10 +3,27 @@ import os
 import pandas as pd
 
 from src.commons.process_dataframe import keep_valid_columns, insert_new_col_from_two_cols, \
-    get_sub_df_according2col_value, get_mean, get_std
+    get_sub_df_according2col_value, get_mean, get_std, insert_new_col
 from src.commons.process_number import get_deviation, get_percent_change
 from src.constants.ms2_mix_uniform_3_constants import KEEP_COLs
 from src.preprocess.sub.get_data2analysis import drop_df_rows_according2_one_col
+
+
+def convert_blockOrdertocontrast1(blockOrder: str):
+    if blockOrder == "c4_mix.xlsx" or blockOrder == "c6_mix.xlsx":
+        return "mix"
+    else:
+        return "uniform"
+
+
+def convert_blockOrdertocontrast2(blockOrder: str):
+    if blockOrder == "c4_mix.xlsx" or blockOrder == "c6_mix.xlsx":
+        return "mix"
+    elif blockOrder == "c4_white.xlsx" or blockOrder == "c6_white_xlsx":
+        return "white"
+    else:
+        return "black"
+
 
 if __name__ == '__main__':
     write_to_excel = False
@@ -70,11 +87,8 @@ if __name__ == '__main__':
     # 1.20% trials were removed
     df_data_prepro = pd.concat(prepro_df_list, ignore_index = True)
 
+    insert_new_col(df_data_prepro, "blockOrder", "contrast", convert_blockOrdertocontrast1)
+    insert_new_col(df_data_prepro, "blockOrder", "contrast_full", convert_blockOrdertocontrast2)
+
     if write_to_excel:
         df_data_prepro.to_excel("preprocessed_uniform_mix_3.xlsx", index = False)
-
-
-
-
-
-

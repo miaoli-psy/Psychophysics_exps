@@ -15,22 +15,6 @@ def get_percent_triplets(percentpairs):
         raise Exception(f"percentpair {percentpairs} is unexpected")
 
 
-def convert_blockOrdertocontrast1(blockOrder: str):
-    if blockOrder == "c4_mix.xlsx" or blockOrder == "c6_mix.xlsx":
-        return "mix"
-    else:
-        return "uniform"
-
-
-def convert_blockOrdertocontrast2(blockOrder: str):
-    if blockOrder == "c4_mix.xlsx" or blockOrder == "c6_mix.xlsx":
-        return "mix"
-    elif blockOrder == "c4_white.xlsx" or blockOrder == "c6_white_xlsx":
-        return "white"
-    else:
-        return "black"
-
-
 if __name__ == '__main__':
     to_excel = False
 
@@ -41,8 +25,6 @@ if __name__ == '__main__':
 
     # convert percentpairs to percent_triplets
     insert_new_col(data, "perceptpairs", "percent_triplets", get_percent_triplets)
-    insert_new_col(data, "blockOrder", "contrast", convert_blockOrdertocontrast1)
-    insert_new_col(data, "blockOrder", "contrast_full", convert_blockOrdertocontrast2)
 
 
     dv = "deviation_score"

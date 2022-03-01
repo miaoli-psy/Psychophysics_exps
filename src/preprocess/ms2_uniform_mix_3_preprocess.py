@@ -19,7 +19,7 @@ def convert_blockOrdertocontrast1(blockOrder: str):
 def convert_blockOrdertocontrast2(blockOrder: str):
     if blockOrder == "c4_mix.xlsx" or blockOrder == "c6_mix.xlsx":
         return "mix"
-    elif blockOrder == "c4_white.xlsx" or blockOrder == "c6_white_xlsx":
+    elif blockOrder == "c4_white.xlsx" or blockOrder == "c6_white.xlsx":
         return "white"
     else:
         return "black"

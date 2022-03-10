@@ -21,19 +21,18 @@ library(pwr)
 setwd("D:/SCALab/projects/numerosity_exps/src/stat_tests/")
 
 # read data
-all_data <- read_excel("../../data/ms1_encircle/ms1_encircle_data.xlsx")
-all_data_by_num <- read_excel("../../data/ms1_encircle/ms1_encircle_by_num.xlsx")
+all_data <- read_excel("../../data/ms1_encircle/preprocessed_encircle.xlsx")
 
-# change col name
-colnames(all_data_by_num)[which(names(all_data_by_num) == "mean")] <- "average_group"
+
 # visualization -----------------------------------------------------------
 
 # number of groups - numerosity
 plot1 <- ggboxplot(all_data,
                   x = "numerosity",
-                  y = "average_group",
+                  y = "groups_n",
                   color = "crowdingcons") +
   facet_wrap( ~ winsize, scale = "free_x")
+
 
 plot1
 
@@ -41,7 +40,7 @@ plot1
 
 plot2 <- ggboxplot(all_data,
                     x = "numerosity",
-                    y = "average_inner_group",
+                    y = "inner_groups_n",
                     color = "crowdingcons") +
   facet_wrap( ~ winsize, scale = "free_x")
 
@@ -52,8 +51,8 @@ plot2
 summary <- all_data %>%
   group_by(winsize, crowdingcons) %>%
   summarize(
-    mean = mean(average_group, na.rm = TRUE),
-    std_dev = sd(average_group, na.rm = TRUE)
+    mean = mean(groups_n, na.rm = TRUE),
+    std_dev = sd(groups_n, na.rm = TRUE)
   )
 summary
 
@@ -64,8 +63,9 @@ all_data$crowdingcons <- as.factor(all_data$crowdingcons)
 all_data$numerosity <- as.factor(all_data$numerosity)
 all_data$winsize <- as.factor(all_data$winsize)
 all_data$displayN <- as.factor(all_data$displayN)
+all_data$evaluation <- as.factor(all_data$evaluation)
 
-
+str(all_data)
 # zero effect -------------------------------------------------------------
 
 # each winsize
@@ -99,16 +99,13 @@ TOST <-
 TOST
 
 # test BF anova on average group
-bf = anovaBF(average_group ~ crowdingcons*winsize, 
-             data = all_data,
-             whichRandom = "displayN")
+bf = anovaBF(groups_n ~ crowdingcons*winsize + evaluation, data = all_data, whichRandom = "evaluation")
 
 bf
 
 
-# test BF anova on average inner group
 
-bf = anovaBF(average_inner_group ~ crowdingcons*winsize, data = all_data, whichRandom = "displayN")
 
-bf
+
+
 

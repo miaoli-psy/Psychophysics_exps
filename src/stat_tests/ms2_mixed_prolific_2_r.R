@@ -22,7 +22,7 @@ library(sjPlot)
 setwd("D:/SCALab/projects/numerosity_exps/src/stat_tests/")
 
 # read data
-data_preprocessed <- read_excel("../../data/ms2_uniform_prolific_1_data/preprocessed_prolific.xlsx")
+data_preprocessed <- read_excel("../../data/ms2_mix_prolific_2_data/ms2_mix_2_preprocessed.xlsx")
 
 # data by subject
 data_by_subject <- data_preprocessed %>%
@@ -161,162 +161,6 @@ ggsave(
 )
 
 
-
-# LMM clustering-----------------------------------------------------------------
-
-# ID as factor
-str(my_data)
-
-my_data$perceptpairs <- as.factor(my_data$perceptpairs)
-my_data$protectzonetype <- as.factor(my_data$protectzonetype)
-my_data$numerosity <- as.factor(my_data$numerosity)
-my_data$participant <- as.factor(my_data$participant)
-
-
-# test the effect of clustering
-model1 <-
-  lmer(
-    deviation_score_mean ~ protectzonetype +
-      perceptpairs +
-      (1 | participant) +
-      (1 | numerosity),
-    data = my_data,
-    REML = FALSE
-  )
-model1
-
-
-null1 <-
-  lmer(
-    deviation_score_mean ~ protectzonetype +
-      (1 | participant) +
-      (1 | numerosity),
-    data = my_data,
-    REML = FALSE
-  )
-null1
-
-anova(model1, null1)
-
-alignment_con.model1 <-
-  lmer(
-    deviation_score_mean ~ protectzonetype +
-      perceptpairs +
-      (1 | participant) +
-      (1 | numerosity),
-    data = my_data,
-    REML = FALSE
-  )
-alignment_con.model1
-
-
-alignment_con.null1 <-
-  lmer(
-    deviation_score_mean ~ perceptpairs +
-      (1 | participant) +
-      (1 | numerosity),
-    data = my_data,
-    REML = FALSE
-  )
-alignment_con.null1
-
-
-anova(alignment_con.model1, alignment_con.null1)
-
-# check interaction: no interaction
-alignment_con.interaction <-
-  lmer(
-    deviation_score_mean ~ protectzonetype * perceptpairs +
-      (1 | participant) +
-      (1 | numerosity),
-    data = my_data,
-    REML = FALSE
-  )
-
-anova(alignment_con.interaction, alignment_con.model1)
-
-# random slope vs. random intercepts
-
-coef(alignment_con.model1)
-
-alignment_con.model_random_slope <-
-  lmer(
-    deviation_score_mean ~ protectzonetype + perceptpairs + numerosity +
-      (1 + protectzonetype|participant),
-    data = my_data,
-    REML = FALSE
-  )
-alignment_con.model_random_slope
-
-
-coef(alignment_con.model_random_slope)
-
-alignment_con.null_random_slope <-
-  lmer(
-    deviation_score_mean ~ perceptpairs + numerosity +
-      (1 + protectzonetype |
-         participant),
-    data = my_data,
-    REML = FALSE
-  )
-alignment_con.null_random_slope
-
-
-anova(alignment_con.model_random_slope, 
-      alignment_con.null_random_slope)
-
-
-
-# try: numerosity not as random effect
-
-alignment_con.model2 <-
-  lmer(
-    deviation_score_mean ~ protectzonetype +
-      perceptpairs +
-      numerosity +
-      (1 + protectzonetype | participant),
-    data = my_data,
-    REML = FALSE
-  )
-alignment_con.model2
-
-
-coef(alignment_con.model)
-
-alignment_con.null2 <-
-  lmer(
-    deviation_score_mean ~ perceptpairs +
-      numerosity +
-      (1 + protectzonetype | participant),
-    data = my_data,
-    REML = FALSE
-  )
-alignment_con.null2
-
-anova(alignment_con.model2, alignment_con.null2)
-
-
-# fix effect r2
-
-r.squaredGLMM(alignment_con.model_random_slope)
-# https://www.rdocumentation.org/packages/r2glmm/versions/0.1.2/topics/r2beta
-# https://stats.stackexchange.com/questions/453758/differences-in-proportion-of-variance-explained-by-mumin-and-r2glmm-packages-usi
-# r2beta may have error
-
-# model R2
-r2beta(alignment_con.model_random_slope, method = 'kr', partial = TRUE)
-
-# an APA style table: https://cran.r-project.org/web/packages/sjPlot/vignettes/tab_mixed.html
-tab_model(alignment_con.model_random_slope, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
-
-# posc-hoc on models not on data set (maybe: https://cran.r-project.org/web/packages/emmeans/vignettes/interactions.html)
-emmeans_res <- emmeans(
-  alignment_con.model_random_slope,
-  list(pairwise ~ protectzonetype * numerosity * perceptpairs),
-  adjust = "tukey"
-)
-
-print(emmeans_res)
 # data no clustering ------------------------------------------------------
 
 
@@ -344,19 +188,19 @@ data2 <- data_preprocessed %>%
             percent_change_std = sd(percent_change))
 
 
-# samplesize = 34 * 25 for winsize0.4; 32 * 25 for winsize 0.6
+# samplesize = 29 * 25 for winsize0.4; 27 * 25 for winsize 0.6
 
 data2 <- data2 %>%
   mutate(
     deviation_score_SEM =
       case_when(
-        winsize == 0.4 ~ deviation_score_std / sqrt(34 * 25),
-        winsize == 0.6 ~ deviation_score_std / sqrt(32 * 25)
+        winsize == 0.4 ~ deviation_score_std / sqrt(29 * 25),
+        winsize == 0.6 ~ deviation_score_std / sqrt(27 * 25)
       ), 
     percent_change_SEM =
       case_when(
-        winsize == 0.4 ~ percent_change_std / sqrt(34 * 25),
-        winsize == 0.6 ~ percent_change_std / sqrt(32 * 25)
+        winsize == 0.4 ~ percent_change_std / sqrt(29 * 25),
+        winsize == 0.6 ~ percent_change_std / sqrt(27 * 25)
       )
   )
 
@@ -366,7 +210,7 @@ data_by_subject_ws04_2 <- subset(data_by_subject2, winsize == 0.4)
 data_by_subject_ws06_2 <- subset(data_by_subject2, winsize == 0.6)
 
 # TODO
-my_data2 <- data_by_subject_ws06_2
+my_data2 <- data_by_subject_ws04_2
 
 summary(my_data2)
 
@@ -444,44 +288,8 @@ my_data2$participant <- as.factor(my_data2$participant)
 
 # LMM without clustering as fix factor ------------------------------------
 
-alignment_con.model_random_slope2 <-
-  lmer(
-    deviation_score_mean ~ protectzonetype + 
-      (1 + protectzonetype|participant) +
-      (1 | numerosity),
-    data = my_data2,
-    REML = FALSE
-  )
-alignment_con.model_random_slope2
-
-
-coef(alignment_con.model_random_slope2)
-
-alignment_con.null_random_slope2 <-
-  lmer(
-    deviation_score_mean ~ 
-      (1 + protectzonetype | participant) +
-      (1 | numerosity),
-    data = my_data2,
-    REML = FALSE
-  )
-alignment_con.null_random_slope2
-
-
-anova(alignment_con.model_random_slope2, 
-      alignment_con.null_random_slope2)
-
-
-
-# R square
-r.squaredGLMM(alignment_con.model_random_slope2)
-
-r2beta(alignment_con.model_random_slope2, method = 'kr', partial = TRUE)
-
-tab_model(alignment_con.model_random_slope2, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
-
-
 # numerosity as fix effect
+
 alignment_con.model_random_slope3 <-
   lmer(
     deviation_score_mean ~ protectzonetype + numerosity +
@@ -514,12 +322,10 @@ r2beta(alignment_con.model_random_slope3, method = 'kr', partial = TRUE)
 
 tab_model(alignment_con.model_random_slope3, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
 # posc-hoc on models not on data set (maybe: https://cran.r-project.org/web/packages/emmeans/vignettes/interactions.html)
-emmeans(
+emmeans_res <- emmeans(
   alignment_con.model_random_slope3,
   list(pairwise ~ protectzonetype * numerosity),
   adjust = "tukey"
 )
+print(emmeans_res)
 
-summary(glht(alignment_con.model_random_slope3, linfct=mcp(numerosity ="Tukey")))
-
-lsmeans(alignment_con.model_random_slope3, pairwise~protectzonetype*numerosity, adjust="tukey")

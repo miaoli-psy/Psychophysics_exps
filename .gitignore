@@ -86,3 +86,6 @@ vignettes/*.pdf
 rawdata/
 slides/
 archive/
+.idea/
+results/
+

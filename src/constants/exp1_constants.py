@@ -126,3 +126,14 @@ KEPT_COL_NAMES_exp1 = ["Crowding",
                        "response",
                        "participant_N",
                        "blockOrder"]
+
+KEEP_COL_Coor = ["crowdingcons",
+                 "winsize",
+                 "N_disk",
+                 "participant_N",
+                 "response",
+                 "deviation_score",
+                 "percent_change",
+                 "response",
+                 "displayN",
+                 "list_index"]

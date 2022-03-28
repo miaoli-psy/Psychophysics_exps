@@ -81,11 +81,12 @@ ggsave(file = "test.svg", plot = my_plot, width = 10, height = 7)
 
 data_corr_to_test <- dplyr::select(data_corr, deviation_score_mean, numerosity, groups_mean, winsize, crowdingcons)
 
-data_corr_to_test <- subset(data_corr_to_test, winsize == 0.3 & crowdingcons == "tangential")
+data_corr_to_test <- subset(data_corr_to_test, winsize == 0.3 & crowdingcons == "radial")
+data_corr_to_test <- subset(crowdingcons == "radial")
 
 str(data_corr_to_test)
-pcor.test(data_corr_to_test$groups_mean,
+res <-pcor.test(data_corr_to_test$groups_mean,
      data_corr_to_test$deviation_score_mean, 
      data_corr_to_test$numerosity)
-
+str(res)
 

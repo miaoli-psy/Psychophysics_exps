@@ -361,14 +361,30 @@ data2 <- data2 %>%
   )
 
 
+str(data_by_subject2)
+
+data_by_subject2$protectzonetype <- as.factor(data_by_subject2$protectzonetype)
+data_by_subject2$numerosity <- as.factor(data_by_subject2$numerosity)
+data_by_subject2$participant <- as.factor(data_by_subject2$participant)
+
+
 # separate groups
 data_by_subject_ws04_2 <- subset(data_by_subject2, winsize == 0.4)
 data_by_subject_ws06_2 <- subset(data_by_subject2, winsize == 0.6)
 
 # TODO
-my_data2 <- data_by_subject_ws06_2
+my_data2 <- data_by_subject_ws04_2
 
 summary(my_data2)
+
+
+summary <- data2 %>%
+  group_by(winsize, protectzonetype) %>%
+  summarize(
+    mean = mean(deviation_score_mean, na.rm = TRUE),
+    std_dev = sd(deviation_score_mean, na.rm = TRUE)
+  )
+summary
 
 
 # result plots 2 ------------------------------------------------------------

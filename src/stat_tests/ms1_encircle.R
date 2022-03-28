@@ -21,7 +21,7 @@ library(pwr)
 setwd("D:/SCALab/projects/numerosity_exps/src/stat_tests/")
 
 # read data
-all_data <- read_excel("../../data/ms1_encircle/preprocessed_encircle.xlsx")
+all_data <- read_csv("../../data/ms1_encircle/preprocessed_encircle.csv")
 
 
 # visualization -----------------------------------------------------------

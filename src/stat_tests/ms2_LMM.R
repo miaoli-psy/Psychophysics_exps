@@ -214,3 +214,105 @@ bxp3 <- ggboxplot(data = data_by_subject,
 
 print(bxp3)
 
+
+# data no clustering ------------------------------------------------------
+
+
+# data by subject
+data_by_subject2 <- data_preprocessed %>%
+  group_by(numerosity, participant, protectzonetype, winsize) %>%
+  summarise(deviation_score_mean = mean(deviation_score),
+            deviation_score_std = sd(deviation_score),
+            percent_change_mean = mean(percent_change),
+            percent_change_std = sd(percent_change))
+
+
+# samplesize = 25 (each condition 5 displays * 5 clustering = 25)
+data_by_subject2 <- data_by_subject2 %>%
+  mutate(deviation_socre_SEM = deviation_score_std / sqrt(25),
+         percent_change_SEM = percent_change_std / sqrt(25))
+
+
+# data across subject
+data2 <- data_preprocessed %>% 
+  group_by(numerosity, protectzonetype, winsize) %>% 
+  summarise(deviation_score_mean = mean(deviation_score),
+            deviation_score_std = sd(deviation_score),
+            percent_change_mean = mean(percent_change),
+            percent_change_std = sd(percent_change))
+
+
+# samplesize = 29 * 25 for winsize0.4; 27 * 25 for winsize 0.6
+
+data2 <- data2 %>%
+  mutate(
+    deviation_score_SEM =
+      case_when(
+        winsize == 0.4 ~ deviation_score_std / sqrt(29 * 25),
+        winsize == 0.6 ~ deviation_score_std / sqrt(27 * 25)
+      ), 
+    percent_change_SEM =
+      case_when(
+        winsize == 0.4 ~ percent_change_std / sqrt(29 * 25),
+        winsize == 0.6 ~ percent_change_std / sqrt(27 * 25)
+      )
+  )
+
+
+# separate groups
+data_by_subject_ws04_2 <- subset(data_by_subject2, winsize == 0.4)
+data_by_subject_ws06_2 <- subset(data_by_subject2, winsize == 0.6)
+
+# TODO
+my_data2 <- data_by_subject_ws04_2
+
+summary(my_data2)
+
+
+my_data2$protectzonetype <- as.factor(my_data2$protectzonetype)
+my_data2$numerosity <- as.factor(my_data2$numerosity)
+my_data2$participant <- as.factor(my_data2$participant)
+my_data2$winsize <- as.factor(my_data2$winsize)
+
+# numerosity as fix effect
+
+alignment_con.model_random_slope3 <-
+  lmer(
+    deviation_score_mean ~ protectzonetype + numerosity +
+      (1 + protectzonetype|participant),
+    data = my_data2,
+    REML = FALSE
+  )
+alignment_con.model_random_slope3
+
+
+coef(alignment_con.model_random_slope3)
+
+alignment_con.null_random_slope3 <-
+  lmer(
+    deviation_score_mean ~ numerosity +
+      (1 + protectzonetype | participant),
+    data = my_data2,
+    REML = FALSE
+  )
+alignment_con.null_random_slope3
+
+
+anova(alignment_con.model_random_slope3, 
+      alignment_con.null_random_slope3)
+
+
+r.squaredGLMM(alignment_con.model_random_slope3)
+
+r2beta(alignment_con.model_random_slope3, method = 'kr', partial = TRUE)
+
+tab_model(alignment_con.model_random_slope3, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
+# posc-hoc on models not on data set (maybe: https://cran.r-project.org/web/packages/emmeans/vignettes/interactions.html)
+emmeans_res <- emmeans(
+  alignment_con.model_random_slope3,
+  list(pairwise ~ protectzonetype * numerosity),
+  adjust = "tukey"
+)
+print(emmeans_res)
+
+summary(glht(alignment_con.model_random_slope3, linfct=mcp(protectzonetype ="Tukey")))

@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+import numpy as np
 
 from src.commons.process_dataframe import keep_valid_columns, change_col_value_type, insert_new_col_from_two_cols, \
     get_sub_df_according2col_value, get_std, get_mean
@@ -51,7 +52,7 @@ if __name__ == '__main__':
         subitizing_df_list.append(sub_df)
 
     # 30 subitizing trials per participants: remove participant subitizing less than 90% correct
-    # 11 participants were removed
+    # 13 participants were removed
     correct_trial_list = list()
     for sub_df in subitizing_df_list:
         correct_trial_list.append((sub_df["deviation_score"] == 0).sum())
@@ -90,6 +91,14 @@ if __name__ == '__main__':
 
     # 1.13% trials were removed
     df_data_prepro = pd.concat(prepro_df_list, ignore_index = True)
+
+    # check participant/ average age
+    df_by_participant = df_data_prepro.groupby(by = ["participant", "winsize"], dropna = False).mean()
+
+    table1 = pd.pivot_table(df_data_prepro, values = ['age'], columns = ["winsize"], aggfunc = {"age": np.mean})
+    table2 = pd.pivot_table(df_data_prepro, values = ['age'], columns = ["winsize"], index = ["participant"], aggfunc = {"age": np.mean})
+    table2 = pd.pivot_table(df_data_prepro, values = ['age'], columns = ["winsize", "sex"], index = ["participant"])
+
 
     if write_to_excel:
         df_data_prepro.to_excel("ms2_mix_2_preprocessed.xlsx")

@@ -24,6 +24,13 @@ setwd("D:/SCALab/projects/numerosity_exps/src/stat_tests/")
 # read data
 data_preprocessed <- read_excel("../../data/ms2_triplets_4_data/preprocessed_triplets_4.xlsx")
 
+# check avg age
+df <- data_preprocessed %>% 
+  summarise(mean_age = mean(age),
+            sd = sd(age),
+            range = paste(min(age), "-", max(age)))
+
+
 # data by subject
 data_by_subject <- data_preprocessed %>%
   group_by(numerosity, participant, protectzonetype, winsize) %>%

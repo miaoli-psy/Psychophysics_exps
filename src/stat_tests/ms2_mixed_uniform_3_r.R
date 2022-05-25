@@ -24,6 +24,16 @@ setwd("D:/SCALab/projects/numerosity_exps/src/stat_tests/")
 # read data
 data_preprocessed <- read_excel("../../data/ms2_uniform_mix_3_data/preprocessed_uniform_mix_3.xlsx")
 
+# check average age
+
+check_age <- data_preprocessed %>% 
+  group_by(participant) %>% 
+  summarise_at(vars(age),list(age = mean))
+
+check_age <- check_age %>% 
+  summarise_at(vars(age), list(age = mean))
+
+
 # data by subject
 data_by_subject <- data_preprocessed %>%
   group_by(numerosity, participant, protectzonetype, perceptpairs, winsize, contrast_full) %>%
@@ -389,9 +399,9 @@ anova(alignment_con.model_random_slope3,
 
 r.squaredGLMM(alignment_con.model_random_slope)
 
-r2beta(alignment_con.model_random_slope3, method = 'kr', partial = TRUE)
+r2beta(alignment_con.model_random_slope, method = 'kr', partial = TRUE)
 
-tab_model(alignment_con.model_random_slope3, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
+tab_model(alignment_con.model_random_slope, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
 # posc-hoc on models not on data set (maybe: https://cran.r-project.org/web/packages/emmeans/vignettes/interactions.html)
 emmeans_res <- emmeans(
   alignment_con.model_random_slope,

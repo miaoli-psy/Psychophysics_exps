@@ -242,19 +242,19 @@ data2 <- data_preprocessed %>%
             percent_change_std = sd(percent_change))
 
 
-# samplesize = 29 * 25 for winsize0.4; 27 * 25 for winsize 0.6
+# samplesize = 29 * 25 for winsize0.4; 28 * 25 for winsize 0.6
 
 data2 <- data2 %>%
   mutate(
     deviation_score_SEM =
       case_when(
         winsize == 0.4 ~ deviation_score_std / sqrt(29 * 25),
-        winsize == 0.6 ~ deviation_score_std / sqrt(27 * 25)
+        winsize == 0.6 ~ deviation_score_std / sqrt(28 * 25)
       ), 
     percent_change_SEM =
       case_when(
         winsize == 0.4 ~ percent_change_std / sqrt(29 * 25),
-        winsize == 0.6 ~ percent_change_std / sqrt(27 * 25)
+        winsize == 0.6 ~ percent_change_std / sqrt(28 * 25)
       )
   )
 

@@ -8,141 +8,135 @@ library(svglite)
 setwd("D:/SCALab/projects/numerosity_exps/src/results_plots/")
 
 # read data
-all_data <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_r.xlsx")
-all_data_each_pp <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_each_pp.xlsx")
-all_data_combine_num <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_r_combine_num.xlsx")
-all_data_combine_num_each_pp <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_combine_num_each_pp.xlsx")
-all_data_combine_cluster <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_r_combine_cluster.xlsx")
-all_data_combine_cluster_each_pp <- read_excel("../../data/ms2_uniform_prolific_1_data/prolifc_data_combine_cluster_each_pp.xlsx")
+data_preprocessed <- read_excel("../../data/ms2_uniform_prolific_1_data/preprocessed_prolific.xlsx")
+
+# pre-process
+
+# data by subject
+data_by_subject <- data_preprocessed %>%
+  group_by(numerosity,
+           participant,
+           protectzonetype,
+           winsize) %>%
+  summarise(
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score),
+    percent_change_mean = mean(percent_change),
+    percent_change_std = sd(percent_change),
+    n = n()
+  ) %>%
+  mutate(
+    deviation_socre_SEM = deviation_score_std / sqrt(n),
+    percent_change_SEM = percent_change_std / sqrt(n),
+    deviation_socre_CI = deviation_socre_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                    1),
+    percent_change_CI = percent_change_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                  1)
+  )
 
 
-# plot sep numerosity
+# data across subject (samplesize = 34 * 5 for winsize0.4; 32 * 5 for winsize 0.6)
+data_across_subject <- data_preprocessed %>%
+  group_by(numerosity, protectzonetype, winsize) %>%
+  summarise(
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score),
+    percent_change_mean = mean(percent_change),
+    percent_change_std = sd(percent_change),
+    n = n()
+  ) %>%
+  mutate(
+    deviation_socre_SEM = deviation_score_std / sqrt(n),
+    percent_change_SEM = percent_change_std / sqrt(n),
+    deviation_socre_CI = deviation_socre_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                    1),
+    percent_change_CI = percent_change_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                  1)
+  )
+
+# plot deviation - numerosity, separate exp1a (small winsize) and exp1b (large winsize)
+
+breaks_fun <- function(x) {
+  if(max(x) < 50) {
+    seq(34, 44, 2)
+  } else {
+    seq(54, 64, 2)
+  }
+}
+
+
 my_plot <-  ggplot() +
   
-  geom_bar(data = all_data, aes(x = percent_triplets,
-                                y = mean_deviation_score,
-                                fill = protectzonetype),
-           position = "dodge", stat = "identity", alpha = 0.5, width = 0.2) +
+  geom_point(
+    data = data_across_subject,
+    aes(
+      x = numerosity,
+      y = deviation_score_mean,
+      color = protectzonetype,
+      group = protectzonetype
+    ),
+    position = position_dodge(1),
+    stat = "identity",
+    alpha = 0.6,
+    size = 3
+  ) +
   
-  scale_x_continuous(breaks = c(0, 0.25,0.5, 0.75, 1)) +
+  scale_x_continuous(breaks = breaks_fun) +
   
-  scale_y_continuous(limits = c(-25, 25)) +
+  scale_y_continuous(limits = c(-10, 0)) +
   
-  # each data point represents the average deviation of 1 participant
-  geom_point(data = all_data_each_pp, aes(x = percent_triplets,
-                                          y = mean_deviation_score,
-                                          group = protectzonetype,
-                                          colour = protectzonetype),
-             alpha = 0.2,
-             position = position_dodge(0.2))+
+  geom_errorbar(
+    data = data_across_subject,
+    aes(
+      x = numerosity,
+      y = deviation_score_mean,
+      ymin = deviation_score_mean - deviation_socre_SEM,
+      ymax = deviation_score_mean + deviation_socre_SEM,
+      group = protectzonetype,
+      color = protectzonetype
+    ),
+    size  = 1.2,
+    width = .00,
+    alpha = 0.6,
+    position = position_dodge(1)
+  ) +
   
-  geom_errorbar(data = all_data, aes(x = percent_triplets,
-                                     y = mean_deviation_score,
-                                     ymin = mean_deviation_score - SEM,
-                                     ymax = mean_deviation_score + SEM,
-                                     group = protectzonetype),
-                color = "black",
-                size  = 1.2,
-                width = .00,
-                position = position_dodge(0.2)) +
+  scale_fill_manual(values = c("radial" = "#FF0000",
+                               "tangential" = "#2600FF")) +
+
+  scale_colour_manual(values = c("radial" = "#FF0000",
+                                 "tangential" = "#2600FF")) +
   
-  scale_fill_manual(values = c("radial" = "#ff4500",
-                               "tangential" = "#4169e1")) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
   
-  scale_colour_manual(values = c("radial" = "#ff4500",
-                               "tangential" = "#4169e1")) +
+  labs(y = "Deviation score", x = "Numerosity") +
   
-  labs(y = "Deviation score", x = "percent single/triplet discs") +
+  theme(axis.title.x = element_text(color="black", size=14, face="bold"),
+        axis.title.y = element_text(color="black", size=14, face="bold"),
+        panel.border = element_blank(),  
+        # remove panel grid lines
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        # remove panel background
+        panel.background = element_blank(),
+        # add axis line
+        axis.line = element_line(colour = "grey"),
+        # x,y axis tick labels
+        axis.text.x = element_text(size = 12, face = "bold"),
+        axis.text.y = element_text(size = 12, face = "bold"),
+        # legend size
+        legend.title = element_text(size = 12, face = "bold"),
+        legend.text = element_text(size = 10),
+        # facet wrap title
+        strip.text.x = element_text(size = 12, face = "bold")) +
   
-  theme_few() +
-  
-  facet_wrap(~ numerosity, nrow = 2)
-  
+  facet_wrap( ~ winsize, nrow = 1, scales = "free_x")
+
 
 print(my_plot)
 
-# plot combine numerosity, sep winsize
-my_plot2 <- ggplot() +
-  
-  geom_bar(data = all_data_combine_num, aes(x = percent_triplets,
-                                            y = mean_deviation_score,
-                                            fill = protectzonetype),
-           
-           position = "dodge", stat = "identity", alpha = 0.5, width = 0.2) +
-  
-  scale_x_continuous(breaks = c(0, 0.25,0.5, 0.75, 1)) +
-  
-  scale_y_continuous(limits = c(-10, 0)) +
 
-  geom_errorbar(data = all_data_combine_num, aes(x = percent_triplets,
-                                                         y = mean_deviation_score,
-                                                         ymin = mean_deviation_score - SEM,
-                                                         ymax = mean_deviation_score + SEM,
-                                                         group = protectzonetype),
-                color = "black",
-                size  = 1.2,
-                width = .00,
-                position = position_dodge(0.2)) +
-  
-  scale_fill_manual(values = c("radial" = "#ff4500",
-                               "tangential" = "#4169e1")) +
-  
-  scale_colour_manual(values = c("radial" = "#ff4500",
-                                 "tangential" = "#4169e1")) +
-  
-  labs(y = "Deviation score", x = "percent single/triplet discs") +
-  
-  theme_few() +
-  
-  facet_wrap(~ winsize)
-
-print(my_plot2)
-
-
-# plot combine cluster
-my_plot3 <-  ggplot() +
-  
-  geom_bar(data = all_data_combine_cluster, aes(x = numerosity,
-                                y = mean_deviation_score,
-                                fill = protectzonetype),
-           position = "dodge", stat = "identity", alpha = 0.5, width = 1.5) +
-  
-  scale_x_continuous(breaks = c(34, 36, 38, 40, 42, 44, 54, 56, 58, 60, 62, 64)) +
-
-  scale_y_continuous(limits = c(-25, 25)) +
-  
-  # each data point represents the average deviation of 1 participant
-  geom_point(data = all_data_combine_cluster_each_pp, aes(x = numerosity,
-                                          y = mean_deviation_score,
-                                          group = protectzonetype,
-                                          colour = protectzonetype),
-             alpha = 0.2,
-             position = position_dodge(1.5))+
-  
-  geom_errorbar(data = all_data_combine_cluster, aes(x = numerosity,
-                                     y = mean_deviation_score,
-                                     ymin = mean_deviation_score - SEM,
-                                     ymax = mean_deviation_score + SEM,
-                                     group = protectzonetype),
-                color = "black",
-                size  = 1.2,
-                width = .00,
-                position = position_dodge(1.5)) +
-  
-  scale_fill_manual(values = c("radial" = "#ff4500",
-                               "tangential" = "#4169e1")) +
-  
-  scale_colour_manual(values = c("radial" = "#ff4500",
-                                 "tangential" = "#4169e1")) +
-  
-  labs(y = "Deviation score", x = "percent single/triplet discs") +
-  
-  theme_few()
-
-print(my_plot3)
-
-
-ggsave(file = "test.svg", plot = my_plot, dpi = 600, height = 8, width = 20)
+ggsave(file = "test2.svg", plot = my_plot, width = 6.72, height = 3.19, units = "in",)
 
 
 

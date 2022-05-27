@@ -16,7 +16,7 @@ library(ggthemes)
 library(svglite)
 library(sjPlot)
 
-# Exp1 and Exp2 ===========================================================
+# Exp1 ===========================================================
 
 # prepare -----------------------------------------------------------------
 
@@ -26,110 +26,97 @@ setwd("D:/SCALab/projects/numerosity_exps/src/stat_tests/")
 # read data
 data_preprocessed <- read_excel("../../data/ms2_uniform_prolific_1_data/preprocessed_prolific.xlsx")
 
-# data by subject
+# check age, sex
 data_by_subject <- data_preprocessed %>%
-  group_by(numerosity, participant, protectzonetype, perceptpairs, winsize) %>%
-  summarise(deviation_score_mean = mean(deviation_score),
-            deviation_score_std = sd(deviation_score),
-            percent_change_mean = mean(percent_change),
-            percent_change_std = sd(percent_change))
+  group_by(participant, age, sex, winsize) %>%
+  tally() 
+  
 
-# Visualization------------------------------------------------------
-
-# TODO
-dv <- "deviation_score_mean"
-# dv <- "percent_change_mean"
-
-# subject
-bxp <- ggboxplot(data = data_by_subject,
-                 x = "participant",
-                 y = dv,
-                 color = "protectzonetype") +
-  facet_wrap( ~ winsize, nrow = 2, scale = "free_x")
-
-print(bxp)
-
-# clustering level
-bxp2 <- ggboxplot(data = data_by_subject,
-                  x = "perceptpairs",
-                  y = dv,
-                  color = "protectzonetype") +
-  facet_wrap( ~ winsize, ncol = 2, scale = "free_x")
-
-print(bxp2)
-
-# numerosity
-
-bxp3 <- ggboxplot(data = data_by_subject,
-                  x = "numerosity",
-                  y = dv,
-                  color = "protectzonetype") +
-  facet_wrap( ~ winsize, ncol = 2, scale = "free_x")
-
-print(bxp3)
-
-
+df_win06 <-subset(data_by_subject, winsize == 0.6)
+mean(df_win06$age)
 
 # LMM ---------------------------------------------------------------------
 
-# arrange data
+# data by subject
 data_by_subject2 <- data_preprocessed %>%
-  group_by(numerosity, participant, protectzonetype, winsize) %>%
-  summarise(deviation_score_mean = mean(deviation_score),
-            deviation_score_std = sd(deviation_score),
-            percent_change_mean = mean(percent_change),
-            percent_change_std = sd(percent_change))
+  group_by(numerosity,
+           participant,
+           protectzonetype,
+           winsize) %>%
+  summarise(
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score),
+    percent_change_mean = mean(percent_change),
+    percent_change_std = sd(percent_change),
+    n = n()
+  ) %>%
+  mutate(
+    deviation_socre_SEM = deviation_score_std / sqrt(n),
+    percent_change_SEM = percent_change_std / sqrt(n),
+    deviation_socre_CI = deviation_socre_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                    1),
+    percent_change_CI = percent_change_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                  1)
+  )
 
 
-# samplesize = 25 (each condition 5 displays * 5 clustering = 25)
-data_by_subject2 <- data_by_subject2 %>%
-  mutate(deviation_socre_SEM = deviation_score_std / sqrt(25),
-         percent_change_SEM = percent_change_std / sqrt(25))
-
-
+# as factors
 str(data_by_subject2)
-
 data_by_subject2$protectzonetype <- as.factor(data_by_subject2$protectzonetype)
 data_by_subject2$numerosity <- as.factor(data_by_subject2$numerosity)
 data_by_subject2$participant <- as.factor(data_by_subject2$participant)
 
 
-# separate groups
+# separate groups - 2 experiments
 data_by_subject_ws04_2 <- subset(data_by_subject2, winsize == 0.4)
 data_by_subject_ws06_2 <- subset(data_by_subject2, winsize == 0.6)
 
 
 # TODO
+# Exp1a (small numerosity range)
 my_data2 <- data_by_subject_ws04_2
 
-# check averages
-
-summary <- my_data2 %>%
-  group_by(protectzonetype) %>%
-  summarize(
-    mean = mean(deviation_score_mean, na.rm = TRUE),
-    std_dev = sd(deviation_score_mean, na.rm = TRUE)
-  )
-summary
+# Exp1b (large numerosity range)
+# my_data2 <- data_by_subject_ws06_2
 
 
-# LMMs
+# interaction effect
 
-alignment_con.model_random_slope3 <-
+# full model with interaction
+alignment_con.model_random_slope <-
   lmer(
-    deviation_score_mean ~ protectzonetype + numerosity +
-      (1 + protectzonetype|participant),
+    deviation_score_mean ~ protectzonetype * numerosity +
+      (1 + protectzonetype | participant),
     data = my_data2,
     REML = FALSE
   )
-alignment_con.model_random_slope3
+alignment_con.model_random_slope
 
 
-coef(alignment_con.model_random_slope3)
+# reduced model without interaction
+alignment_con.reduced_random_slope <-
+  lmer(
+    deviation_score_mean ~ numerosity + protectzonetype +
+      (1 + protectzonetype | participant),
+    data = my_data2,
+    REML = FALSE
+  )
+alignment_con.reduced_random_slope
 
+
+# likelihood ratio test
+anova(alignment_con.model_random_slope, 
+      alignment_con.reduced_random_slope)
+
+
+# visualize the interaction
+emmip(alignment_con.model_random_slope, protectzonetype ~ numerosity)
+
+
+# main effect of alignment condition and numerosity
 alignment_con.null_random_slope3 <-
   lmer(
-    deviation_score_mean ~ numerosity +
+    deviation_score_mean ~ protectzonetype +
       (1 + protectzonetype | participant),
     data = my_data2,
     REML = FALSE
@@ -137,8 +124,19 @@ alignment_con.null_random_slope3 <-
 alignment_con.null_random_slope3
 
 
-anova(alignment_con.model_random_slope3, 
+anova(alignment_con.reduced_random_slope, 
       alignment_con.null_random_slope3)
+
+
+# estimates
+emms <- emmeans(
+  alignment_con.model_random_slope,
+  list(pairwise ~ protectzonetype),
+  adjust = "tukey"
+)
+
+summary(emms, infer = TRUE)
+
 
 
 r.squaredGLMM(alignment_con.model_random_slope3)

@@ -83,7 +83,7 @@ my_plot <-  ggplot() +
   
   scale_x_continuous(breaks = breaks_fun) +
   
-  scale_y_continuous(limits = c(-10, 0)) +
+  scale_y_continuous(limits = c(-13, 0)) +
   
   geom_errorbar(
     data = data_across_subject,
@@ -136,7 +136,7 @@ my_plot <-  ggplot() +
 print(my_plot)
 
 
-ggsave(file = "test2.svg", plot = my_plot, width = 6.72, height = 3.19, units = "in",)
+ggsave(file = "test.svg", plot = my_plot, width = 6.72, height = 3.19, units = "in",)
 
 
 

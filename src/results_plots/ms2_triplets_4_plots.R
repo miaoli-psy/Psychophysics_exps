@@ -8,89 +8,131 @@ library(svglite)
 setwd("D:/SCALab/projects/numerosity_exps/src/results_plots/")
 
 # read data
-all_data <- read_excel("../../data/ms2_triplets_4_data/ms2_triplets_4_data.xlsx")
-all_data_each_pp <- read_excel("../../data/ms2_triplets_4_data/ms2_triplets_4_data_each_pp.xlsx")
+data_preprocessed <- read_excel("../../data/ms2_triplets_4_data/preprocessed_triplets_4.xlsx")
 
-# plot deviation score
+
+# data by subject
+data_by_subject <- data_preprocessed %>%
+  group_by(numerosity,
+           participant,
+           protectzonetype,
+           winsize) %>%
+  summarise(
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score),
+    percent_change_mean = mean(percent_change),
+    percent_change_std = sd(percent_change),
+    n = n()
+  ) %>%
+  mutate(
+    deviation_socre_SEM = deviation_score_std / sqrt(n),
+    percent_change_SEM = percent_change_std / sqrt(n),
+    deviation_socre_CI = deviation_socre_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                    1),
+    percent_change_CI = percent_change_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                  1)
+  )
+
+# data across subject
+data_across_subject <- data_preprocessed %>%
+  group_by(numerosity,
+           protectzonetype,
+           winsize) %>%
+  summarise(
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score),
+    percent_change_mean = mean(percent_change),
+    percent_change_std = sd(percent_change),
+    n = n()
+  ) %>%
+  mutate(
+    deviation_socre_SEM = deviation_score_std / sqrt(n),
+    percent_change_SEM = percent_change_std / sqrt(n),
+    deviation_socre_CI = deviation_socre_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                    1),
+    percent_change_CI = percent_change_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                  1)
+  )
+
+breaks_fun <- function(x) {
+  if(max(x) < 75) {
+    seq(51, 72, 3)
+  } else {
+    seq(78, 99, 3)
+  }
+}
+
+
 my_plot <-  ggplot() +
   
-  geom_bar(data = all_data, aes(x = numerosity,
-                                y = deviation_scoremean,
-                                fill = protectzonetype),
-           position = "dodge", stat = "identity", alpha = 0.5, width = 2) +
+  geom_point(
+    data = data_across_subject,
+    aes(
+      x = numerosity,
+      y = deviation_score_mean,
+      color = protectzonetype,
+      group = protectzonetype
+    ),
+    position = position_dodge(1),
+    stat = "identity",
+    alpha = 0.6,
+    size = 3
+  ) +
   
-  scale_x_continuous(breaks = c(51, 54, 57, 60, 63, 66, 69, 72, 78, 81, 84, 87, 90, 93, 96, 99 )) +
+  scale_x_continuous(breaks = breaks_fun) +
   
-  scale_y_continuous(limits = c(-10, 10)) +
+  scale_y_continuous(limits = c(-6, 8.5)) +
   
-  # each data point represents the average deviation of 1 participant
-   # geom_point(data = all_data_each_pp, aes(x = numerosity,
-   #                                         y = deviation_scoremean,
-   #                                        group = protectzonetype,
-   #                                         colour = protectzonetype),
-   #            alpha = 0.2,
-   #            position = position_dodge(2))+
+  geom_errorbar(
+    data = data_across_subject,
+    aes(
+      x = numerosity,
+      y = deviation_score_mean,
+      ymin = deviation_score_mean - deviation_socre_SEM,
+      ymax = deviation_score_mean + deviation_socre_SEM,
+      group = protectzonetype,
+      color = protectzonetype
+    ),
+    size  = 1.2,
+    width = .00,
+    alpha = 0.6,
+    position = position_dodge(1)
+  ) +
+  
+  scale_fill_manual(values = c("radial" = "#FF0000",
+                               "tangential" = "#2600FF")) +
+  
+  scale_colour_manual(values = c("radial" = "#FF0000",
+                                 "tangential" = "#2600FF")) +
+  
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  
+  labs(y = "Deviation score (DV)", x = "Numerosity") +
+  
+  theme(axis.title.x = element_text(color="black", size=14, face="bold"),
+        axis.title.y = element_text(color="black", size=14, face="bold"),
+        panel.border = element_blank(),  
+        # remove panel grid lines
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        # remove panel background
+        panel.background = element_blank(),
+        # add axis line
+        axis.line = element_line(colour = "grey"),
+        # x,y axis tick labels
+        axis.text.x = element_text(size = 12, face = "bold"),
+        axis.text.y = element_text(size = 12, face = "bold"),
+        # legend size
+        legend.title = element_text(size = 12, face = "bold"),
+        legend.text = element_text(size = 10),
+        # facet wrap title
+        strip.text.x = element_text(size = 12, face = "bold")) +
+  
+  facet_wrap( ~ winsize, nrow = 1, scales = "free_x")
 
-   geom_errorbar(data = all_data, aes(x = numerosity,
-                                      y = deviation_scoremean,
-                                      ymin = deviation_scoremean - SEM_deviation_score,
-                                      ymax = deviation_scoremean + SEM_deviation_score,
-                                      group = protectzonetype),
-                 color = "black",
-                 size  = 1.2,
-                 width = .00,
-                 position = position_dodge(2)) +
-  
-  scale_fill_manual(values = c("radial" = "#ff4500",
-                               "tangential" = "#4169e1")) +
-  
-  scale_colour_manual(values = c("radial" = "#ff4500",
-                               "tangential" = "#4169e1")) +
-  
-  labs(y = "Deviation score", x = "numerosity") +
-  
-  theme_few()
 
 print(my_plot)
 
 
-my_plot2 <-  ggplot() +
-  
-  geom_bar(data = all_data, aes(x = numerosity,
-                                y = percent_changemean,
-                                fill = protectzonetype),
-           position = "dodge", stat = "identity", alpha = 0.5, width = 2) +
-  
-  scale_x_continuous(breaks = c(51, 54, 57, 60, 63, 66, 69, 72, 78, 81, 84, 87, 90, 93, 96,99 )) +
-  
-  scale_y_continuous(limits = c(-0.25, 0.25)) +
-  
-  # each data point represents the average deviation of 1 participant
-  geom_point(data = all_data_each_pp, aes(x = numerosity,
-                                          y = percent_changemean,
-                                          group = protectzonetype,
-                                          colour = protectzonetype),
-             alpha = 0.2,
-             position = position_dodge(2))+
-  
-  geom_errorbar(data = all_data, aes(x = numerosity,
-                                     y = percent_changemean,
-                                     ymin = percent_changemean - SEM_percent_change,
-                                     ymax = percent_changemean + SEM_percent_change,
-                                     group = protectzonetype),
-                color = "black",
-                size  = 1.2,
-                width = .00,
-                position = position_dodge(2)) +
-  
-  scale_fill_manual(values = c("radial" = "#ff4500",
-                               "tangential" = "#4169e1")) +
-  
-  scale_colour_manual(values = c("radial" = "#ff4500",
-                                 "tangential" = "#4169e1")) +
-  
-  labs(y = "Relative estimation error", x = "numerosity") +
-  
-  theme_few()
+ggsave(file = "test2.svg", plot = my_plot, width = 6.72, height = 3.2, units = "in")
 
-print(my_plot2)

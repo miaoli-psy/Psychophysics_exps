@@ -138,6 +138,6 @@ my_plot <-  ggplot() +
 print(my_plot)
 
 
-ggsave(file = "test2.svg", plot = my_plot, width = 6.72, height = 3.19, units = "in",)
+ggsave(file = "test2.svg", plot = my_plot, width = 6.72, height = 3.19, units = "in")
 
 

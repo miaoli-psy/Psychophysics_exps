@@ -115,3 +115,56 @@ my_plot <-  ggplot() +
 print(my_plot)
 
 ggsave(file = "test.svg", plot = my_plot)
+
+
+# plot grouping per evaluation
+my_plot2 <-  ggplot() +
+  
+  geom_bar(data = data_by_subject, aes(x = winsize,
+                                           y = perceived_group_n_mean,
+                                           group = crowdingcons,
+                                           fill = crowdingcons),
+           position =  position_dodge(0.09), stat = "identity", alpha = 0.5) +
+  
+  
+  
+  scale_fill_manual(labels = c("radial", "tangential"),
+                    values = c("#ff4500", "#4169e1"),
+                    name = "aligenment condition" )  +
+  
+  scale_color_manual(labels = c("radial", "tangential"),
+                     values = c("#ff4500", "#4169e1"),
+                     name = "aligenment condition" )  +
+  
+  scale_x_continuous(breaks = c(0.3, 0.4, 0.5, 0.6, 0.7),
+                     labels = c("21-25", "31-35", "41-45", "49-53", "54-58")) +
+  
+  scale_y_continuous(breaks = c(0, 5, 10, 15, 20, 25)) +
+  
+  
+  labs(y = "Perceived number of groups", x = "Numerosity") +
+  
+  
+  theme(axis.title.x = element_text(color="black", size=14, face="bold"),
+        axis.title.y = element_text(color="black", size=14, face="bold"),
+        panel.border = element_blank(),  
+        # remove panel grid lines
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        # remove panel background
+        panel.background = element_blank(),
+        # add axis line
+        axis.line = element_line(colour = "grey"),
+        # x,y axis tick labels
+        axis.text.x = element_text(size = 12, face = "bold"),
+        axis.text.y = element_text(size = 12, face = "bold"),
+        # legend size
+        legend.title = element_text(size = 12, face = "bold"),
+        legend.text = element_text(size = 10),
+        # facet wrap title
+        strip.text.x = element_text(size = 12, face = "bold")) +
+  
+  facet_wrap( ~ evaluation)
+
+
+print(my_plot2)

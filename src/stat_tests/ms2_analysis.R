@@ -277,3 +277,258 @@ r2beta(alignment_con.model_random_slope3, method = 'kr', partial = TRUE)
 tab_model(alignment_con.model_random_slope3, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
 
 summary(glht(alignment_con.model_random_slope3, linfct=mcp(protectzonetype ="Tukey")))
+
+
+# Exp 3 ====================================================================
+
+# read data
+data_preprocessed <- read_excel("../../data/ms2_uniform_mix_3_data/preprocessed_uniform_mix_3.xlsx")
+
+
+# check age, sex
+df_check_age <- data_preprocessed %>%
+  group_by(participant, age, sex) %>%
+  tally() 
+
+mean(df_check_age$age)
+
+
+# data by subject
+my_data2 <- data_preprocessed %>%
+  group_by(numerosity,
+           participant,
+           protectzonetype,
+           winsize,
+           contrast) %>%
+  summarise(
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score),
+    percent_change_mean = mean(percent_change),
+    percent_change_std = sd(percent_change),
+    n = n()
+  ) %>%
+  mutate(
+    deviation_socre_SEM = deviation_score_std / sqrt(n),
+    percent_change_SEM = percent_change_std / sqrt(n),
+    deviation_socre_CI = deviation_socre_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                    1),
+    percent_change_CI = percent_change_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                  1)
+  )
+
+my_data2$protectzonetype <- as.factor(my_data2$protectzonetype)
+my_data2$numerosity <- as.factor(my_data2$numerosity)
+my_data2$participant <- as.factor(my_data2$participant)
+my_data2$winsize <- as.factor(my_data2$winsize)
+my_data2$contrast <- as.factor(my_data2$contrast)
+
+str(my_data2)
+
+# interaction effect
+
+# 3-way interaction
+
+# full model with interaction
+alignment_con.model_random_slope <-
+  lmer(
+    deviation_score_mean ~ protectzonetype * numerosity * contrast +
+      (1 + protectzonetype | participant),
+    data = my_data2,
+    REML = FALSE
+  )
+alignment_con.model_random_slope
+
+
+# reduced model without interaction
+alignment_con.reduced_random_slope <-
+  lmer(
+    deviation_score_mean ~ numerosity + protectzonetype + contrast + 
+      numerosity * protectzonetype + 
+      numerosity * contrast +
+      protectzonetype * contrast +
+      (1 + protectzonetype | participant),
+    data = my_data2,
+    REML = FALSE
+  )
+alignment_con.reduced_random_slope
+
+
+# likelihood ratio test
+anova(alignment_con.model_random_slope, 
+      alignment_con.reduced_random_slope)
+
+
+# visualize the interaction (if exists)
+emmip(alignment_con.model_random_slope, protectzonetype ~ contrast | numerosity)
+
+# 2-way interaction numerosity * alignment con
+
+alignment_con.none <-
+  lmer(
+    deviation_score_mean ~ numerosity + protectzonetype + contrast + 
+      contrast * numerosity + 
+      contrast * protectzonetype +
+      (1 + protectzonetype | participant),
+    data = my_data2,
+    REML = FALSE
+  )
+
+alignment_con.none 
+
+anova(alignment_con.none, 
+      alignment_con.reduced_random_slope)
+
+# main effect
+
+alignment_con.reduced_random_slope2 <-
+  lmer(
+    deviation_score_mean ~ numerosity + protectzonetype + contrast +
+      (1 + protectzonetype | participant),
+    data = my_data2,
+    REML = FALSE
+  )
+alignment_con.reduced_random_slope2
+
+alignment_con.none2 <-
+  lmer(
+    deviation_score_mean ~  numerosity + contrast + 
+      (1 + protectzonetype | participant),
+    data = my_data2,
+    REML = FALSE
+  )
+
+alignment_con.none2
+
+anova(alignment_con.none2, 
+      alignment_con.reduced_random_slope2)
+
+
+
+# estimates
+emms <- emmeans(
+  alignment_con.reduced_random_slope2,
+  list(pairwise ~ protectzonetype),
+  adjust = "tukey"
+)
+
+options(max.print = 10000) 
+summary(emms, infer = TRUE)
+
+
+# Exp4 ====================================================================================
+
+# read data
+data_preprocessed <- read_excel("../../data/ms2_triplets_4_data/preprocessed_triplets_4.xlsx")
+
+# check age, sex
+df_check_age <- data_preprocessed %>%
+  group_by(participant, age, sex) %>%
+  tally() 
+
+mean(df_check_age$age)
+
+# data by subject
+data_by_subject <- data_preprocessed %>%
+  group_by(numerosity,
+           participant,
+           protectzonetype,
+           winsize) %>%
+  summarise(
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score),
+    percent_change_mean = mean(percent_change),
+    percent_change_std = sd(percent_change),
+    n = n()
+  ) %>%
+  mutate(
+    deviation_socre_SEM = deviation_score_std / sqrt(n),
+    percent_change_SEM = percent_change_std / sqrt(n),
+    deviation_socre_CI = deviation_socre_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                    1),
+    percent_change_CI = percent_change_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                  1)
+  )
+
+# as factors
+str(data_by_subject)
+data_by_subject$protectzonetype <- as.factor(data_by_subject$protectzonetype)
+data_by_subject$numerosity <- as.factor(data_by_subject$numerosity)
+data_by_subject$participant <- as.factor(data_by_subject$participant)
+
+
+# interaction effect
+
+# full model with interaction
+alignment_con.model_random_slope <-
+  lmer(
+    deviation_score_mean ~ protectzonetype * numerosity +
+      (1 + protectzonetype | participant),
+    data = data_by_subject,
+    REML = FALSE
+  )
+alignment_con.model_random_slope
+
+
+# reduced model without interaction
+alignment_con.reduced_random_slope <-
+  lmer(
+    deviation_score_mean ~ numerosity + protectzonetype +
+      (1 + protectzonetype | participant),
+    data = data_by_subject,
+    REML = FALSE
+  )
+alignment_con.reduced_random_slope
+
+
+# likelihood ratio test
+anova(alignment_con.model_random_slope, 
+      alignment_con.reduced_random_slope)
+
+
+# visualize the interaction (if exists)
+emmip(alignment_con.model_random_slope, protectzonetype ~ numerosity)
+
+
+# main effect of alignment condition and numerosity
+alignment_con.null_random_slope3 <-
+  lmer(
+    deviation_score_mean ~ numerosity +
+      (1 + protectzonetype | participant),
+    data = data_by_subject,
+    REML = FALSE
+  )
+alignment_con.null_random_slope3
+
+
+anova(alignment_con.reduced_random_slope, 
+      alignment_con.null_random_slope3)
+
+
+# estimates
+emms <- emmeans(
+  alignment_con.reduced_random_slope,
+  list(pairwise ~ numerosity),
+  adjust = "tukey"
+)
+
+summary(emms, infer = TRUE)
+
+
+
+r.squaredGLMM(alignment_con.reduced_random_slope)
+
+r2beta(alignment_con.reduced_random_slope, method = 'kr', partial = TRUE)
+
+tab_model(alignment_con.reduced_random_slope, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
+
+# posc-hoc on models not on data set (maybe: https://cran.r-project.org/web/packages/emmeans/vignettes/interactions.html)
+emmeans(
+  alignment_con.model_random_slope3,
+  list(pairwise ~ protectzonetype * numerosity),
+  adjust = "tukey"
+)
+
+summary(glht(alignment_con.reduced_random_slope, linfct=mcp(numerosity ="Tukey")))
+
+
+

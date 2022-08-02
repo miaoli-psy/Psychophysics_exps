@@ -87,9 +87,10 @@ assert (__find_previous_x(2.3, [1, 2.1, 3, 5]) == 2.1)
 if __name__ == '__main__':
     save_plot = False
     fit_poisson = False
-    fit_polynomial = True
+    fit_polynomial = False
     plot_each_display = True
-    plot_average_display = True
+    plot_average_display = False
+    plot_loc_density_diff = False
     PATH = "../displays/"
     FILE = "update_stim_info_full.xlsx"
     stimuli_df = pd.read_excel(PATH + FILE)
@@ -250,7 +251,7 @@ if __name__ == '__main__':
                 cx.plot(datanc_to_fit1[index][i][:, 0], datanc_to_fit1[index][i][:, 1], "b--", alpha = 0.5)
             cx.title.set_text("numerosity %s" % numerosity_list[index])
         plt.show()
-        figc.savefig("try.svg")
+        # figc.savefig("try.svg")
 
     # %% averaged local density for each numerosity
     avrg_crowding_dic = get_avrg_dict(crowding_dic)
@@ -313,45 +314,46 @@ if __name__ == '__main__':
             bx.title.set_text("numerosity %s" % numerosity_list[index])
         plt.show()
     # %% plot local density differences
-    to_plot_diff_array_list = list()
-    for n in numerosity_list:
-        x_list_diff, y_list_diff = get_diff_x_y(n, to_fit_dict_c = avrg_dict_c_to_fit,
-                                                to_fit_dict_nc = avrg_dict_nc_to_fit,
-                                                fit_poly = False)
+    if plot_loc_density_diff:
+        to_plot_diff_array_list = list()
+        for n in numerosity_list:
+            x_list_diff, y_list_diff = get_diff_x_y(n, to_fit_dict_c = avrg_dict_c_to_fit,
+                                                    to_fit_dict_nc = avrg_dict_nc_to_fit,
+                                                    fit_poly = False)
 
-        to_plot_diff_array_list.append(np.array([x_list_diff, y_list_diff]).T)
+            to_plot_diff_array_list.append(np.array([x_list_diff, y_list_diff]).T)
 
-    figd, dxs = plt.subplots(5, 5, figsize = (40, 30), sharex = True, sharey = True)
-    dxs = dxs.ravel()
-    for i, to_plot_diff_array in enumerate(to_plot_diff_array_list):
-        dxs[i].plot(to_plot_diff_array[:, 0], to_plot_diff_array[:, 1])
-        dxs[i].axhline(y = 0)
-    for dx in dxs:
-        dx.set_ylim(-0.5, 0.5)
-    plt.show()
-    figd.savefig("diff_nofitting.svg")
+        figd, dxs = plt.subplots(5, 5, figsize = (40, 30), sharex = True, sharey = True)
+        dxs = dxs.ravel()
+        for i, to_plot_diff_array in enumerate(to_plot_diff_array_list):
+            dxs[i].plot(to_plot_diff_array[:, 0], to_plot_diff_array[:, 1])
+            dxs[i].axhline(y = 0)
+        for dx in dxs:
+            dx.set_ylim(-0.5, 0.5)
+        plt.show()
+        figd.savefig("diff_nofitting.svg")
 
-    # %% plot different curves: 5 in a subplot
-    plot_dict = {0: [0, 1, 2, 3, 4],
-                 1: [5, 6, 7, 8, 9],
-                 2: [10, 11, 12, 13, 14],
-                 3: [15, 16, 17, 18, 19],
-                 4: [20, 21, 22, 23, 24]}
+    # plot different curves: 5 in a subplot
+        plot_dict = {0: [0, 1, 2, 3, 4],
+                     1: [5, 6, 7, 8, 9],
+                     2: [10, 11, 12, 13, 14],
+                     3: [15, 16, 17, 18, 19],
+                     4: [20, 21, 22, 23, 24]}
 
-    fige, exs = plt.subplots(2, 3, figsize = (16, 8), sharex = True, sharey = True)
-    exs = exs.ravel()
+        fige, exs = plt.subplots(2, 3, figsize = (16, 8), sharex = True, sharey = True)
+        exs = exs.ravel()
 
-    for index, ex in enumerate(exs):
-        if index < 5:
-            for i in range(0, 5):
-                ex.plot(to_plot_diff_array_list[plot_dict[index][i]][:, 0],
-                        to_plot_diff_array_list[plot_dict[index][i]][:, 1],
-                        label = "%s" %i, alpha = 0.5)
-                ex.legend()
-        ex.set_ylim(-0.5, 0.5)
-        ex.axhline(y = 0, color = "gray", linestyle = "--")
-    plt.show()
-    fige.savefig("try.svg")
+        for index, ex in enumerate(exs):
+            if index < 5:
+                for i in range(0, 5):
+                    ex.plot(to_plot_diff_array_list[plot_dict[index][i]][:, 0],
+                            to_plot_diff_array_list[plot_dict[index][i]][:, 1],
+                            label = "%s" %i, alpha = 0.5)
+                    ex.legend()
+            ex.set_ylim(-0.5, 0.5)
+            ex.axhline(y = 0, color = "gray", linestyle = "--")
+        plt.show()
+        fige.savefig("try.svg")
 
     if save_plot:
         fig.savefig("sampleplot.svg")

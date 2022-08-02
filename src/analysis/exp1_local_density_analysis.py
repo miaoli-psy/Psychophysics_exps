@@ -10,6 +10,7 @@ import numpy as np
 import copy
 from src.commons.fitfuncs import fit_poisson_cdf
 from src.commons.process_number import cal_eccentricity
+from src.display_properties.properties import Properties
 
 
 def __pix_to_deg_tuple(input_tuple, changeN = 1, k = 3.839 / 100):
@@ -49,6 +50,7 @@ def avrg_dict_pix_to_deg(input_dict, changeN):
         dict_deg.update({key: new_posi})
     return dict_deg
 
+
 def __max_eccentricities(dis_list):
     """returns the max_x_axis and the corrosponding posi"""
     e = []
@@ -63,8 +65,9 @@ def __max_eccentricities(dis_list):
     return max_x_axis, max_posi
 
 
-def __get_point_number(x_axis: int, list_point: list):
-    """for each x-axis, calculate the number of discs"""
+def __get_discposi_at_given_e(x_axis: int, list_point: list):
+    """for each eccentricity (in pixel unit), calculate the number of discs, return disc number and each disc
+    positoin """
     number = 0
     points = []
     for point in list_point:
@@ -74,11 +77,23 @@ def __get_point_number(x_axis: int, list_point: list):
     return number, points
 
 
+# 仿照上面函数写一个直接返回density的函数
+def __get_loc_density_at_given_e(x_axis: int, list_point: list):
+    number = 0
+    points = []
+    for point in list_point:
+        if cal_eccentricity((x_axis, 0)) >= cal_eccentricity(point):
+            number += 1
+            points.append(point)
+    loc_density = Properties(points).density
+    return number, loc_density
+
+
 def __get_x_y(list_point: list) -> list:
     x_max = abs(__max_eccentricities(list_point)[0])
     list_result, y = [], 0
     for x in range(int(x_max) + 2):
-        new_y, points = __get_point_number(x, list_point)
+        new_y, points = __get_discposi_at_given_e(x, list_point)
         if new_y != y:
             y = new_y
             list_result.append((x, y))
@@ -86,6 +101,17 @@ def __get_x_y(list_point: list) -> list:
             # print("x,y: " ,x, ",",y, "points: ", points)
     return list_result
 
+
+def __get_x_y_loc_density(list_point: list) -> list:
+    x_max = abs(__max_eccentricities(list_point)[0])
+    list_result, y = [], 0
+    for x in range(int(x_max) + 2):
+        new_y, points = __get_discposi_at_given_e(x, list_point)
+        if new_y != y:
+            y = new_y
+            n, loc_density = __get_loc_density_at_given_e(x, points)
+            list_result.append((x, loc_density))
+    return list_result
 
 def get_result_dict(posis_dict):
     """calculates the local density"""
@@ -204,3 +230,32 @@ def get_avrg_dict(inpudict):
                 avrg_nmrsty.append(posi)
         avrg_dic.update({numerosity: avrg_nmrsty})
     return avrg_dic
+
+
+if __name__ == '__main__':
+    display = [(30.0, -110.0),
+               (-130.0, 90.0),
+               (-130.0, -80.0),
+               (-80.0, 80.0),
+               (-110.0, -50.0),
+               (120.0, 10.0),
+               (120.0, -100.0),
+               (-30.0, -100.0),
+               (50.0, 100.0),
+               (140.0, 70.0),
+               (90.0, 50.0),
+               (100.0, 80.0),
+               (110.0, -50.0),
+               (-120.0, 50.0),
+               (-100.0, 0.0),
+               (-10.0, 100.0),
+               (80.0, -60.0),
+               (150.0, -10.0),
+               (-140.0, -10.0),
+               (-80.0, -60.0),
+               (-70.0, -110.0)]
+
+    my_point = __get_discposi_at_given_e(120, display)
+    my_loc_density = __get_loc_density_at_given_e(120, display)
+    my_x_y = __get_x_y(display)
+    my_x_y_loc_density = __get_x_y_loc_density(display)

@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from src.analysis.exp1_local_density_analysis import dict_pix_to_deg, get_result_dict, interplote_result_dict_start, \
     get_fitted_res_cdf_poisson, get_sample_plot_x_y, normolizedLD, get_data2fit, get_data_to_fit_list, \
     get_fitted_power_list, get_data_to_ttest, get_avrg_dict, get_avrg_result_dict, interplote_avrg_result_dict_start, \
-    avrg_dict_pix_to_deg, get_avrg_data_to_fit
+    avrg_dict_pix_to_deg, get_avrg_data_to_fit, get_data_to_fit_list_no_normolized
 from src.commons.fitfuncs import fit_poisson_cdf
 from src.commons.process_dataframe import process_col
 from src.commons.process_dict import get_sub_dict
@@ -91,6 +91,7 @@ if __name__ == '__main__':
     plot_each_display = True
     plot_average_display = False
     plot_loc_density_diff = False
+    normolization = False
     PATH = "../displays/"
     FILE = "update_stim_info_full.xlsx"
     stimuli_df = pd.read_excel(PATH + FILE)
@@ -123,8 +124,12 @@ if __name__ == '__main__':
     result_dict_c_list = [get_sub_dict(result_dict_c, k) for k in k_list]
     result_dict_nc_list = [get_sub_dict(result_dict_nc, k) for k in k_list]
     # %% fit polynomial
-    datac_to_fit = get_data_to_fit_list(result_dict_c_list)
-    datanc_to_fit = get_data_to_fit_list(result_dict_nc_list)
+    if normolization:
+        datac_to_fit = get_data_to_fit_list(result_dict_c_list)
+        datanc_to_fit = get_data_to_fit_list(result_dict_nc_list)
+    else:
+        datac_to_fit = get_data_to_fit_list_no_normolized(result_dict_c_list)
+        datanc_to_fit = get_data_to_fit_list_no_normolized(result_dict_nc_list)
 
     # 最高项系数the highest order
     deg = 2
@@ -307,8 +312,8 @@ if __name__ == '__main__':
         figb, bxs = plt.subplots(5, 5, figsize = (25, 15), sharex = True, sharey = True)
         bxs = bxs.ravel()
         for index, bx in enumerate(bxs):
-            bx.plot(x_avrg_c_list[index], y_avrg_c_list[index], "ro", alpha = 0.1)
-            bx.plot(x_avrg_nc_list[index], y_avrg_nc_list[index], "bo", alpha = 0.1)
+            bx.plot(x_avrg_c_list[index], y_avrg_c_list[index], "r--", alpha = 0.5)
+            bx.plot(x_avrg_nc_list[index], y_avrg_nc_list[index], "--", alpha = 0.5)
             bx.plot(x_avrg_c_list[index], polyfit_crowding_avrg_list[index](x_avrg_c_list[index]), "r-")
             bx.plot(x_avrg_nc_list[index], polyfit_no_crowding_avrg_list[index](x_avrg_nc_list[index]), "b-")
             bx.title.set_text("numerosity %s" % numerosity_list[index])

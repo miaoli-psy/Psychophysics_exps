@@ -2,15 +2,32 @@ from scipy.spatial import distance, ConvexHull
 from itertools import combinations
 import numpy as np
 
+def cal_average(lst):
+    return round(sum(lst) / len(lst), 2)
 
 class Properties:
-    def __init__(self, posilist, pix_to_deg_index = 0.0016):
-        self.numerosity = len(posilist)
+    def __init__(self, posilist, pix_to_deg = 0.04):
         self.__posilist_array = np.asarray(posilist)
         self.__hull = ConvexHull(self.__posilist_array)
-        self.occupancy_area = round(self.__hull.volume * pix_to_deg_index, 2)
-        # self.occupancy_area = round(self.__hull.volume)
+        self.pix_to_deg_index = pix_to_deg
+        # self.convexhull = round(self.__hull.area * (0.25 / 3.82), 2)
+        self.convexhull = round(self.__hull.area * pix_to_deg, 2)
+        # self.occupancy_area = round(self.__hull.volume * ((0.25 / 3.82) ** 2), 2)
+        self.occupancy_area = round(self.__hull.volume * pix_to_deg ** 2, 2)
+        self.occupancy_area_reduced = round(self.__hull.volume * pix_to_deg ** 2 - 46.28, 2)
+        self.averge_eccentricity = self.cal_averge_eccentricity()
+        self.average_spacing = self.get_average_spacing()
         self.density = round(len(posilist) / self.occupancy_area, 4)
+        self.density_no_fovea = round(len(posilist) / self.occupancy_area_reduced, 4)
+        self.numerosity = len(posilist)
+
+    def cal_averge_eccentricity(self):
+        all_eccentricity = [distance.euclidean(posi, (0, 0)) * self.pix_to_deg_index for posi in self.__posilist_array]
+        return cal_average(all_eccentricity)
+
+    def get_average_spacing(self, pix_to_deg_index = 0.04):
+        distances = [distance.euclidean(p1, p2) for p1, p2 in combinations(self.__posilist_array, 2)]
+        return round(sum(distances) / len(distances) * pix_to_deg_index, 2)
 
 
 if __name__ == "__main__":

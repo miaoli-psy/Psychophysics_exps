@@ -89,8 +89,23 @@ def __get_loc_density_at_given_e(x_axis: int, list_point: list):
     if len(points) < 3:
         return number, 0
     else:
-        loc_density = Properties(points).density
+        loc_density = Properties(points).density_no_fovea
         return number, loc_density
+
+
+def __get_loc_convex_hull_at_given_e(x_axis: int, list_point: list):
+    number = 0
+    points = []
+    for point in list_point:
+        if cal_eccentricity((x_axis, 0)) >= cal_eccentricity(point):
+            number += 1
+            points.append(point)
+    # if there are less than 3 discs, no convex hull/density could be calculated
+    if len(points) < 3:
+        return number, 0
+    else:
+        loc_convex_hull = Properties(points).occupancy_area
+        return number, loc_convex_hull
 
 
 def __get_x_y(list_point: list) -> list:
@@ -117,6 +132,17 @@ def __get_x_y_loc_density(list_point: list) -> list:
     return list_result
 
 
+def __get_x_y_loc_convex_hull(list_point: list) -> list:
+    x_max = abs(__max_eccentricities(list_point)[0])
+    list_result, y = [], 0
+    for x in range(int(x_max) + 2):
+        new_y, loc_convex = __get_loc_convex_hull_at_given_e(x, list_point)
+        if new_y != y:
+            y = new_y
+            list_result.append((x, loc_convex))
+    return list_result
+
+
 def get_result_dict(posis_dict):
     """calculates the local density (number of discs within an eccentricity)"""
     result_dict = {}
@@ -136,6 +162,19 @@ def get_result_dict_loc_density(posis_dict):
         result_list_t = []
         for posi in posis:
             result_t = __get_x_y_loc_density(posi)
+            result_list_t.append(result_t)
+        result_dict.update({key: result_list_t})
+    return result_dict
+
+
+def get_result_dict_loc_convex_hull(posis_dict):
+    """calculates the local density"""
+    result_dict = {}
+    for key, posis in posis_dict.items():
+        print(key)
+        result_list_t = []
+        for posi in posis:
+            result_t = __get_x_y_loc_convex_hull(posi)
             result_list_t.append(result_t)
         result_dict.update({key: result_list_t})
     return result_dict
@@ -189,6 +228,7 @@ def get_data2fit(input_list):
     y_value = [loc_tuple[1] for loc_tuple in input_list]
     np_array = np.array([x_value, normolizedLD(y_value)]).transpose()
     return np_array
+
 
 def get_data2fit_no_normolized(input_list):
     x_value = [loc_tuple[0] for loc_tuple in input_list]
@@ -264,10 +304,12 @@ def get_avrg_dict(inpudict):
 
 
 if __name__ == '__main__':
-    display = [(30.0, -110.0), (-130.0, 90.0), (-130.0, -80.0), (-80.0, 80.0), (-110.0, -50.0), (120.0, 10.0), (120.0, -100.0), (-30.0, -100.0), (50.0, 100.0), (140.0, 70.0), (90.0, 50.0), (100.0, 80.0), (110.0, -50.0), (-120.0, 50.0), (-100.0, 0.0), (-10.0, 100.0), (80.0, -60.0), (150.0, -10.0), (-140.0, -10.0), (-80.0, -60.0), (-70.0, -110.0)]
+    display = [(30.0, -110.0), (-130.0, 90.0), (-130.0, -80.0), (-80.0, 80.0), (-110.0, -50.0), (120.0, 10.0),
+               (120.0, -100.0), (-30.0, -100.0), (50.0, 100.0), (140.0, 70.0), (90.0, 50.0), (100.0, 80.0),
+               (110.0, -50.0), (-120.0, 50.0), (-100.0, 0.0), (-10.0, 100.0), (80.0, -60.0), (150.0, -10.0),
+               (-140.0, -10.0), (-80.0, -60.0), (-70.0, -110.0)]
     my_point = __get_discposi_at_given_e(300, display)
     my_loc_density = __get_loc_density_at_given_e(300, display)
     my_x_y = __get_x_y(display)
     my_x_y_loc_density = __get_x_y_loc_density(display)
     max_e = __max_eccentricities(display)[0]
-

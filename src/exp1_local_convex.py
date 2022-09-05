@@ -2,14 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from src.analysis.exp1_local_density_analysis import get_result_dict_loc_density, interplote_result_dict_start, \
-    dict_pix_to_deg, get_data_to_fit_list, get_data_to_fit_list_no_normolized
+    dict_pix_to_deg, get_data_to_fit_list, get_data_to_fit_list_no_normolized, get_result_dict_loc_convex_hull
 from src.commons.process_dataframe import keep_valid_columns, process_col
 from src.commons.process_dict import get_sub_dict
 from src.commons.process_str import str_to_list
 
 if __name__ == '__main__':
     plot_each_display = True
-    normolization = True
+    normolization = False
     PATH = "../displays/"
     FILE = "update_stim_info_full.xlsx"
     stimuli_df = pd.read_excel(PATH + FILE)
@@ -33,11 +33,11 @@ if __name__ == '__main__':
     crowding_dic = {k: g['positions'].tolist() for k, g in stimuli_df_c.groupby('N_disk')}
     no_crowding_dic = {k: g['positions'].tolist() for k, g in stimuli_df_nc.groupby('N_disk')}
 
-    # get local density distribution
-    result_dict_c = get_result_dict_loc_density(crowding_dic)
-    result_dict_nc = get_result_dict_loc_density(no_crowding_dic)
+    # get local convexhull distribution
+    result_dict_c = get_result_dict_loc_convex_hull(crowding_dic)
+    result_dict_nc = get_result_dict_loc_convex_hull(no_crowding_dic)
 
-    # make sure the local density values start from (100,..)
+    # make sure the x-axis start with 100 pix
     result_dict_c = interplote_result_dict_start(result_dict_c)
     result_dict_nc = interplote_result_dict_start(result_dict_nc)
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
             for display in i.values():
                 display_new = []
                 for j in display:
-                    display_new.append(j[15:])
+                    display_new.append(j[7:])
                 datac_to_fit1.append(display_new)
 
         datanc_to_fit1 = []
@@ -85,7 +85,7 @@ if __name__ == '__main__':
             for display in i.values():
                 display_new = []
                 for j in display:
-                    display_new.append(j[15:])
+                    display_new.append(j[7:])
                 datanc_to_fit1.append(display_new)
 
         for index, cx in enumerate(cxs):
@@ -95,3 +95,6 @@ if __name__ == '__main__':
             cx.title.set_text("numerosity %s" % numerosity_list[index])
         plt.show()
         figc.savefig("try.svg")
+
+
+

@@ -93,8 +93,6 @@ if __name__ == '__main__':
                 cx.plot(datac_to_fit1[index][i][:, 0], datac_to_fit1[index][i][:, 1], "r--", alpha = 0.5)
                 cx.plot(datanc_to_fit1[index][i][:, 0], datanc_to_fit1[index][i][:, 1], "b--", alpha = 0.5)
             cx.title.set_text("numerosity %s" % numerosity_list[index])
+        # plt.ylim([0, 100])
         plt.show()
         figc.savefig("try.svg")
-
-
-

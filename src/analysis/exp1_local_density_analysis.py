@@ -159,6 +159,7 @@ def get_result_dict_loc_density(posis_dict):
     """calculates the local density"""
     result_dict = {}
     for key, posis in posis_dict.items():
+        print(key)
         result_list_t = []
         for posi in posis:
             result_t = __get_x_y_loc_density(posi)
@@ -171,7 +172,6 @@ def get_result_dict_loc_convex_hull(posis_dict):
     """calculates the local density"""
     result_dict = {}
     for key, posis in posis_dict.items():
-        print(key)
         result_list_t = []
         for posi in posis:
             result_t = __get_x_y_loc_convex_hull(posi)
@@ -184,6 +184,14 @@ def get_avrg_result_dict(posis_dict):
     result_dict = dict()
     for key, posi in posis_dict.items():
         result_t = __get_x_y(posi)
+        result_dict.update({key: result_t})
+    return result_dict
+
+def get_avrg_result_dict_loc_density(posis_dict):
+    result_dict = dict()
+    for key, posi in posis_dict.items():
+        print(key)
+        result_t = __get_x_y_loc_density(posi)
         result_dict.update({key: result_t})
     return result_dict
 

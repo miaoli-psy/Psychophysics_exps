@@ -104,7 +104,7 @@ def __get_loc_convex_hull_at_given_e(x_axis: int, list_point: list):
     if len(points) < 3:
         return number, 0
     else:
-        loc_convex_hull = Properties(points).occupancy_area
+        loc_convex_hull = Properties(points).occupancy_area_reduced
         return number, loc_convex_hull
 
 

@@ -73,7 +73,7 @@ if __name__ == '__main__':
         datac_to_fit = get_data_to_fit_list_no_normolized(result_dict_c_list)
         datanc_to_fit = get_data_to_fit_list_no_normolized(result_dict_nc_list)
 
-    starting_n = 11
+    starting_n = 15
 
     if plot_each_display:
         figc, cxs = plt.subplots(5, 5, figsize = (30, 20), sharex = True, sharey = True)
@@ -96,9 +96,10 @@ if __name__ == '__main__':
 
         for index, cx in enumerate(cxs):
             for i in range(0, 5):
-                cx.plot(datac_to_fit1[index][i][:, 0], datac_to_fit1[index][i][:, 1], "r--", alpha = 0.5)
+                cx.plot(datac_to_fit1[index][i][:, 0], datac_to_fit1[index][i][:, 1], "r--",  alpha = 0.5)
                 cx.plot(datanc_to_fit1[index][i][:, 0], datanc_to_fit1[index][i][:, 1], "b--", alpha = 0.5)
             cx.title.set_text("numerosity %s" % numerosity_list[index])
+        plt.ylim([0, 1])
         plt.show()
         figc.savefig("try.svg")
 
@@ -138,7 +139,7 @@ if __name__ == '__main__':
 
 
         # plot all
-        start_n = 7
+        start_n = 0
         x_avrg_c_list = [avrg_dict_c_to_fit[n][start_n:, 0] for n in numerosity_list]
         y_avrg_c_list = [avrg_dict_c_to_fit[n][start_n:, 1] for n in numerosity_list]
         x_avrg_nc_list = [avrg_dict_nc_to_fit[n][start_n:, 0] for n in numerosity_list]
@@ -152,8 +153,8 @@ if __name__ == '__main__':
         figb, bxs = plt.subplots(5, 5, figsize = (25, 15), sharex = True, sharey = True)
         bxs = bxs.ravel()
         for index, bx in enumerate(bxs):
-            bx.plot(x_avrg_c_list[index], y_avrg_c_list[index], "r--", alpha = 0.5)
-            bx.plot(x_avrg_nc_list[index], y_avrg_nc_list[index], "b--", alpha = 0.5)
+            bx.plot(x_avrg_c_list[index], y_avrg_c_list[index], "ro", size = 2, alpha = 0.5)
+            bx.plot(x_avrg_nc_list[index], y_avrg_nc_list[index], "bo", size = 2,alpha = 0.5)
             bx.plot(x_avrg_c_list[index], polyfit_crowding_avrg_list[index](x_avrg_c_list[index]), "r-")
             bx.plot(x_avrg_nc_list[index], polyfit_no_crowding_avrg_list[index](x_avrg_nc_list[index]), "b-")
             bx.title.set_text("numerosity %s" % numerosity_list[index])

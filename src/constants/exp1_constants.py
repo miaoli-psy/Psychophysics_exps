@@ -27,7 +27,8 @@ KEPT_COL_NAMES_STIMU_DF = ["crowdingcons",
 KEPT_COL_NAMES_STIMU_DF2 = ["crowdingcons",
                             "winsize",
                             "index_stimuliInfo",
-                            "N_disk"]
+                            "N_disk",
+                            "list_index"]
 
 KEPT_COL_NAMES = ["crowdingcons",
                   "Display",

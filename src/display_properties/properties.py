@@ -15,10 +15,12 @@ class Properties:
         # self.occupancy_area = round(self.__hull.volume * ((0.25 / 3.82) ** 2), 2)
         self.occupancy_area = round(self.__hull.volume * pix_to_deg ** 2, 2)
         self.occupancy_area_reduced = round(self.__hull.volume * pix_to_deg ** 2 - 46.28, 2)
+        self.occupancy_area_reduced_ms2 = round(self.__hull.volume * pix_to_deg ** 2 - 24.3, 2)
         self.averge_eccentricity = self.cal_averge_eccentricity()
         self.average_spacing = self.get_average_spacing()
         self.density = round(len(posilist) / self.occupancy_area, 4)
         self.density_no_fovea = round(len(posilist) / self.occupancy_area_reduced, 4)
+        self.density_no_fovea_ms2 = round(len(posilist) / self.occupancy_area_reduced_ms2, 4)
         self.numerosity = len(posilist)
 
     def cal_averge_eccentricity(self):

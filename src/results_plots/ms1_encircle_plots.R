@@ -30,13 +30,17 @@ data_preprocessed <- read_csv("../../data/ms1_encircle/preprocessed_encircle.csv
 
 # data by subject
 data_by_subject <- data_preprocessed %>% 
-  group_by(winsize, evaluation, crowdingcons) %>% 
-  summarise(perceived_group_n_mean = mean(groups_n),
-            perceived_group_n_std = sd(groups_n))
+  group_by(participant, crowdingcons, winsize) %>% 
+  summarise(
+    n = n(),
+    perceived_group_n_mean = mean(groups_n),
+    perceived_group_n_std = sd(groups_n)
+    ) %>% 
+  mutate(perceived_group_n_SEM = perceived_group_n_std/sqrt(n))
 
 # data across subject
 data_across_subject <- data_preprocessed %>% 
-  group_by(winsize, crowdingcons) %>% 
+  group_by(crowdingcons, winsize) %>% 
   summarise(
     n = n(),
     perceived_group_n_mean = mean(groups_n),
@@ -45,6 +49,9 @@ data_across_subject <- data_preprocessed %>%
   mutate(perceived_group_n_SEM = perceived_group_n_std/sqrt(n)
          ) %>% 
   mutate(perceived_group_n_std_ic = perceived_group_n_SEM * qt((1 - 0.05)/2 + 0.5, n - 1))
+
+
+# data across subject
 
 
 my_plot <-  ggplot() +
@@ -126,6 +133,13 @@ my_plot2 <-  ggplot() +
                                            fill = crowdingcons),
            position =  position_dodge(0.09), stat = "identity", alpha = 0.5) +
   
+  geom_point(data = data_across_subject, aes(x = winsize,
+                                           y = perceived_group_n_mean,
+                                           group = crowdingcons,
+                                           fill = crowdingcons),
+           position =  position_dodge(0.09), stat = "identity", alpha = 0.5) +
+
+
   
   
   scale_fill_manual(labels = c("radial", "tangential"),
@@ -136,8 +150,8 @@ my_plot2 <-  ggplot() +
                      values = c("#ff4500", "#4169e1"),
                      name = "aligenment condition" )  +
   
-  scale_x_continuous(breaks = c(0.3, 0.4, 0.5, 0.6, 0.7),
-                     labels = c("21-25", "31-35", "41-45", "49-53", "54-58")) +
+  # scale_x_continuous(breaks = c(0.3, 0.4, 0.5, 0.6, 0.7),
+  #                    labels = c("21-25", "31-35", "41-45", "49-53", "54-58")) +
   
   scale_y_continuous(breaks = c(0, 5, 10, 15, 20, 25)) +
   
@@ -164,7 +178,9 @@ my_plot2 <-  ggplot() +
         # facet wrap title
         strip.text.x = element_text(size = 12, face = "bold")) +
   
-  facet_wrap( ~ evaluation)
+  facet_wrap( ~participant)
 
 
 print(my_plot2)
+
+

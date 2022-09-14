@@ -41,6 +41,6 @@ def get_local_density_for_single_display(display_posis):
         if sub_numerosity != new_sub_numerosity:
             sub_numerosity = new_sub_numerosity
             local_density_list.append((e, local_density))
-        print(local_density_list)
+    # print(local_density_list)
     return local_density_list
 

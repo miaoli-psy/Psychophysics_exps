@@ -1,8 +1,7 @@
-import pandas as pd
+
 
 from src.commons.process_number import cal_eccentricity
 from src.display_properties.properties import Properties
-
 
 def get_sub_posi_list_at_given_e(eccentricty, display_posis):
     """
@@ -27,7 +26,7 @@ def get_local_density_at_given_e(eccentricity, display_posis):
     if len(sub_display) == 0:
         return sub_numerosity, 0
     else:
-        return sub_numerosity, Properties(sub_display).density_no_fovea_ms2
+        return sub_numerosity, Properties(sub_display).density_reduced
 
 
 def get_local_density_for_single_display(display_posis):
@@ -42,5 +41,6 @@ def get_local_density_for_single_display(display_posis):
         if sub_numerosity != new_sub_numerosity:
             sub_numerosity = new_sub_numerosity
             local_density_list.append((e, local_density))
+        print(local_density_list)
     return local_density_list
 

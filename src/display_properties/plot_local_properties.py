@@ -13,6 +13,33 @@ def covert_e_to_pix(e):
     return round(e * 0.04, 2)
 
 
+def numerosity_to_ax(numerosity):
+    if numerosity == 34:
+        return 0
+    elif numerosity == 36:
+        return 1
+    elif numerosity == 38:
+        return 2
+    elif numerosity == 40:
+        return 3
+    elif numerosity == 42:
+        return 4
+    elif numerosity == 44:
+        return 5
+    elif numerosity == 54:
+        return 6
+    elif numerosity == 56:
+        return 7
+    elif numerosity == 58:
+        return 8
+    elif numerosity == 60:
+        return 9
+    elif numerosity == 62:
+        return 10
+    elif numerosity == 64:
+        return 11
+
+
 def get_dict_of_df(df_loc_density):
     # put dataframe "local_density_list" into a list
     local_density_dict = dict()
@@ -53,18 +80,25 @@ if __name__ == '__main__':
     tangential_75 = displays_tangential[displays_tangential["perceptpairs"] == 0.75]
     tangential_100 = displays_tangential[displays_tangential["perceptpairs"] == 1]
 
-    radial_0_dict = get_dict_of_df(radial_0)
+    #%% TODO 改需要画的名字，title
+    radial_name = radial_100
+    tangential_name = tangential_100
+    plot_title = "75"
 
-    # fig, aex = plt.subplots(6, 2, sharex = True, sharey = True)
-    # aex = aex.ravel()
-    # for index, ax in enumerate(aex):
-    #     for
+    radial_dict = get_dict_of_df(radial_name)
+    tangential_dict = get_dict_of_df(tangential_name)
 
+    fig, aex = plt.subplots(2, 6, figsize = (50, 20), sharex = True, sharey = True)
+    aex = aex.ravel()
+    for key, df in radial_dict.items():
+        df.plot(x = "eccentricity", y = "local_density", style = "r--", alpha = 0.5,
+                ax = aex[numerosity_to_ax(key[0])],
+                legend = None,
+                title = "%s" % (key[0]))
+    for key, df in tangential_dict.items():
+        df.plot(x = "eccentricity", y = "local_density", style = "b--", alpha = 0.5,
+                ax = aex[numerosity_to_ax(key[0])],
+                legend = None)
 
-
-    local_density_single = radial_0_dict[(34, 2)]
-    local_density_single.plot(x = "eccentricity",
-                              y = "local_density",
-                              style = "r--",
-                              alpha = 0.5)
+    plt.suptitle("displays with %s percent pairs" % plot_title, fontsize = 20)
     plt.show()

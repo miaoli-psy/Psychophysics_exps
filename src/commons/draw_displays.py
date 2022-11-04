@@ -224,6 +224,31 @@ def draw_disc_only(e_posi):
     fig.savefig('disc%s.svg' % (str(e_posi)[0:15]), bbox_inches = 'tight', pad_inches = 0)
 
 
+def draw_mix_color_discs(base_posi, extra_posi):
+    fig, ax = plt.subplots(subplot_kw = {'aspect': 'equal'}, figsize = (4, 3))
+    for dot in base_posi:
+        plt.plot(dot[0], dot[1], color = 'k', marker = 'o', markersize = 2)
+    for dot in extra_posi:
+        plt.plot(dot[0], dot[1], color = 'white', marker = 'o', markersize = 2)
+    plt.plot(0, 0, color = 'k', marker = '+', markersize = 4)
+
+    # set x,y lim
+    ax.set_xlim([-400, 400])
+    ax.set_ylim([-260, 260])
+    # 边框不可见
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    # 坐标不可见
+    ax.axes.get_yaxis().set_visible(False)
+    ax.axes.get_xaxis().set_visible(False)
+    # set background color
+    ax.patch.set_facecolor('lightgray')
+    plt.show()
+
+    fig.savefig('disc%s.svg' % (str(extra_posi)[0:15]), bbox_inches = 'tight', pad_inches = 0)
+
 def drawEllipse_crowding(e_posi, black_disc_posi, red_disc_posi, crowding_posi, ka, kb, ellipseColor_r = 'royalblue',
                          savefig = False):
     """

@@ -407,7 +407,7 @@ anova(alignment_con.none2,
 # estimates
 emms <- emmeans(
   alignment_con.reduced_random_slope2,
-  list(pairwise ~ protectzonetype),
+  list(pairwise ~ contrast),
   adjust = "tukey"
 )
 

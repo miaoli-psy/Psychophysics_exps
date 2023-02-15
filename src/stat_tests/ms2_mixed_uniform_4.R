@@ -73,7 +73,123 @@ my_data <- data_preprocessed
 
 hist(my_data$deviation_score)
 
-# LMM ----------------------------------------------------------------
+# LMM winsize as a fixed factor-------------------------------------------
+
+my_data$deviation_score2 <- scale(my_data$deviation_score, center = TRUE, scale = TRUE)
+hist(my_data$deviation_score2)
+
+
+str(my_data)
+
+my_data$protectzonetype <- as.factor(my_data$protectzonetype)
+my_data$winsize <- as.factor(my_data$winsize)
+my_data$contrast <- as.factor(my_data$contrast)
+
+
+# not converged (~80min)
+full_model <- lmer(deviation_score2 ~ protectzonetype * winsize * contrast + 
+                     (1 + contrast + winsize + protectzonetype|participant), 
+                   data = my_data, REML = FALSE)
+
+summary(full_model)
+rePCA(full_model)
+summary(rePCA(full_model))
+
+
+# converged
+model.lm <- lmer(deviation_score2 ~ protectzonetype * winsize * contrast +
+                   (1 +  protectzonetype|participant),
+                 data = my_data, REML = FALSE)
+summary(model.lm)
+
+model.lm2 <- lmer(deviation_score2 ~ protectzonetype * winsize * contrast + 
+                    (1 |participant), data = my_data, REML = FALSE)
+
+summary(model.lm2)
+
+anova(model.lm, model.lm2)
+
+
+emmip(model.lm, protectzonetype ~ winsize | contrast)
+
+
+# 3-way interaction
+
+model.reduced <- lmer(deviation_score2 ~ protectzonetype * winsize + 
+                        winsize * contrast+ 
+                        contrast * protectzonetype+
+                        (1 + protectzonetype|participant), data = my_data, REML = FALSE)
+
+summary(model.reduced)
+anova(model.reduced)
+anova(model.lm, model.reduced)
+
+emmip(model.lm, contrast ~ winsize)
+
+
+# 2-way interaction
+
+model.reduced2 <- lmer(deviation_score2 ~ winsize * contrast+ 
+                         winsize * protectzonetype+
+                         (1 + protectzonetype|participant), data = my_data, REML = FALSE)
+
+anova(model.reduced, model.reduced2)
+
+
+# alignment condition/numerosity/contrast polarity
+model.reducedlm <- lmer(deviation_score2 ~ nest_numerosity + contrast + protectzonetype +
+                          (1 + protectzonetype|participant), data = my_data, REML = FALSE)
+
+summary(model.reducedlm)
+
+model.null <- lmer(deviation_score2 ~ protectzonetype + contrast + (1 + protectzonetype|participant),
+                   data = my_data, REML = FALSE)
+
+
+anova(model.reducedlm, model.null)
+
+
+
+# contrast: post-hoc comparison
+emms <- emmeans(
+  model.lm,
+  list(pairwise ~  contrast|winsize),
+  adjust = "tukey"
+)
+
+emms$emmeans
+summary(emms, infer = TRUE)
+
+
+emms2 <- emmeans(
+  model.lm,
+  list(pairwise ~ protectzonetype|winsize),
+  adjust = "tukey"
+)
+
+summary(emms2, infer = TRUE)
+
+
+# check main effect with likely radiohood test
+
+model.tem <- lmer(deviation_score2 ~ protectzonetype + winsize + contrast +
+                    (1 + protectzonetype|participant), data = my_data, REML = FALSE)
+
+
+model.tem2 <- lmer(deviation_score2 ~ winsize + contrast +
+                    (1 + protectzonetype|participant), data = my_data, REML = FALSE)
+
+anova(model.tem, model.tem2)
+
+emms3 <- emmeans(
+  model.lm,
+  list(pairwise ~ protectzonetype),
+  adjust = "tukey"
+)
+
+summary(emms3, infer = TRUE)
+
+# LMM nested numerosity as a fixed factor-------------------------------------------
 
 my_data$deviation_score2 <- scale(my_data$deviation_score, center = TRUE, scale = TRUE)
 hist(my_data$deviation_score2)

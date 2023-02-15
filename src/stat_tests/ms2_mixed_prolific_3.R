@@ -71,7 +71,66 @@ print(bxp3)
 hist(my_data$deviation_score)
 
 
-# LMM ----------------------------------------------------------------
+# LMM numerosity as random factor-------------------------------------------------------
+
+my_data$deviation_score2 <- scale(my_data$deviation_score, center = TRUE, scale = TRUE)
+hist(my_data$deviation_score2)
+
+# ID as factor
+str(my_data)
+
+# my_data$perceptpairs <- as.factor(my_data$perceptpairs)
+my_data$protectzonetype <- as.factor(my_data$protectzonetype)
+
+my_data$numerosity <- as.factor(my_data$numerosity)
+
+
+# not converged
+full_model <- lmer(deviation_score2 ~ protectzonetype + 
+                     (1 + numerosity + protectzonetype|participant) + 
+                     (1 + numerosity + protectzonetype|numerosity), data = my_data, REML = FALSE)
+
+summary(full_model)
+rePCA(full_model)
+summary(rePCA(full_model))
+
+
+# converged
+model.lm <- lmer(deviation_score2 ~ protectzonetype + 
+                   (1 + protectzonetype|participant) +
+                   (1 + protectzonetype|numerosity),
+                 data = my_data, REML = FALSE)
+
+summary(model.lm)
+anova(model.lm)
+
+
+# alignment condition
+model.reduce <- lmer(deviation_score2 ~ 
+                       (1 + protectzonetype|participant) +
+                       (1 + protectzonetype|numerosity),
+                     data = my_data, REML = FALSE)
+
+anova(model.lm, model.reduce)
+
+# simple (main) effect (only for data_ws04)
+
+# simple_main <- joint_tests(model.lm3, by = "numerosity")
+
+
+# contrast: post-hoc comparison
+emms <- emmeans(
+  model.lm,
+  list(pairwise ~ protectzonetype),
+  adjust = "tukey"
+)
+
+summary(emms, infer = TRUE)
+
+
+
+
+# LMM numerosity as fixed factor----------------------------------------------------------------
 
 my_data$deviation_score2 <- scale(my_data$deviation_score, center = TRUE, scale = TRUE)
 hist(my_data$deviation_score2)

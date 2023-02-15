@@ -10,6 +10,9 @@ setwd("D:/SCALab/projects/numerosity_exps/src/results_plots/")
 # read data
 data_preprocessed <- read_excel("../../data/ms2_uniform_mix_3_data/preprocessed_uniform_mix_3.xlsx")
 
+
+# plot numerosity in x-axis ---------------------------------------------
+
 # data by subject
 data_by_subject <- data_preprocessed %>%
   group_by(numerosity,
@@ -269,3 +272,140 @@ my_plot2 <-  ggplot() +
 print(my_plot2)
 
 ggsave(file = "test2.svg", plot = my_plot2, width = 6.72, height = 3.2, units = "in")
+
+
+# plot combine numerosity ---------------------------------------------
+
+# data by subject
+data_by_subject3 <- data_preprocessed %>%
+  group_by(participant,
+           protectzonetype,
+           winsize,
+           contrast) %>%
+  summarise(
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score),
+    percent_change_mean = mean(percent_change),
+    percent_change_std = sd(percent_change),
+    n = n()
+  ) %>%
+  mutate(
+    deviation_socre_SEM = deviation_score_std / sqrt(n),
+    percent_change_SEM = percent_change_std / sqrt(n),
+    deviation_socre_CI = deviation_socre_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                    1),
+    percent_change_CI = percent_change_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                  1)
+  )
+
+
+data_across_subject3 <- data_preprocessed %>%
+  group_by( protectzonetype,
+           winsize,
+           contrast) %>%
+  summarise(
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score),
+    percent_change_mean = mean(percent_change),
+    percent_change_std = sd(percent_change),
+    n = n()
+  ) %>%
+  mutate(
+    deviation_socre_SEM = deviation_score_std / sqrt(n),
+    percent_change_SEM = percent_change_std / sqrt(n),
+    deviation_socre_CI = deviation_socre_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                    1),
+    percent_change_CI = percent_change_SEM * qt((1 - 0.05) / 2 + .5, n -
+                                                  1)
+  )
+
+
+my_plot3 <-  ggplot() +
+  
+  geom_bar(
+    data = data_across_subject3,
+    aes(
+      x = protectzonetype,
+      y = deviation_score_mean,
+      group = contrast,
+      fill = contrast
+    ),
+    position = position_dodge(1),
+    stat = "identity",
+    width = 0.3,
+    alpha = 0.8,
+    size = 3
+  ) +
+  
+  
+  scale_y_continuous(limits = c(-30, 20)) +
+  
+  geom_errorbar(
+    data = data_across_subject3,
+    aes(
+      x = protectzonetype,
+      y = deviation_score_mean,
+      ymin = deviation_score_mean - deviation_socre_SEM,
+      ymax = deviation_score_mean + deviation_socre_SEM,
+      group = contrast
+    ),
+    size  = 1.2,
+    color = "#000000",
+    width = .00,
+    alpha = 1,
+    position = position_dodge(1)
+  ) +
+  
+  geom_point(
+    data = data_by_subject3,
+    aes(
+      x = protectzonetype,
+      y = deviation_score_mean,
+      color = contrast,
+      group = contrast
+    ),
+    position = position_jitterdodge(0.2),
+    stat = "identity",
+    alpha = 0.1,
+    size = 3
+  ) +
+  
+  
+  scale_fill_manual(values = c("mix" = "#00FFFF",
+                               "uniform" = "#FFA500")) +
+
+  scale_colour_manual(values = c("mix" = "#00FFFF",
+                                 "uniform" = "#FFA500")) +
+  
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  
+  labs(y = "Deviation score (DV)", x = "Alignment condition", fill = "contrast polarity") +
+  
+  theme(axis.title.x = element_text(color="black", size=14, face="bold"),
+        axis.title.y = element_text(color="black", size=14, face="bold"),
+        panel.border = element_blank(),  
+        # remove panel grid lines
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        # remove panel background
+        panel.background = element_blank(),
+        # add axis line
+        axis.line = element_line(colour = "grey"),
+        # x,y axis tick labels
+        axis.text.x = element_text(size = 12, face = "bold"),
+        axis.text.y = element_text(size = 12, face = "bold"),
+        # legend size
+        legend.title = element_text(size = 12, face = "bold"),
+        legend.text = element_text(size = 10),
+        # facet wrap title
+        strip.text.x = element_text(size = 12, face = "bold")) +
+  
+  facet_wrap( ~ winsize, nrow = 1, scales = "free_x",
+              labeller = labeller(winsize =
+                                    c("0.4" = "Exp 4 (34-44)",
+                                      "0.6" = "Exp 4 (54-64)"))) 
+
+
+print(my_plot3)
+
+ggsave(file = "test.svg", plot = my_plot3, width = 6, height = 3.19, units = "in")

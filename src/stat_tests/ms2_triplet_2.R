@@ -60,7 +60,95 @@ print(bxp3)
 
 hist(my_data$deviation_score)
 
+
 # LMM ----------------------------------------------------------------
+  
+# TODO
+my_data <- data_preprocessed
+
+my_data$deviation_score2 <- scale(my_data$deviation_score, center = TRUE, scale = TRUE)
+hist(my_data$deviation_score2)
+
+
+str(my_data)
+
+my_data$protectzonetype <- as.factor(my_data$protectzonetype)
+my_data$winsize <- as.factor(my_data$winsize)
+
+
+# not converged (take about 15 - 20 min to run)
+full_model <- lmer(deviation_score2 ~ protectzonetype * winsize + 
+                     (1 + winsize + protectzonetype|participant), 
+                   data = my_data, REML = FALSE)
+
+summary(full_model)
+rePCA(full_model)
+summary(rePCA(full_model))
+
+
+# converged
+model.lm <- lmer(deviation_score2 ~ protectzonetype * winsize +
+                   (1 +  protectzonetype|participant),
+                 data = my_data, REML = FALSE)
+summary(model.lm)
+
+model.lm2 <- lmer(deviation_score2 ~ protectzonetype * winsize + 
+                    (1 |participant), data = my_data, REML = FALSE)
+
+summary(model.lm2)
+
+anova(model.lm, model.lm2)
+
+
+emmip(model.lm, protectzonetype ~ winsize)
+
+
+# interaction
+
+model.reduced <- lmer(deviation_score2 ~ protectzonetype + winsize + 
+                        (1 + protectzonetype|participant), data = my_data, REML = FALSE)
+summary(model.reduced)
+anova(model.reduced)
+anova(model.lm, model.reduced)
+
+emmip(model.lm, protectzonetype ~ winsize)
+
+
+# alignment condition/numerosity
+model.null <- lmer(deviation_score2 ~ protectzonetype + (1 + protectzonetype|participant),
+                   data = my_data, REML = FALSE)
+
+
+anova(model.reduced, model.null)
+
+
+# contrast: post-hoc comparison
+emms <- emmeans(
+  model.reduced,
+  list(pairwise ~ protectzonetyp|winsize),
+  adjust = "tukey"
+)
+
+emms$emmeans
+
+summary(emms, infer = TRUE)
+
+
+emms2 <- emmeans(
+  model.reduced,
+  list(pairwise ~ winsize|protectzonetype),
+  adjust = "tukey"
+)
+
+summary(emms2, infer = TRUE)
+
+
+r2beta(model.reduced, method = 'kr', partial = TRUE)
+
+tab_model(model.reduced, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
+
+
+# LMM  numerosity  nested factor----------------------------------------------------------------
 
 my_data$deviation_score2 <- scale(my_data$deviation_score, center = TRUE, scale = TRUE)
 hist(my_data$deviation_score2)
@@ -150,4 +238,5 @@ summary(emms2, infer = TRUE)
 r2beta(model.reduced, method = 'kr', partial = TRUE)
 
 tab_model(model.reduced, p.val = "kr", show.df = TRUE, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
+
 

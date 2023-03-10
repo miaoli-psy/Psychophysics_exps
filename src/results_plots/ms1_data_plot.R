@@ -21,7 +21,7 @@ library(svglite)
 # prepare -----------------------------------------------------------------
 
 # set working path
-setwd("D:/SCALab/projects/numerosity_exps/src/results_plots/")
+setwd("C:/SCALab/projects/numerosity_exps/src/results_plots/")
 
 # read data
 data_preprocessed <- read_excel("../../data/exp1_rerun_data/ms1_all_data.xlsx")
@@ -174,3 +174,98 @@ print(my_plot)
 ggsave(file = "test2.svg", plot = my_plot)
 
 
+
+
+# data across subject
+data_across_subject3 <- data_preprocessed %>% 
+  group_by(protectzonetype, 
+           winsize) %>% 
+  summarise(
+    n = n(),
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score)
+  ) %>% 
+  mutate(
+    deviation_score_SEM = deviation_score_std / sqrt(n)
+  )
+
+
+# data across subject
+data_by_subject3 <- data_preprocessed %>% 
+  group_by(participant,
+           protectzonetype, 
+           winsize) %>% 
+  summarise(
+    n = n(),
+    deviation_score_mean = mean(deviation_score),
+    deviation_score_std = sd(deviation_score)
+  ) %>% 
+  mutate(
+    deviation_score_SEM = deviation_score_std / sqrt(n)
+  )
+
+my_plot2 <-  ggplot() +
+  
+  geom_point(
+    data = data_across_subject3,
+    aes(
+      x = winsize,
+      y = deviation_score_mean,
+      color = protectzonetype
+    ),
+    position = position_jitter(0.01),
+    stat = "identity",
+    alpha = 0.5,
+    size = 3
+  ) +
+  
+  geom_errorbar(
+    data = data_across_subject3,
+    aes(
+      x = winsize,
+      y = deviation_score_mean,
+      ymin = deviation_score_mean - deviation_score_SEM,
+      ymax = deviation_score_mean + deviation_score_SEM,
+      color = protectzonetype
+    ),
+    size  = 1.2,
+    width = .00,
+    alpha = 0.5,
+    position = position_dodge(0.01)
+  ) +
+  
+  
+  scale_fill_manual(values = c("radial" = "#FF0000",
+                               "tangential" = "#2600FF")) +
+  
+  scale_colour_manual(values = c("radial" = "#FF0000",
+                                 "tangential" = "#2600FF")) +
+  
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  
+  labs(y = "Deviation score (DV)", x = "Numerosity") +
+  
+  theme(axis.title.x = element_text(color="black", size=14, face="bold"),
+        axis.title.y = element_text(color="black", size=14, face="bold"),
+        panel.border = element_blank(),  
+        # remove panel grid lines
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        # remove panel background
+        panel.background = element_blank(),
+        # add axis line
+        axis.line = element_line(colour = "grey"),
+        # x,y axis tick labels
+        axis.text.x = element_text(size = 12, face = "bold"),
+        axis.text.y = element_text(size = 12, face = "bold"),
+        # legend size
+        legend.title = element_text(size = 12, face = "bold"),
+        legend.text = element_text(size = 10),
+        # facet wrap title
+        strip.text.x = element_text(size = 12, face = "bold"))
+
+
+print(my_plot2)
+
+
+ggsave(file = "test2.svg", plot = my_plot2, width = 5.07, height = 4.95, units = "in")

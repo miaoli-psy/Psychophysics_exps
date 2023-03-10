@@ -32,6 +32,7 @@ extra_t_triplet = str_to_list(ms2_display_demo.iloc[0]["tri_t"])
 
 if __name__ == '__main__':
     exp1_demo = False
+    exp1_process = False
     exp2_demo = True
     density_demo = False
     if exp1_demo:
@@ -43,10 +44,15 @@ if __name__ == '__main__':
         # exp1 display with ellipses crowding
         drawEllipses(posi = SamplePosiExp1.exp1_c, ka = 0.1, kb = 0.25, ellipseColor = 'white', ellipsetransp = 0.5)
 
+    if exp1_process:
+        endN = len(SamplePosiExp1.exp1_c)
+        for i in range(0, endN):
+            drawEllipses(posi=SamplePosiExp1.exp1_c[:i], ka=0.1, kb=0.25, ellipseColor='white', ellipsetransp=0.5, name_str = i)
+
     if exp2_demo:
         # drawEllipse_full(SamplePosiExp2.centerposi, [], ka = 0.25, kb = 0.1, ellipseColor_r = 'white',
         #                  ellipseColor_t = 'white')
-        drawEllipse_full(centerposi, extra_r_triplet, ka = 0.25, kb = 0.1, ellipseColor_r = 'white', ellipseColor_t = 'white')
+        drawEllipse_full(centerposi, extra_r_triplet, ka = 0.25, kb = 0.1, ellipseColor_r = 'white', ellipseColor_t = 'white', name_str = 100 )
         draw_disc_only(centerposi + extra_r_triplet)
         draw_mix_color_discs(centerposi, extra_r_100)
 

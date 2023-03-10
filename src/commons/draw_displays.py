@@ -13,7 +13,7 @@ from matplotlib.patches import Ellipse
 from scipy.spatial import distance
 
 
-def drawEllipse_full(e_posi, extra_posi, ka, kb, ellipseColor_r = 'orangered', ellipseColor_t = 'royalblue', extra_disc_color = 'orangered', ellipsetransp = 0.5):
+def drawEllipse_full(e_posi, extra_posi, ka, kb, ellipseColor_r = 'orangered', ellipseColor_t = 'royalblue', extra_disc_color = 'orangered', ellipsetransp = 0.5, name_str = 1):
     """
     This function allows to draw more than one ellipse. The parameter is
     a list of coordinate (must contain at least two coordinates)
@@ -80,10 +80,10 @@ def drawEllipse_full(e_posi, extra_posi, ka, kb, ellipseColor_r = 'orangered', e
     ax.patch.set_facecolor('lightgray')
     plt.show()
 
-    fig.savefig('efull%s.svg' % (str(e_posi)[0:15]), bbox_inches = 'tight', pad_inches = 0)
+    fig.savefig('efull%s.svg' % (name_str), bbox_inches = 'tight', pad_inches = 0)
 
 
-def drawEllipses(posi, ka, kb, ellipseColor, ellipsetransp = 0.5, extra_posi = [], extra_disc_color = 'orangered'):
+def drawEllipses(posi, ka, kb, ellipseColor, ellipsetransp = 0.5, extra_posi = [], extra_disc_color = 'orangered', name_str = 1):
     eccentricities2 = []
     for i in range(len(posi)):
         eccentricities0 = distance.euclidean(posi[i], (0, 0))
@@ -139,7 +139,8 @@ def drawEllipses(posi, ka, kb, ellipseColor, ellipsetransp = 0.5, extra_posi = [
     # set background color
     ax.patch.set_facecolor('lightgray')
     plt.show()
-    fig.savefig('e%s.svg' % (str(posi)[0:15]), bbox_inches = 'tight', pad_inches = 0)
+    # fig.savefig('%s.svg' % (name_str), bbox_inches = 'tight', pad_inches = 0)
+    fig.savefig('%s.png' % (name_str), bbox_inches = 'tight', pad_inches = 0)
 
 
 def drawEllipses_homo(posi, ka, kb, ellipseColor, ellipsetransp = 0.5, extra_posi = [], extra_disc_color = 'orangered'):

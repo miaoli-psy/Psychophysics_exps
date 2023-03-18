@@ -290,7 +290,7 @@ my_plot3 <-  ggplot() +
   ) +
   
   
-  # scale_y_continuous(limits = c(-13, 0)) +
+  scale_y_continuous(limits = c(-6, 0)) +
   
   geom_errorbar(
     data = data_across_subject2,
@@ -317,7 +317,7 @@ my_plot3 <-  ggplot() +
   
   geom_hline(yintercept = 0, linetype = "dashed") +
   
-  labs(y = "Deviation score (DV)", x = "Alignment condition") +
+  labs(y = "Deviation score", x = "Alignment condition") +
   
   theme(axis.title.x = element_text(color="black", size=14, face="bold"),
         axis.title.y = element_text(color="black", size=14, face="bold"),
@@ -348,3 +348,5 @@ my_plot3 <-  ggplot() +
 
 print(my_plot3)
 
+ggsave(file = "test.svg", plot = my_plot3, width = 5.23, height = 4.6, units = "in")
+# ggsave(file = "test.svg", plot = my_plot3)

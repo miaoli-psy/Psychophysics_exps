@@ -20,7 +20,7 @@ library(svglite)
 # prepare -----------------------------------------------------------------
 
 # set working path
-setwd("D:/SCALab/projects/numerosity_exps/src/results_plots/")
+setwd("c:/SCALab/projects/numerosity_exps/src/results_plots/")
 
 # read data
 data_preprocessed <- read_csv("../../data/ms1_encircle/preprocessed_encircle.csv")
@@ -184,3 +184,73 @@ my_plot2 <-  ggplot() +
 print(my_plot2)
 
 
+
+my_plot3 <-  ggplot() +
+  
+  geom_point(
+    data = data_across_subject,
+    aes(
+      x = winsize,
+      y = perceived_group_n_mean,
+      color = crowdingcons,
+      group = crowdingcons
+    ),
+    position = position_dodge(0.05),
+    stat = "identity",
+    alpha = 0.6,
+    size = 3
+  ) +
+  
+  # scale_x_continuous(breaks = breaks_fun) +
+  
+  scale_y_continuous(limits = c(5, 20)) +
+  
+  geom_errorbar(
+    data = data_across_subject,
+    aes(
+      x = winsize,
+      y = perceived_group_n_mean,
+      ymin = perceived_group_n_mean - perceived_group_n_SEM,
+      ymax = perceived_group_n_mean + perceived_group_n_SEM,
+      group = crowdingcons,
+      color = crowdingcons
+    ),
+    size  = 1.2,
+    width = .00,
+    alpha = 0.6,
+    position = position_dodge(0.05)
+  ) +
+  
+  scale_fill_manual(values = c("radial" = "#FF0000",
+                               "tangential" = "#2600FF")) +
+  
+  scale_colour_manual(values = c("radial" = "#FF0000",
+                                 "tangential" = "#2600FF")) +
+  
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  
+  labs(y = "Deviation score", x = "Numerosity") +
+  
+  theme(axis.title.x = element_text(color="black", size=14, face="bold"),
+        axis.title.y = element_text(color="black", size=14, face="bold"),
+        panel.border = element_blank(),  
+        # remove panel grid lines
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        # remove panel background
+        panel.background = element_blank(),
+        # add axis line
+        axis.line = element_line(colour = "grey"),
+        # x,y axis tick labels
+        axis.text.x = element_text(size = 12, face = "bold"),
+        axis.text.y = element_text(size = 12, face = "bold"),
+        # legend size
+        legend.title = element_text(size = 12, face = "bold"),
+        legend.text = element_text(size = 10),
+        # facet wrap title
+        strip.text.x = element_text(size = 12, face = "bold"))
+
+
+print(my_plot3)
+
+ggsave(file = "test2.svg", plot = my_plot3, width = 5.07, height = 4.95, units = "in")

@@ -31,9 +31,9 @@ extra_r_triplet = str_to_list(ms2_display_demo.iloc[0]["tri_r"])
 extra_t_triplet = str_to_list(ms2_display_demo.iloc[0]["tri_t"])
 
 if __name__ == '__main__':
-    exp1_demo = False
+    exp1_demo = True
     exp1_process = False
-    exp2_demo = True
+    exp2_demo = False
     density_demo = False
     if exp1_demo:
         # exp 1 display sample
@@ -43,6 +43,8 @@ if __name__ == '__main__':
         drawEllipses(posi = SamplePosiExp1.exp1_nc, ka = 0.25, kb = 0.1, ellipseColor = 'white', ellipsetransp = 0.5)
         # exp1 display with ellipses crowding
         drawEllipses(posi = SamplePosiExp1.exp1_c, ka = 0.1, kb = 0.25, ellipseColor = 'white', ellipsetransp = 0.5)
+
+        drawEllipse_full(SamplePosiExp1.exp1_c, [], ka=0.25, kb=0.1, ellipseColor_r='white', ellipseColor_t='white', name_str=100)
 
     if exp1_process:
         endN = len(SamplePosiExp1.exp1_c)
